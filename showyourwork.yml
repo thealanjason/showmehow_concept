@@ -33,11 +33,11 @@ datasets:
 dependencies:
   # src/scripts/my_script.py:
   #   - src/data/dataset_for_my_script.dat
-  # src/tex/ms.tex:
+  # src/tex/paper.tex:
   #   - src/tex/stylesheet.tex
 
 # Name of the `.tex` manuscript and corresponding `.pdf` article
-ms_name: ms
+ms_name: paper
 
 # Optimize DAG by removing unnecessary jobs upstream of cache hits?
 optimize_caching: false
@@ -54,7 +54,7 @@ overleaf:
     - src/tex/output
   # List of files to pull from Overleaf
   pull:
-    - src/tex/ms.tex
+    - src/tex/paper.tex
     - src/tex/bib.bib
 
 # Always require all input files to be present on disk for workflow to pass?

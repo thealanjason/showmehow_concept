@@ -1,0 +1,8 @@
+name: showyourwork
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - pip
+  - pip:
+    - git+https://github.com/showyourwork/showyourwork
