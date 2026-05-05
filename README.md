@@ -7,7 +7,7 @@
 <a href="https://github.com/thealanjason/showmehow_concept/raw/main-pdf/arxiv.tar.gz">
 <img src="https://img.shields.io/badge/article-tarball-blue.svg?style=flat" alt="Article tarball"/>
 </a>
-<a href="https://github.com/thealanjason/showmehow_concept/raw/main-pdf/ms.pdf">
+<a href="https://github.com/thealanjason/showmehow_concept/raw/main-pdf/paper.pdf">
 <img src="https://img.shields.io/badge/view-pdf-blue.svg?style=flat" alt="Download the PDF"/>
 </a>
 <a href="https://github.com/showyourwork/showyourwork">
