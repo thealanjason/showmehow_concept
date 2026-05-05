@@ -1,3 +1,5 @@
+## SHOWME.how Concept Paper - deRSE26
+
 <p>
 <br>
 <br>
@@ -15,7 +17,7 @@
 </a>
 </p>
 
-SHOWME.how Concept Paper - deRSE26
+![SHOWME.how](showmehow_logo.svg)
 
 An open source scientific article created using the [showyourwork](https://github.com/showyourwork/showyourwork) workflow.
 
