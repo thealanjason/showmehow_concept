@@ -1,7 +1,4 @@
-<p align="center">
-<a href="https://github.com/showyourwork/showyourwork">
-<img width = "450" src="https://raw.githubusercontent.com/showyourwork/.github/main/images/showyourwork.png" alt="showyourwork"/>
-</a>
+<p>
 <br>
 <br>
 <a href="https://github.com/thealanjason/showmehow_concept/actions/workflows/build.yml">
@@ -11,11 +8,16 @@
 <img src="https://img.shields.io/badge/article-tarball-blue.svg?style=flat" alt="Article tarball"/>
 </a>
 <a href="https://github.com/thealanjason/showmehow_concept/raw/main-pdf/ms.pdf">
-<img src="https://img.shields.io/badge/download-pdf-blue.svg?style=flat" alt="Download the PDF"/>
+<img src="https://img.shields.io/badge/view-pdf-blue.svg?style=flat" alt="Download the PDF"/>
 </a>
-<a href="https://mozilla.github.io/pdf.js/web/viewer.html?file=https%3A%2F%2Fraw.githubusercontent.com%thealanjason%2Fshowmehow_concept%2Fmain-pdf%2Fms.pdf">
-<img src="https://img.shields.io/badge/view-pdf-blue.svg?style=flat" alt="Read with PDF.js"/>
+<a href="https://github.com/showyourwork/showyourwork">
+<img src="https://img.shields.io/badge/built%20with-showyourwork!-red.svg?style=flat" alt="showyourwork"/>
 </a>
 </p>
 
+SHOWME.how Concept Paper - deRSE26
+
 An open source scientific article created using the [showyourwork](https://github.com/showyourwork/showyourwork) workflow.
+
+<!-- See [CONTRIBUTING.md](CONTRIBUTING.md) for how to get started working with this repository. -->
+
