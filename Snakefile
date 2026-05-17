@@ -84,6 +84,11 @@ rule submission_stage:
             --exclude='.gitignore' \
             . | tar -x -C {output}
         cp {input.cls_publisher} {output}/eceasst.cls
+        # Copy static figures into build/submission/figures/ so the submission
+        # pdflatex build (which doesn't use showyourwork's graphics resolution)
+        # can find them via the `figures/<file>.pdf` paths in article.tex.
+        mkdir -p {output}/figures
+        cp src/static/*.pdf {output}/figures/
         mv {output}/paper.tex {output}/article.tex
         sed -i '/\\usepackage{{showyourwork}}/d' {output}/article.tex
         """
