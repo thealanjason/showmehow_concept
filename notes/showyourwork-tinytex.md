@@ -100,21 +100,22 @@ rule in the file becomes the default target.
 Rules:
 
 - **`all`** — depends on `paper.pdf` (showyourwork/tectonic) and
-  `paper-submission.pdf` + `paper-submission.tar.gz` (pdflatex). First in
-  the file, so it's the default. `showyourwork build` builds all three.
+  `article.pdf` + `article.tar.gz` (pdflatex). First in the file, so it's
+  the default. `showyourwork build` builds all three.
 - **`setup_tinytex`** — runs `tlmgr install` for the packages pdflatex
   needs that don't ship in `genomedk::tinytex`. Sentinel at
   `build/.tinytex-installed` makes this a one-time check.
 - **`submission_stage`** — rsyncs `src/tex/` into `build/submission/`,
   excluding `showyourwork.sty`, the patched `eceasst.cls`, the
   `.publisher` sibling, and all LaTeX build artifacts. Then drops the
-  pristine `eceasst.cls.publisher` in as `eceasst.cls` and strips the
-  `\usepackage{showyourwork}` line from `paper.tex`.
+  pristine `eceasst.cls.publisher` in as `eceasst.cls`, renames
+  `paper.tex` to `article.tex` (publisher expects that filename), and
+  strips the `\usepackage{showyourwork}` line.
 - **`submission_pdf`** — runs `pdflatex / bibtex / pdflatex / pdflatex`
   inside `build/submission/` using the `env-tinytex.yml` conda env.
-  Copies the resulting PDF to `paper-submission.pdf` at the repo root.
+  Copies the resulting PDF to `article.pdf` at the repo root.
 - **`submission_tarball`** — tars `build/submission/` (source only, no
-  build artifacts) into `paper-submission.tar.gz`.
+  build artifacts) into `article.tar.gz`.
 
 What this guarantees:
 
@@ -126,7 +127,8 @@ What this guarantees:
 - Local and CI use the same path. showyourwork-action runs snakemake with
   conda enabled, so `env-tinytex.yml` is provisioned automatically.
 
-Outputs are gitignored (`/build/`, `/paper-submission.tar.gz`).
+Outputs are gitignored (`/build/`, `/article.tar.gz`; `/article.pdf` is
+covered by the `/*.pdf` rule).
 
 ## CI publishing (publish-submission.yml)
 
@@ -151,8 +153,8 @@ What the workflow does:
 - On push to `main`: builds the artifacts, then checks out `main-pdf` and
   drops the two files in alongside showyourwork's outputs.
 
-The README badges link to `raw/main-pdf/paper-submission.pdf` and
-`raw/main-pdf/paper-submission.tar.gz`, so clicking always gives the latest.
+The README badges link to `raw/main-pdf/article.pdf` and
+`raw/main-pdf/article.tar.gz`, so clicking always gives the latest.
 
 ## Known log warnings to ignore
 

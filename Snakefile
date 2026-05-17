@@ -2,11 +2,12 @@
 # Root Snakefile — user rules loaded by showyourwork.
 #
 # Produces, alongside the default tectonic-built `paper.pdf`:
-#   - paper-submission.pdf : built with pdflatex from a staged clean copy of
-#                            src/tex (publisher eceasst.cls, no showyourwork).
-#                            This is the journal-equivalent rendering.
-#   - paper-submission.tar.gz : the staged source tree, ready to send to the
-#                               publisher.
+#   - article.pdf : built with pdflatex from a staged clean copy of src/tex
+#                   (publisher eceasst.cls, no showyourwork). This is the
+#                   journal-equivalent rendering. The staged entry point is
+#                   renamed from paper.tex to article.tex because the publisher
+#                   expects that filename.
+#   - article.tar.gz : the staged source tree, ready to send to the publisher.
 #
 # See notes/showyourwork-tinytex.md for background.
 # =============================================================================
@@ -16,8 +17,8 @@
 rule all:
     input:
         "paper.pdf",
-        "paper-submission.pdf",
-        "paper-submission.tar.gz"
+        "article.pdf",
+        "article.tar.gz"
 
 
 # -----------------------------------------------------------------------------
@@ -51,8 +52,9 @@ rule setup_tinytex:
 #   - showyourwork.sty (showyourwork-specific)
 #   - LaTeX build artifacts left over from local pdflatex runs
 #   - the patched eceasst.cls and its .publisher sibling
-# Then drop the pristine publisher .cls in as eceasst.cls and strip the
-# \usepackage{showyourwork} line from paper.tex.
+# Then drop the pristine publisher .cls in as eceasst.cls, strip the
+# \usepackage{showyourwork} line, and rename paper.tex to article.tex — the
+# publisher expects the entry point to be article.tex.
 rule submission_stage:
     input:
         tex           = "src/tex/paper.tex",
@@ -82,33 +84,34 @@ rule submission_stage:
             --exclude='.gitignore' \
             . | tar -x -C {output}
         cp {input.cls_publisher} {output}/eceasst.cls
-        sed -i '/\\usepackage{{showyourwork}}/d' {output}/paper.tex
+        mv {output}/paper.tex {output}/article.tex
+        sed -i '/\\usepackage{{showyourwork}}/d' {output}/article.tex
         """
 
 
 # -----------------------------------------------------------------------------
-# Build paper-submission.pdf via pdflatex from the staged tree
+# Build article.pdf via pdflatex from the staged tree
 # -----------------------------------------------------------------------------
 rule submission_pdf:
     input:
         srcdir = "build/submission",
         setup  = "build/.tinytex-installed"
     output:
-        pdf = "paper-submission.pdf"
+        pdf = "article.pdf"
     conda:
         "env-tinytex.yml"
     shell:
         r"""
         cd {input.srcdir}
-        pdflatex -interaction=nonstopmode paper.tex
+        pdflatex -interaction=nonstopmode article.tex
         # bibtex may exit non-zero on warnings (malformed entries, missing
         # fields). Tolerate it here — undefined refs surface as LaTeX warnings,
         # and we'd rather have a PDF for review than no PDF.
-        bibtex paper || true
-        pdflatex -interaction=nonstopmode paper.tex
-        pdflatex -interaction=nonstopmode paper.tex
+        bibtex article || true
+        pdflatex -interaction=nonstopmode article.tex
+        pdflatex -interaction=nonstopmode article.tex
         cd - >/dev/null
-        cp {input.srcdir}/paper.pdf {output.pdf}
+        cp {input.srcdir}/article.pdf {output.pdf}
         """
 
 
@@ -120,9 +123,9 @@ rule submission_pdf:
 rule submission_tarball:
     input:
         srcdir = "build/submission",
-        pdf    = "paper-submission.pdf"
+        pdf    = "article.pdf"
     output:
-        "paper-submission.tar.gz"
+        "article.tar.gz"
     shell:
         r"""
         tar czf {output} -C build \
@@ -135,6 +138,6 @@ rule submission_tarball:
             --exclude='*.out' \
             --exclude='*.synctex.gz' \
             --exclude='missfont.log' \
-            --exclude='paper.pdf' \
+            --exclude='article.pdf' \
             submission
         """

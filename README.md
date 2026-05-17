@@ -12,10 +12,10 @@
 <a href="https://github.com/thealanjason/showmehow_concept/raw/main-pdf/paper.pdf">
 <img src="https://img.shields.io/badge/view-pdf%20(tectonic)-blue.svg?style=flat" alt="Download the PDF (tectonic preview)"/>
 </a>
-<a href="https://github.com/thealanjason/showmehow_concept/raw/main-pdf/paper-submission.pdf">
+<a href="https://github.com/thealanjason/showmehow_concept/raw/main-pdf/article.pdf">
 <img src="https://img.shields.io/badge/view-pdf%20(submission)-green.svg?style=flat" alt="Download the submission PDF"/>
 </a>
-<a href="https://github.com/thealanjason/showmehow_concept/raw/main-pdf/paper-submission.tar.gz">
+<a href="https://github.com/thealanjason/showmehow_concept/raw/main-pdf/article.tar.gz">
 <img src="https://img.shields.io/badge/download-submission%20tarball-green.svg?style=flat" alt="Download the submission tarball"/>
 </a>
 <a href="https://github.com/showyourwork/showyourwork">
