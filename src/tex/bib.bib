@@ -1,370 +1,333 @@
-@preamble{ "\newcommand{\noopsort}[1]{} "
-	# "\newcommand{\printfirst}[2]{#1} "
-	# "\newcommand{\singleletter}[1]{#1} "
-	# "\newcommand{\switchargs}[2]{#2#1} " }
+% ── Orchestration ────────────────────────────────────────────────────────────
 
-@ARTICLE{article-minimal,
-   author = {L[eslie] A. Aamport},
-   title = {The Gnats and Gnus Document Preparation System},
-   journal = {\mbox{G-Animal's} Journal},
-   year = 1986,
+@article{molder2021snakemake,
+  author  = {Felix M{\"o}lder and Kim Philipp Jablonski and Brice Letcher and
+             Michael B. Hall and Christopher H. Tomkins-Tinch and Vanessa Sochat and
+             Jan Forster and Soohyun Lee and Sven O. Twardziok and Alexander Kanitz and
+             Andreas Wilm and Manuel Holtgrewe and Sven Rahmann and Sven Nahnsen and
+             Johannes K{\"o}ster},
+  title   = {Sustainable data analysis with {Snakemake}},
+  journal = {F1000Research},
+  volume  = {10},
+  pages   = {33},
+  year    = {2021},
+  doi     = {10.12688/f1000research.29032.2},
 }
 
-@ARTICLE{article-full,
-   author = {L[eslie] A. Aamport},
-   title = {The Gnats and Gnus Document Preparation System},
-   journal = {\mbox{G-Animal's} Journal},
-   year = 1986,
-   volume = 41,
-   number = 7,
-   pages = "73+",
-   month = jul,
-   note = "This is a full ARTICLE entry",
-   doi = "10.9999/example-doi",
-   url = "http://www.example.org/gnats-and-gnus/"
+@article{ditommaso2017nextflow,
+  author  = {Paolo {Di Tommaso} and Maria Chatzou and Evan W. Floden and
+             Pablo Prieto Barja and Emilio Palumbo and Cedric Notredame},
+  title   = {Nextflow enables reproducible computational workflows},
+  journal = {Nature Biotechnology},
+  volume  = {35},
+  pages   = {316--319},
+  year    = {2017},
+  doi     = {10.1038/nbt.3820},
 }
 
-The KEY field is here to override the KEY field in the journal being
-cross referenced (so is the NOTE field, in addition to its imparting
-information).
+% ── Isolation ────────────────────────────────────────────────────────────────
 
-@ARTICLE{article-crossref,
-   crossref = {WHOLE-JOURNAL},
-   key = "",
-   author = {L[eslie] A. Aamport},
-   title = {The Gnats and Gnus Document Preparation System},
-   pages = "73+",
-   note = "This is a cross-referencing ARTICLE entry",
+@article{merkel2014docker,
+  author  = {Dirk Merkel},
+  title   = {Docker: Lightweight {Linux} Containers for Consistent Development and Deployment},
+  journal = {Linux Journal},
+  volume  = {2014},
+  number  = {239},
+  pages   = {2},
+  year    = {2014},
 }
 
-@ARTICLE{whole-journal,
-   key = "GAJ",
-   journal = {\mbox{G-Animal's} Journal},
-   year = 1986,
-   volume = 41,
-   number = 7,
-   month = jul,
-   note = {The entire issue is devoted to gnats and gnus
-		(this entry is a cross-referenced ARTICLE (journal))},
+@article{kurtzer2017singularity,
+  author  = {Gregory M. Kurtzer and Vanessa Sochat and Michael W. Bauer},
+  title   = {Singularity: Scientific Containers for Mobility of Compute},
+  journal = {PLOS ONE},
+  volume  = {12},
+  number  = {5},
+  pages   = {e0177459},
+  year    = {2017},
+  doi     = {10.1371/journal.pone.0177459},
 }
 
-@INBOOK{inbook-minimal,
-   author = "Donald E. Knuth",
-   title = "Fundamental Algorithms",
-   publisher = "Addison-Wesley",
-   year = "{\noopsort{1973b}}1973",
-   chapter = "1.2",
+@misc{apptainer,
+  author       = {{Apptainer Project}},
+  title        = {Apptainer: Application containers for {Linux}},
+  howpublished = {\url{https://apptainer.org}},
+  note         = {Hosted by the Linux Foundation; forked from Singularity in 2021},
+  year         = {2021},
 }
 
-@INBOOK{inbook-full,
-   author = "Donald E. Knuth",
-   title = "Fundamental Algorithms",
-   volume = 1,
-   series = "The Art of Computer Programming",
-   publisher = "Addison-Wesley",
-   address = "Reading, Massachusetts",
-   edition = "Second",
-   month = "10~" # jan,
-   year = "{\noopsort{1973b}}1973",
-   type = "Section",
-   chapter = "1.2",
-   pages = "10--119",
-   note = "This is a full INBOOK entry",
+@software{conda,
+  author  = {{Anaconda, Inc.}},
+  title   = {Conda: Package, dependency and environment management},
+  url     = {https://conda.io},
+  year    = {2017},
 }
 
-@INBOOK{inbook-crossref,
-   crossref = "whole-set",
-   title = "Fundamental Algorithms",
-   volume = 1,
-   series = "The Art of Computer Programming",
-   edition = "Second",
-   year = "{\noopsort{1973b}}1973",
-   type = "Section",
-   chapter = "1.2",
-   note = "This is a cross-referencing INBOOK entry",
+@software{mamba,
+  author  = {{QuantStack} and {Mamba Contributors}},
+  title   = {Mamba: The Fast Cross-Platform Package Manager},
+  url     = {https://github.com/mamba-org/mamba},
+  year    = {2021},
 }
 
-@BOOK{book-minimal,
-   author = "Donald E. Knuth",
-   title = "Seminumerical Algorithms",
-   publisher = "Addison-Wesley",
-   year = "{\noopsort{1973c}}1981",
+% ── Interoperation ───────────────────────────────────────────────────────────
+
+@software{hdf5,
+  author  = {{The HDF Group}},
+  title   = {{Hierarchical Data Format, version 5}},
+  url     = {https://www.hdfgroup.org/HDF5/},
+  doi     = {10.5281/zenodo.17808614},
+  year    = {1997},
 }
 
-@BOOK{book-full,
-   author = "Donald E. Knuth",
-   title = "Seminumerical Algorithms",
-   volume = 2,
-   series = "The Art of Computer Programming",
-   publisher = "Addison-Wesley",
-   address = "Reading, Massachusetts",
-   edition = "Second",
-   month = "10~" # jan,
-   year = "{\noopsort{1973c}}1981",
-   note = "This is a full BOOK entry",
+@inproceedings{moore2023zarr,
+  author    = {Josh Moore and Susanne Kunis},
+  title     = {Zarr: A Cloud-Optimized Storage for Interactive Access of Large Arrays},
+  booktitle = {Proceedings of the Conference on Research Data Infrastructure},
+  volume    = {1},
+  year      = {2023},
+  doi       = {10.52825/cordi.v1i.285},
 }
 
-@BOOK{book-crossref,
-   crossref = "whole-set",
-   title = "Seminumerical Algorithms",
-   volume = 2,
-   series = "The Art of Computer Programming",
-   edition = "Second",
-   year = "{\noopsort{1973c}}1981",
-   note = "This is a cross-referencing BOOK entry",
+@article{seelinger2023umbridge,
+  author  = {Linus Seelinger and Vivian Cheng-Seelinger and Andrew Davis and
+             Matthew Parno and Anne Reinarz},
+  title   = {{UM-Bridge}: Uncertainty quantification and modeling bridge},
+  journal = {Journal of Open Source Software},
+  volume  = {8},
+  number  = {83},
+  pages   = {4748},
+  year    = {2023},
+  doi     = {10.21105/joss.04748},
 }
 
-@BOOK{whole-set,
-   author = "Donald E. Knuth",
-   publisher = "Addison-Wesley",
-   title = "The Art of Computer Programming",
-   series = "Four volumes",
-   year = "{\noopsort{1973a}}{\switchargs{--90}{1968}}",
-   note = "Seven volumes planned (this is a cross-referenced set of BOOKs)",
-   url = "http://www-cs-faculty.stanford.edu/~knuth/taocp.html",
+% ── Motivation: FAIR & Computational Labs ────────────────────────────────────
+
+@article{wilkinson2016fair,
+  author  = {Mark D. Wilkinson and Michel Dumontier and IJsbrand Jan Aalbersberg and
+             Gabrielle Appleton and Myles Axton and Arie Baak and Niklas Blomberg and
+             Jan-Willem Boiten and Luiz Bonino {da Silva Santos} and Philip E. Bourne and
+             Jildau Bouwman and Anthony J. Brookes and Tim Clark and Merc{\`e} Crosas and
+             Ingrid Dillo and Olivier Dumon and Scott Edmunds and Chris T. Evelo and
+             Richard Finkers and Alejandra Gonzalez-Beltran and Alasdair J. G. Gray and
+             Paul Groth and Carole Goble and Jeffrey S. Grethe and Jaap Heringa and
+             Peter A. C. {'t Hoen} and Rob Hooft and Tobias Kuhn and Ruben Kok and
+             Joost Kok and Scott J. Lusher and Maryann E. Martone and Albert Mons and
+             Abel L. Packer and Bengt Persson and Philippe Rocca-Serra and Marco Roos and
+             Rene van Schaik and Susanna-Assunta Sansone and Erik Schultes and
+             Thierry Sengstag and Ted Slater and George Strawn and Morris A. Swertz and
+             Mark Thompson and Johan van der Lei and Erik van Mulligen and Jan Velterop and
+             Andra Waagmeester and Peter Wittenburg and Katherine Wolstencroft and
+             Jun Zhao and Barend Mons},
+  title   = {The {FAIR} Guiding Principles for scientific data management and stewardship},
+  journal = {Scientific Data},
+  volume  = {3},
+  pages   = {160018},
+  year    = {2016},
+  doi     = {10.1038/sdata.2016.18},
 }
 
-@BOOKLET{booklet-minimal,
-   key = "Kn{\printfirst{v}{1987}}",
-   title = "The Programming of Computer Art",
+@article{barker2022fair4rs,
+  author  = {Michelle Barker and Neil P. Chue Hong and Daniel S. Katz and
+             Anna-Lena Lamprecht and Carlos Martinez-Ortiz and Fotis Psomopoulos and
+             Jennifer Harrow and Leyla Jael Castro and Morane Gruenpeter and
+             Paula Andrea Martinez and Tom Honeyman},
+  title   = {Introducing the {FAIR} Principles for research software},
+  journal = {Scientific Data},
+  volume  = {9},
+  pages   = {622},
+  year    = {2022},
+  doi     = {10.1038/s41597-022-01710-x},
 }
 
-@BOOKLET{booklet-full,
-   author = "Jill C. Knvth",
-   title = "The Programming of Computer Art",
-   howpublished = "Vernier Art Center",
-   address = "Stanford, California",
-   month = feb,
-   year = 1988,
-   note = "This is a full BOOKLET entry",
-   url = "http://www.somewhere.org/",
+@article{wilkinson2025fairworkflows,
+  author  = {Sean R. Wilkinson and Meznah Aloqalaa and Khalid Belhajjame and
+             Michael R. Crusoe and Bruno {de Paula Kinoshita} and Luiz Gadelha and
+             Daniel Garijo and Ove Johan Ragnar Gustafsson and Nick Juty and
+             Sehrish Kanwal and Farah Zaib Khan and Johannes K{\"o}ster and
+             Karsten Peters-von Gehlen and Line Pouchard and Randy K. Rannow and
+             Stian Soiland-Reyes and Nicola Soranzo and Shoaib Sufi and Ziheng Sun and
+             Baiba Vilne and Merridee A. Wouters and Denis Yuen and Carole Goble},
+  title   = {Applying the {FAIR} Principles to computational workflows},
+  journal = {Scientific Data},
+  volume  = {12},
+  pages   = {328},
+  year    = {2025},
+  doi     = {10.1038/s41597-025-04451-9},
 }
 
-@INCOLLECTION{incollection-minimal,
-   author = "Daniel D. Lincoll",
-   title = "Semigroups of Recurrences",
-   booktitle = "High Speed Computer and Algorithm Organization",
-   publisher = "Academic Press",
-   year = 1977,
+@article{goble2020fairworkflows,
+  author  = {Carole Goble and Sarah Cohen-Boulakia and Stian Soiland-Reyes and
+             Daniel Garijo and Yolanda Gil and Michael R. Crusoe and
+             Kristian Peters and Daniel Schober},
+  title   = {{FAIR} Computational Workflows},
+  journal = {Data Intelligence},
+  volume  = {2},
+  number  = {1--2},
+  pages   = {108--121},
+  year    = {2020},
+  doi     = {10.1162/dint_a_00033},
 }
 
-@INCOLLECTION{incollection-full,
-   author = "Daniel D. Lincoll",
-   title = "Semigroups of Recurrences",
-   editor = "David J. Lipcoll and D. H. Lawrie and A. H. Sameh",
-   booktitle = "High Speed Computer and Algorithm Organization",
-   number = 23,
-   series = "Fast Computers",
-   chapter = 3,
-   type = "Part",
-   pages = "179--183",
-   publisher = "Academic Press",
-   address = "New York",
-   edition = "Third",
-   month = sep,
-   year = 1977,
-   note = "This is a full INCOLLECTION entry",
-   doi = "10.9999/another-example-doi",
+@article{suter2025terminology,
+  author  = {Fr{\'e}d{\'e}ric Suter and Tain{\~a} Coleman and {\.I}lkay Altin{\c{t}}as and
+             Rosa M. Badia and Bartosz Balis and Kyle Chard and Iacopo Colonnelli and
+             Ewa Deelman and Paolo {Di Tommaso} and Thomas Fahringer and Carole Goble and
+             Shantenu Jha and Daniel S. Katz and Johannes K{\"o}ster and Ulf Leser and
+             Kshitij Mehta and Hilary Oliver and J.-Luc Peterson and Giovanni Pizzi and
+             Lo{\"i}c Pottier and Ra{\"u}l Sirvent and Eric Suchyta and Douglas Thain and
+             Sean R. Wilkinson and Justin M. Wozniak and Rafael {Ferreira da Silva}},
+  title   = {A Terminology for Scientific Workflow Systems},
+  journal = {Future Generation Computer Systems},
+  volume  = {174},
+  pages   = {107974},
+  year    = {2026},
+  doi     = {10.1016/j.future.2025.107974},
 }
 
-@INCOLLECTION{incollection-crossref,
-   crossref = "whole-collection",
-   author = "Daniel D. Lincoll",
-   title = "Semigroups of Recurrences",
-   pages = "179--183",
-   note = "This is a cross-referencing INCOLLECTION entry",
+@book{leser2026workflowsystems,
+  editor    = {Ulf Leser and Marcus Hilbrich and Sean R. Wilkinson and Rafael {Ferreira da Silva}},
+  title     = {Workflow Systems for Large-Scale Scientific Data Analysis},
+  publisher = {Berlin Universities Publishing},
+  year      = {2026},
+  doi       = {10.14279/depositonce-24000},
+  isbn      = {978-3-98781-068-8},
 }
 
-@BOOK{whole-collection,
-   editor = "David J. Lipcoll and D. H. Lawrie and A. H. Sameh",
-   title = "High Speed Computer and Algorithm Organization",
-   booktitle = "High Speed Computer and Algorithm Organization",
-   number = 23,
-   series = "Fast Computers",
-   publisher = "Academic Press",
-   address = "New York",
-   edition = "Third",
-   month = sep,
-   year = 1977,
-   note = "This is a cross-referenced BOOK (collection) entry",
+@article{cohenboulakia2017workflows,
+  author  = {Sarah Cohen-Boulakia and Khalid Belhajjame and Olivier Collin and
+             J{\'e}r{\^o}me Chopard and Christine Froidevaux and Alban Gaignard and
+             Konrad Hinsen and Pierre Larmande and Yvan Le Bras and Fr{\'e}d{\'e}ric Lemoine and
+             Fabien Mareuil and Herv{\'e} M{\'e}nager and Christophe Pradal and
+             Christophe Blanchet},
+  title   = {Scientific Workflows for Computational Reproducibility in the Life Sciences:
+             {Status}, Challenges and Opportunities},
+  journal = {Future Generation Computer Systems},
+  volume  = {75},
+  pages   = {284--298},
+  year    = {2017},
+  doi     = {10.1016/j.future.2017.01.012},
 }
 
-@MANUAL{manual-minimal,
-   key = "Manmaker",
-   title = "The Definitive Computer Manual",
+% ── Related Work ─────────────────────────────────────────────────────────────
+
+@article{dierckx2022evaluation,
+  author  = {Philipp Dierckx and Dennis Gl{\"a}ser and Ontje L{\"u}nsdorf and
+             Michael Selzer and Bernd Flemisch and J{\"o}rg F. Unger},
+  title   = {Evaluation of tools for describing, reproducing and reusing scientific workflows},
+  journal = {{ING.GRID}},
+  year    = {2022},
+  doi     = {10.48694/inggrid.3726},
 }
 
-@MANUAL{manual-full,
-   author = "Larry Manmaker",
-   title = "The Definitive Computer Manual",
-   organization = "Chips-R-Us",
-   address = "Silicon Valley",
-   edition = "Silver",
-   month = apr # "-" # may,
-   year = 1986,
-   note = "This is a full MANUAL entry",
-   url = "http://www.manmaker.com/manual/",
+% ── Related Work: new entries ─────────────────────────────────────────────────
+
+@misc{amstutz2016cwl,
+  author       = {Peter Amstutz and Michael R. Crusoe and Neboj{\v{s}}a Tijani{\'c} and
+                  Brad Chapman and John Chilton and Michael Heuer and Andrey Kartashov and
+                  Dan Leehr and Herv{\'e} M{\'e}nager and Maya Nedeljkovich and
+                  Matt Scales and Stian Soiland-Reyes and Luka Stojanovic},
+  title        = {Common Workflow Language, v1.0},
+  year         = {2016},
+  howpublished = {Specification, Software Freedom Conservancy},
+  url          = {https://w3id.org/cwl/v1.0/},
+  doi          = {10.6084/m9.figshare.3115156.v2},
 }
 
-@MASTERSTHESIS{mastersthesis-minimal,
-   author = "{\'{E}}douard Masterly",
-   title = "Mastering Thesis Writing",
-   school = "Stanford University",
-   year = 1988,
+@article{goble2021workflowhub,
+  author  = {Carole Goble and Stian Soiland-Reyes and Finn Bacall and Stuart Owen and
+             Alan Williams and Ignacio Eguinoa and Bert Droesbeke and Simone Leo and
+             Luca Pireddu and Laura Rodriguez-Navas and Jos{\'e} M. Fern{\'a}ndez and
+             Salvador Capella-Gutierrez and Herv{\'e} M{\'e}nager and Bj{\"o}rn Gr{\"u}ning and
+             Beatriz Serrano-Solano and Philip Ewels and Frederik Coppens},
+  title   = {Implementing {FAIR} Digital Objects in the {EOSC-Life} Workflow Collaboratory},
+  journal = {Zenodo preprint}, % TODO verify: check if published in Scientific Data or a proceedings
+  year    = {2021},
+  doi     = {10.5281/zenodo.4605654},
 }
 
-@MASTERSTHESIS{mastersthesis-full,
-   author = "{\'{E}}douard Masterly",
-   title = "Mastering Thesis Writing",
-   school = "Stanford University",
-   type = "Master's project",
-   address = "English Department",
-   month = jun # "-" # aug,
-   year = 1988,
-   note = "This is a full MASTERSTHESIS entry",
-   url = "http://www.stanford.edu/masterstheses/masterly.pdf",
+@article{soilandreyes2022rocrate,
+  author  = {Stian Soiland-Reyes and Peter Sefton and Merc{\`e} Crosas and
+             Leyla Jael Castro and Frederik Coppens and Jos{\'e} M. Fern{\'a}ndez and
+             Daniel Garijo and Björn Gr{\"u}ning and Marco La Rosa and
+             Simone Leo and Eoghan {\'O} Carrag{\'a}in and Marc Portier and
+             Ana Trisovic and {RO-Crate Community} and Paul Groth and Carole Goble},
+  title   = {Packaging Research Artefacts with {RO-Crate}},
+  journal = {Data Science},
+  volume  = {5}, % TODO verify volume
+  number  = {2}, % TODO verify number
+  pages   = {97--138}, % TODO verify pages
+  year    = {2022},
+  doi     = {10.3233/DS-210053},
 }
 
-@MISC{misc-minimal,
-   key = "Missilany",
-   note = "This is a minimal MISC entry",
+@inproceedings{gamblin2015spack,
+  author    = {Todd Gamblin and Matthew LeGendre and Michael R. Collette and
+               Gregory L. Lee and Adam Moody and Bronis R. {de Supinski} and
+               Scott Futral},
+  title     = {The {Spack} Package Manager: Bringing Order to {HPC} Software Chaos},
+  booktitle = {Proceedings of the International Conference for High Performance
+               Computing, Networking, Storage and Analysis ({SC}'15)},
+  year      = {2015},
+  publisher = {ACM},
+  doi       = {10.1145/2807591.2807623},
 }
 
-@MISC{misc-full,
-   author = "Joe-Bob Missilany",
-   title = "Handing out random pamphlets in airports",
-   howpublished = "Handed out at O'Hare",
-   month = oct,
-   year = 1984,
-   note = "This is a full MISC entry",
-   url = "http://www.missilany.org/pamphlet/ohare.pdf",
+@inproceedings{courtes2015guix,
+  author    = {Ludo Court{\`e}s and Ricardo Wurmus},
+  title     = {Reproducible and User-Controlled Software Environments in {HPC} with {GNU Guix}},
+  booktitle = {Proceedings of the Euro-Par 2015 International Workshops on
+               Parallel Processing}, % TODO verify: check exact venue (Euro-Par workshops / RepPar)
+  year      = {2015},
+  doi       = {10.1007/978-3-319-27308-2_47},
 }
 
-@STRING{STOC-key = "OX{\singleletter{stoc}}"}
-
-@STRING{ACM = "The OX Association for Computing Machinery"}
-
-@STRING{STOC = " Symposium on the Theory of Computing"}
-
-@INPROCEEDINGS{inproceedings-minimal,
-   author = "Alfred V. Oaho and Jeffrey D. Ullman and Mihalis Yannakakis",
-   title = "On Notions of Information Transfer in {VLSI} Circuits",
-   booktitle = "Proc. Fifteenth Annual ACM" # STOC,
-   year = 1983,
+@misc{apachearrow,
+  author       = {{Apache Software Foundation}},
+  title        = {Apache Arrow: A Cross-Language Development Platform for In-Memory Data},
+  howpublished = {Open-source project},
+  url          = {https://arrow.apache.org},
+  year         = {2016},
 }
 
-@INPROCEEDINGS{inproceedings-full,
-   author = "Alfred V. Oaho and Jeffrey D. Ullman and Mihalis Yannakakis",
-   title = "On Notions of Information Transfer in {VLSI} Circuits",
-   editor = "Wizard V. Oz and Mihalis Yannakakis",
-   booktitle = "Proc. Fifteenth Annual ACM" # STOC,
-   number = 17,
-   series = "All ACM Conferences",
-   pages = "133--139",
-   month = mar,
-   year = 1983,
-   address = "Boston",
-   organization = ACM,
-   publisher = "Academic Press",
-   note = "This is a full INPROCEDINGS entry",
-   doi = "10.9999/example.proceedings-article.STOC",
-   url = "http://www.not-the-acm.org/stoc83/",
+@article{huber2020aiida,
+  author  = {Sebastiaan P. Huber and Spyros Zoupanos and Martin Uhrin and
+             Leopold Talirz and Leonid Kahle and Rico H{\"a}uselmann and
+             Dominik Gresch and Tiziano M{\"u}ller and Aliaksandr V. Yakutovich and
+             Casper W. Andersen and Francisco F. Ramirez and Carl S. Adorf and
+             Fernando Gargiulo and Snehal Kumbhar and Elsa Passaro and
+             Conrad Johnston and Andrius Merkys and Andrea Cepellotti and
+             Nicolas Mounet and Nicola Marzari and Boris Kozinsky and Giovanni Pizzi},
+  title   = {{AiiDA} 1.0, a Scalable Computational Infrastructure for Automated
+             Reproducible Workflows and Data Provenance},
+  journal = {Scientific Data},
+  volume  = {7},
+  pages   = {300},
+  year    = {2020},
+  doi     = {10.1038/s41597-020-00638-4},
 }
 
-@INPROCEEDINGS{inproceedings-crossref,
-   crossref = "whole-proceedings",
-   author = "Alfred V. Oaho and Jeffrey D. Ullman and Mihalis Yannakakis",
-   title = "On Notions of Information Transfer in {VLSI} Circuits",
-   organization = "",
-   pages = "133--139",
-   note = "This is a cross-referencing INPROCEEDINGS entry",
+@article{deelman2015pegasus,
+  author  = {Ewa Deelman and Karan Vahi and Gideon Juve and Mats Rynge and
+             Scott Callaghan and Philip J. Maechling and Rajiv Mayani and
+             Weiwei Chen and Rafael {Ferreira da Silva} and Miron Livny and
+             Kent Wenger},
+  title   = {Pegasus, a Workflow Management System for Science Automation},
+  journal = {Future Generation Computer Systems},
+  volume  = {46},
+  pages   = {17--35},
+  year    = {2015},
+  doi     = {10.1016/j.future.2014.10.008},
 }
 
-@PROCEEDINGS{proceedings-minimal,
-   key = STOC-key,
-   title = "Proc. Fifteenth Annual" # STOC,
-   year = 1983,
-}
-
-@PROCEEDINGS{proceedings-full,
-   editor = "Wizard V. Oz and Mihalis Yannakakis",
-   title = "Proc. Fifteenth Annual" # STOC,
-   number = 17,
-   series = "All ACM Conferences",
-   month = mar,
-   year = 1983,
-   address = "Boston",
-   organization = ACM,
-   publisher = "Academic Press",
-   note = "This is a full PROCEEDINGS entry",
-   url = "http://www.not-the-acm.org/stoc83/",
-}
-
-@PROCEEDINGS{whole-proceedings,
-   key = STOC-key,
-   organization = ACM,
-   title = "Proc. Fifteenth Annual" # STOC,
-   address = "Boston",
-   year = 1983,
-   booktitle = "Proc. Fifteenth Annual ACM" # STOC,
-   note = "This is a cross-referenced PROCEEDINGS",
-}
-
-@PHDTHESIS{phdthesis-minimal,
-   author = "F. Phidias Phony-Baloney",
-   title = "Fighting Fire with Fire: Festooning {F}rench Phrases",
-   school = "Fanstord University",
-   year = 1988,
-}
-
-@PHDTHESIS{phdthesis-full,
-   author = "F. Phidias Phony-Baloney",
-   title = "Fighting Fire with Fire: Festooning {F}rench Phrases",
-   school = "Fanstord University",
-   type = "{PhD} Dissertation",
-   address = "Department of French",
-   month = jun # "-" # aug,
-   year = 1988,
-   note = "This is a full PHDTHESIS entry",
-   url = "http://www.fanstord.edu/phd/phony.pdf",
-}
-
-@TECHREPORT{techreport-minimal,
-   author = "Tom Terrific",
-   title = "An {$O(n \log n / \! \log\log n)$} Sorting Algorithm",
-   institution = "Fanstord University",
-   year = 1988,
-}
-
-@TECHREPORT{techreport-full,
-   author = "Tom T{\'{e}}rrific",
-   title = "An {$O(n \log n / \! \log\log n)$} Sorting Algorithm",
-   institution = "Fanstord University",
-   type = "Wishful Research Result",
-   number = "7",
-   address = "Computer Science Department, Fanstord, California",
-   month = oct,
-   year = 1988,
-   note = "This is a full TECHREPORT entry",
-   url = "http://www.fanstord.edu/techreports/1988/Number7.pdf",
-}
-
-@UNPUBLISHED{unpublished-minimal,
-   author = "Ulrich {\"{U}}nderwood and Ned {\~N}et and Paul {\={P}}ot",
-   title = "Lower Bounds for Wishful Research Results",
-   note = "Talk at Fanstord University (this is a minimal UNPUBLISHED entry)",
-}
-
-@UNPUBLISHED{unpublished-full,
-   author = "Ulrich {\"{U}}nderwood and Ned {\~N}et and Paul {\={P}}ot",
-   title = "Lower Bounds for Wishful Research Results",
-   month = nov # ", " # dec,
-   year = 1988,
-   note = "Talk at Fanstord University (this is a full UNPUBLISHED entry)",
-   url = "http://www.underwood.net/talks/1988fanstord/",
-}
-
-@MISC{random-note-crossref,
-   key = {Volume-2},
-   note = "Volume~2 is listed under Knuth \cite{book-full}"
+@techreport{lebo2013provo,
+  author      = {Timothy Lebo and Satya Sahoo and Deborah McGuinness and
+                 Khalid Belhajjame and James Cheney and David Corsar and
+                 Daniel Garijo and Stian Soiland-Reyes and Stephan Zednik and
+                 Jun Zhao},
+  title       = {{PROV-O}: The {PROV} Ontology},
+  institution = {World Wide Web Consortium ({W3C})},
+  type        = {{W3C} Recommendation},
+  year        = {2013},
+  url         = {https://www.w3.org/TR/prov-o/},
 }
