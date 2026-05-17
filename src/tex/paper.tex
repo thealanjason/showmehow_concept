@@ -48,8 +48,9 @@
   \emph{Isolation} (conda-lock, Docker, Apptainer), \emph{Interoperation}
   (HDF5/Zarr, UMBridge), \emph{Orchestration} (Nextflow, Snakemake). Outcome:
   language-/format-/hardware-agnostic units; laptop, HPC, and cloud portability
-  without unit-code changes; no wrapper-maintenance burden. Companion repo:
-  \url{https://github.com/mbd-rwth/showmehow}.%
+  without unit-code changes; no wrapper-maintenance burden. Companion website
+  (concept, guide, use-case index): \url{https://mbd-rwth.github.io/showmehow/};
+  source: \url{https://github.com/mbd-rwth/showmehow}.%
 }
 \keywords{scientific workflows, heterogeneity, reproducibility, FAIR, computational labs,
           high-throughput computing, inverse problems, benchmarking}
@@ -277,15 +278,17 @@
         macOS, Windows with the same isolated units (Python/Julia via HDF5);
         diagnostic units added post-hoc without touching existing ones. conda-lock
         pinning and per-thread RNG seeding planned, not yet demonstrated.
-        Repository: \url{https://github.com/nicodirkes/showmehow/tree/main/usecase6}.
+        Repository: \url{https://github.com/nicodirkes/bpc_hemolysis}.
   \item \textbf{Bayesian calibration --- mass flow simulation}: patterns~(1)+(3);
         expensive HPC simulator $\to$ surrogate training $\to$ UMBridge-coupled UQ
         loop; three isolated environments; bulk file exchange + live HTTP coupling;
         lab in development.
+        Repository: \url{https://github.com/thealanjason/bpc_massflow}.
   \item \textbf{Benchmarking of GP emulators for high-dimensional UQ}: pattern~(2);
         multiple GP implementations across languages, including newly published
         methods; language-agnostic shared benchmark data; parallel execution with
         incremental checkpointing; lab in development.
+        Repository: \url{https://github.com/gary8564/gpe-bench}.
 \end{itemize}
 
 \begin{table}[h]
