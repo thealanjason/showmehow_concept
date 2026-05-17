@@ -15,7 +15,7 @@
 % \usepackage{tikz}
 % \usetikzlibrary{arrows.meta, shapes.geometric, shapes.symbols, positioning, fit, backgrounds, calc}
 % \usepackage{subcaption}
-% \usepackage{booktabs}
+\usepackage{booktabs}
 % \usepackage{xcolor}
 % \usepackage{hyperref}
 
@@ -26,22 +26,6 @@
 
 \newcommand{\Eg}{E.\,g.}
 \newcommand{\eg}{e.\,g.}
-
-% TikZ styles shared across diagrams
-\tikzset{
-  cu/.style={
-    rectangle, rounded corners=3pt, draw=black, thick,
-    fill=blue!8, align=center, minimum height=1.8em, minimum width=5em,
-    font=\small
-  },
-  data/.style={
-    ellipse, draw=gray, thick, fill=gray!10,
-    align=center, minimum height=1.4em, minimum width=4em,
-    font=\small\itshape
-  },
-  arr/.style={-{Stealth}, thick},
-  optional/.style={cu, fill=orange!10, draw=orange!60!black, dashed}
-}
 
 % Article frontmatter
 \title{SHOWME.how: An Approach to Build Robust Computational Labs\\
@@ -56,7 +40,16 @@
   Methods for Model-based Development in Computational Engineering,\\
   RWTH Aachen University\autlabel{1}%
 }
-\abstract{% TODO
+\abstract{%
+  Modern research: highly computational, heterogeneous data/methods/infrastructure/people.
+  FAIR principles: necessary, not sufficient. Contribution: the \emph{computational lab}
+  --- data + computational units + orchestration layer + collaborators, with heterogeneity
+  as the first-class managed dimension. Approach: SHOWME.how, three pillars ---
+  \emph{Isolation} (conda-lock, Docker, Apptainer), \emph{Interoperation}
+  (HDF5/Zarr, UMBridge), \emph{Orchestration} (Nextflow, Snakemake). Outcome:
+  language-/format-/hardware-agnostic units; laptop, HPC, and cloud portability
+  without unit-code changes; no wrapper-maintenance burden. Companion repo:
+  \url{https://github.com/mbd-rwth/showmehow}.%
 }
 \keywords{scientific workflows, heterogeneity, reproducibility, FAIR, computational labs,
           high-throughput computing, inverse problems, benchmarking}
@@ -69,7 +62,19 @@
 \label{sec:intro}
 % =============================================================================
 
-% TODO
+\begin{itemize}
+  \item Modern research is highly computational and spans large data, complex
+        infrastructure, accelerators, and cross-disciplinary
+        collaboration~\cite{cohenboulakia2017workflows,suter2025terminology}.
+  \item FAIR principles guide management of data, software, and
+        workflows~\cite{wilkinson2016fair,barker2022fair4rs,wilkinson2025fairworkflows,goble2020fairworkflows},
+        but translating them into working infrastructure that handles real-world
+        heterogeneity is non-trivial.
+  \item Heterogeneity (data, methods, infrastructure, people) is the central
+        unmanaged dimension. We introduce the \emph{computational lab}
+        (Section~\ref{sec:complab}) and SHOWME.how (Section~\ref{sec:approach}),
+        structured around three pillars: Isolation, Interoperation, Orchestration.
+\end{itemize}
 
 
 % =============================================================================
@@ -77,7 +82,46 @@
 \label{sec:complab}
 % =============================================================================
 
-% TODO
+\begin{itemize}
+  \item A \emph{computational lab} comprises four components: \emph{data},
+        \emph{computational units}, an \emph{orchestration layer}, and
+        \emph{collaborators}; a sociotechnical system whose central challenge is
+        managing heterogeneity across all four dimensions.
+  \item Collaborators are treated as beneficiaries rather than a separate
+        technical pillar: the three pillars let them keep their preferred
+        languages, OS, and tools. Operationalising roles (RSE / domain / methods
+        expert) as first-class interfaces is left to future work.
+  \item Distinct from related terms: \emph{scientific workflow} (no people/heterogeneity
+        as first-class), \emph{virtual laboratory} (AI-focused), \emph{digital/e-lab}
+        (domain-specific LIMS/ELN), \emph{computational laboratory} (colloquial, no
+        formal definition).
+  \item Dimensions of heterogeneity (Figure~\ref{fig:heterogeneous}): data (inputs,
+        outputs, intermediates), models/algorithms (simulators, surrogates,
+        statistics), compute environment (hardware, OS, language), and people
+        (domain experts, methods specialists, RSEs).
+  \item Scope: SHOWME.how manages boundaries \emph{between} units; tightly-coupled
+        internals (e.g., MPI multi-physics) are left to the unit itself. Loosely-coupled
+        multi-model workflows are in scope.
+  \item Three recurring abstract workflow patterns motivate the design:
+        \begin{enumerate}
+          \item \textbf{Data-based model training from a physics-based source} ---
+                high-throughput data generation for a downstream surrogate.
+          \item \textbf{Method benchmarking in fan-out/fan-in style} --- parallel
+                evaluation of multiple implementations against shared inputs.
+          \item \textbf{Model-based $X$ in an online live loop} --- run-time coupling
+                of a model with a meta-method (UQ, optimisation, calibration, data
+                assimilation) as a client--server pair.
+        \end{enumerate}
+\end{itemize}
+
+\begin{figure}[t]
+  \centering
+  % TODO: figure placeholder (Heterogenous.pdf)
+  \caption{Dimensions of heterogeneity in a computational lab: data, models and
+           algorithms, and compute environment. People with different expertise
+           operate across all dimensions.}
+  \label{fig:heterogeneous}
+\end{figure}
 
 
 % =============================================================================
@@ -85,7 +129,23 @@
 \label{sec:statusquo}
 % =============================================================================
 
-% TODO
+\begin{itemize}
+  \item \textbf{Lack of unit-level reproducibility}: missing/incomplete environment
+        specs prevent rebuilding; workflow reproducibility also needs RNG seeds, OS
+        behaviour, and parallel ordering to be pinned.
+  \item \textbf{Data feedforward approach}: manual file transfer between
+        collaborators preserves environments but loses versioning, traceability, and
+        provenance; physically infeasible for tight loops like Bayesian calibration
+        that need thousands of model queries.
+  \item \textbf{Software wrapper approach}: unified interfaces enable in-memory
+        sharing but go stale, lock the lab to old versions, and block adoption of
+        newly published methods in other languages.
+  \item \textbf{Language-tied data formats} (\texttt{.pkl}, \texttt{.npy},
+        \texttt{.jld2}): convenient within one ecosystem, but force collaborators to
+        convert data or switch languages, undermining heterogeneity. Concretely,
+        \texttt{.jld2} is HDF5-based but Julia type metadata is lost when read in
+        Python via \texttt{h5py} --- only raw array data is recoverable.
+\end{itemize}
 
 
 % =============================================================================
@@ -93,28 +153,110 @@
 \label{sec:approach}
 % =============================================================================
 
-% TODO
+\begin{itemize}
+  \item Three complementary principles --- Isolation, Interoperation, Orchestration
+        (Figure~\ref{fig:three_pillars}); use cases (Section~\ref{sec:usecases})
+        instantiate the patterns from Section~\ref{sec:complab}.
+\end{itemize}
+
+\begin{figure}[t]
+  \centering
+  % TODO: figure placeholder (showmehow_three_pillars.pdf)
+  \caption{Overview of the SHOWME.how approach: Isolation, Interoperation, and
+           Orchestration, with representative tools for each pillar.}
+  \label{fig:three_pillars}
+\end{figure}
 
 % -----------------------------------------------------------------------------
 \subsection{Isolation}
 \label{sec:isolation}
 % -----------------------------------------------------------------------------
 
-% TODO
+\begin{itemize}
+  \item Encapsulates each computational unit with its full dependencies in a
+        self-contained, portable environment.
+  \item \textbf{conda/mamba}~\cite{conda,mamba}: cross-platform, language-agnostic
+        package managers; \texttt{environment.yml} alone is not reproducible.
+  \item \textbf{conda-lock files} pin every package per (OS $\times$ architecture):
+        \texttt{linux-64}, \texttt{linux-aarch64}, \texttt{osx-64}, \texttt{osx-arm64},
+        \texttt{win-64}; sufficient for numerically equivalent reproducibility.
+  \item Bit-identical reproducibility additionally requires controlling host system
+        libraries (\texttt{glibc}), BLAS variants/threading, and floating-point
+        nondeterminism in parallel reductions.
+  \item \textbf{Docker/Apptainer}~\cite{merkel2014docker,kurtzer2017singularity,apptainer}:
+        package the OS layer; Docker on Windows/macOS runs in a Linux VM, so host-side
+        IPC primitives (Unix sockets, named pipes, \texttt{/dev/shm}) are not
+        reachable.
+  \item HPC clusters typically forbid Docker; pipeline:
+        \texttt{Dockerfile} $\to$ Docker image (laptop/cloud) $\to$ Apptainer
+        \texttt{.sif} (HPC).
+  \item Multi-architecture images (\texttt{linux/amd64} + \texttt{linux/arm64})
+        built via \texttt{docker buildx} under a single manifest.
+  \item \textbf{Containerising conda environments}: wrap locked conda env in a
+        container to remove host leakage. Snakemake's \texttt{--containerize}
+        bundles all workflow envs into one image~\cite{molder2021snakemake};
+        Nextflow's Wave provisions per-process images on
+        demand~\cite{ditommaso2017nextflow}.
+  \item Trade-off: bundled image (single artefact, shared OS layer) vs.\ per-unit
+        images (true unit-level isolation, more artefacts). Per-unit aligns with
+        SHOWME.how.
+  \item \textbf{CI automation}: matrix builds regenerate lock files on
+        \texttt{environment.yml} changes and publish multi-arch images on Dockerfile
+        changes, shifting maintenance from collaborators to a single pipeline.
+\end{itemize}
 
 % -----------------------------------------------------------------------------
 \subsection{Interoperation}
 \label{sec:interoperation}
 % -----------------------------------------------------------------------------
 
-% TODO
+\begin{itemize}
+  \item Once units are isolated, data must flow between them; maps onto the
+        Interoperability dimension of FAIR~\cite{wilkinson2016fair}.
+  \item Two sub-concerns: \emph{data interchange} (format) and \emph{data exchange}
+        (protocol).
+  \item \textbf{Interchange formats}: CSV/JSON are human-readable but poor for
+        numerics; language-specific binaries (\texttt{.npy}, \texttt{.pkl},
+        \texttt{.jld2}) are not portable. Use:
+        \begin{itemize}
+          \item \textbf{HDF5}/netCDF for hierarchical, structured
+                data~\cite{hdf5}.
+          \item \textbf{Zarr} for multi-dimensional array data, with HTTP/S3
+                optimisation~\cite{moore2023zarr}.
+        \end{itemize}
+  \item \textbf{Exchange protocols}: start with file-system exchange; use in-process
+        IPC via \texttt{/tmp} only when throughput demands it (and not with Docker
+        on non-Linux).
+  \item \textbf{UMBridge}~\cite{seelinger2023umbridge}: cross-language client--server
+        coupling over JSON/HTTP, enabling online model--UQ coupling without manual
+        transfer. JSON is a throughput bottleneck for large arrays; no binary wire
+        format yet.
+  \item Decision heuristic: file-system $\to$ in-process IPC $\to$ HTTP/UMBridge or
+        object storage (S3) for cross-infrastructure or high-throughput coupling.
+\end{itemize}
 
 % -----------------------------------------------------------------------------
 \subsection{Orchestration}
 \label{sec:orchestration}
 % -----------------------------------------------------------------------------
 
-% TODO
+\begin{itemize}
+  \item Automates coordination as labs grow: data movement, dependency-based
+        scheduling, checkpointing, resource monitoring, and laptop $\to$ HPC $\to$
+        cloud portability without modification.
+  \item We use \textbf{Nextflow}~\cite{ditommaso2017nextflow} and
+        \textbf{Snakemake}~\cite{molder2021snakemake} as representative examples;
+        SHOWME.how is not tied to any manager. Broader landscape in the Workflows
+        Community Initiative~\cite{suter2025terminology}.
+  \item Both share the contract: each step declares inputs, outputs, script, and
+        compute environment (conda or container) --- maps directly onto isolation.
+  \item \textbf{Nextflow}: dataflow paradigm, highly structured; UNIX-only (WSL on
+        Windows); extensions require Groovy/JVM; no native service-process support
+        (worked around with file-based sentinels for UMBridge servers).
+  \item \textbf{Snakemake}: file-based paradigm, Python extension --- cross-platform
+        and familiar to scientists; well-positioned for the full orchestration ideal.
+        Docker is second-class (transparently swapped for Apptainer).
+\end{itemize}
 
 
 % =============================================================================
@@ -122,7 +264,46 @@
 \label{sec:usecases}
 % =============================================================================
 
-% TODO
+\begin{itemize}
+  \item Applied across several domains (Table~\ref{tab:usecases}); not exhaustive of
+        the approach's scope.
+  \item \textbf{Bayesian calibration --- blood hemolysis}: pattern~(3); domain
+        expert (macOS, Python), UQ-methods expert (Windows, R+Python), and RSE
+        (Linux, multi-language) collaborating without changing tools; the RSE
+        ported the domain expert's Python models to Julia for a 10--100$\times$
+        speedup over the original NumPy baseline. Observational evidence: ported
+        laptop~$\to$~HPC with only manager-profile changes (scheduler +
+        Docker~$\to$~Apptainer), no unit-code changes; runs end-to-end on Linux,
+        macOS, Windows with the same isolated units (Python/Julia via HDF5);
+        diagnostic units added post-hoc without touching existing ones. conda-lock
+        pinning and per-thread RNG seeding planned, not yet demonstrated.
+        Repository: \url{https://github.com/nicodirkes/showmehow/tree/main/usecase6}.
+  \item \textbf{Bayesian calibration --- mass flow simulation}: patterns~(1)+(3);
+        expensive HPC simulator $\to$ surrogate training $\to$ UMBridge-coupled UQ
+        loop; three isolated environments; bulk file exchange + live HTTP coupling;
+        lab in development.
+  \item \textbf{Benchmarking of GP emulators for high-dimensional UQ}: pattern~(2);
+        multiple GP implementations across languages, including newly published
+        methods; language-agnostic shared benchmark data; parallel execution with
+        incremental checkpointing; lab in development.
+\end{itemize}
+
+\begin{table}[h]
+  \centering
+  \small
+  \caption{Overview of SHOWME.how use cases, mapped to the three generic workflow
+           patterns from Section~\ref{sec:complab}.}
+  \label{tab:usecases}
+  \begin{tabular}{llll}
+    \toprule
+    \textbf{Use Case} & \textbf{Domain} & \textbf{Pattern} & \textbf{Key Heterogeneity} \\
+    \midrule
+    Bayesian Calibration       & Blood Hemolysis      & (3)     & 3 OS, Python/Julia/R \\
+    Bayesian Calibration       & Mass Flow Simulation & (1)+(3) & Multi-language, local/HPC \\
+    Benchmarking of GP Emulators & High-Dim UQ        & (2)     & Parallel implementations \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 
 % =============================================================================
@@ -130,7 +311,51 @@
 \label{sec:robustness}
 % =============================================================================
 
-% TODO
+\begin{itemize}
+  \item A computational lab must keep running correctly as dependencies, collaborators,
+        and infrastructure change. Four properties:
+        \begin{enumerate}
+          \item \textbf{Tolerate perturbations}: remain functional when components
+                are updated or replaced.
+          \item \textbf{Handle variability}: remain effective across OS, languages,
+                hardware, and data conventions.
+          \item \textbf{Withstand adverse conditions}: maintain reproducibility under
+                infrastructure migration, collaborator turnover, or loss of original
+                environment.
+          \item \textbf{Support modular extensibility}: accommodate new units added
+                after assembly without breaking existing ones (lab-specific addition
+                to the general engineering view).
+        \end{enumerate}
+  \item \textbf{Robustness checklist}, with each criterion answering a status-quo
+        failure mode (Section~\ref{sec:statusquo}):
+        \begin{itemize}
+          \item \emph{Perturbations} (vs.\ missing env specs): per-OS/per-arch lock
+                files for every unit; container-wrapped locked env where
+                bit-identical reproducibility is required; explicit RNG seeding
+                per-thread/rank and per-library (a single global seed is
+                insufficient under OpenMP/MPI; NumPy legacy vs.\ \texttt{Generator},
+                Julia \texttt{Random}/\texttt{MersenneTwister}, R \texttt{set.seed},
+                and third-party libs must each be seeded);
+                workflow-manager checkpointing enabled.
+          \item \emph{Variability} (vs.\ language-tied formats): workflow runs on
+                $>1$ host OS with same locks/images; no language-tied serialisation
+                on unit boundaries; cross-infrastructure coupling via language-/
+                host-agnostic protocol (HTTP via UMBridge, S3).
+          \item \emph{Adverse conditions} (vs.\ wrappers and feedforward): single
+                Dockerfile drives both Docker (laptop) and Apptainer (HPC) images
+                with no unit-code changes; multi-arch manifests where needed; no
+                wrapper code bridges languages in shared address space; lock/image
+                generation automated in CI.
+          \item \emph{Modular extensibility} (vs.\ wrapper lock-in): each unit
+                declares inputs/outputs/script/env as a self-contained contract;
+                adding a new unit requires no edits or revalidation of existing
+                units.
+        \end{itemize}
+  \item \textbf{Honest assessment}: no quantitative measurements (glue-code lines,
+        onboarding time, build times, cross-OS numerical equivalence, restart
+        overhead, post-hoc additions without regression) collected systematically;
+        quantitative evaluation against the checklist remains future work.
+\end{itemize}
 
 
 
@@ -139,7 +364,58 @@
 \label{sec:related}
 % =============================================================================
 
-% TODO
+\begin{itemize}
+  \item \textbf{FAIR}~\cite{wilkinson2016fair,barker2022fair4rs,goble2020fairworkflows,wilkinson2025fairworkflows}:
+        normative framework; SHOWME.how is a concrete implementation strategy for
+        Interoperability and Reusability dimensions.
+  \item \textbf{Scientific workflow systems}: Nextflow~\cite{ditommaso2017nextflow},
+        Snakemake~\cite{molder2021snakemake}; broader surveys by Suter et
+        al.~\cite{suter2025terminology}, Leser et al.~\cite{leser2026workflowsystems};
+        reproducibility evaluation by Dierckx et al.~\cite{dierckx2022evaluation}.
+  \item \textbf{Reproducibility}: Cohen-Boulakia et al.~\cite{cohenboulakia2017workflows}
+        focus on reproducibility in life-science workflows; SHOWME.how generalises
+        to heterogeneity management with reproducibility as a consequence
+        (Table~\ref{tab:cohenboulakia}).
+  \item \textbf{UMBridge}~\cite{seelinger2023umbridge}: key enabling tool for
+        Interoperation; language-agnostic HTTP client--server for model--UQ
+        coupling without wrappers.
+  \item \textbf{Workflow standards/packaging}:
+        CWL~\cite{amstutz2016cwl} (vendor-neutral portable workflow standard),
+        WorkflowHub~\cite{goble2021workflowhub} (community registry),
+        RO-Crate Workflow profile~\cite{soilandreyes2022rocrate} (FAIR packaging);
+        complementary to SHOWME.how, which uses managers directly.
+  \item \textbf{HPC-native/reproducible package management}:
+        Spack~\cite{gamblin2015spack},
+        Nix/Guix~\cite{courtes2015guix} (cryptographic reproducibility); stricter
+        than conda-lock; compatible with SHOWME.how, which uses conda-lock as a
+        pragmatic default.
+  \item \textbf{Columnar formats}: Apache Arrow/Parquet~\cite{apachearrow} for
+        zero-copy, language-agnostic tabular data --- complements HDF5/Zarr for
+        tabular workflows.
+  \item \textbf{Orchestration and provenance}: AiiDA~\cite{huber2020aiida}
+        (graph-database provenance), Pegasus~\cite{deelman2015pegasus} (large-scale
+        HPC/cloud planning), PROV-O~\cite{lebo2013provo} (W3C provenance
+        ontology); future direction for SHOWME.how.
+\end{itemize}
+
+\begin{table}[h]
+  \centering
+  \small
+  \caption{SHOWME.how compared to Cohen-Boulakia et al.~\cite{cohenboulakia2017workflows}.}
+  \label{tab:cohenboulakia}
+  \begin{tabular}{p{0.22\linewidth}p{0.34\linewidth}p{0.34\linewidth}}
+    \toprule
+    \textbf{Aspect} & \textbf{Cohen-Boulakia et al. 2017} & \textbf{SHOWME.how} \\
+    \midrule
+    Central goal       & Reproducibility & Managing heterogeneity (reproducibility a consequence) \\
+    Collaborators      & Not explicitly addressed & Stakeholders whose tool/language/OS heterogeneity is accommodated \\
+    Interoperation     & Assumed; not a distinct pillar & Explicit pillar: formats + protocols \\
+    Infrastructure portability & Mentioned & Explicit: laptop $\to$ HPC $\to$ cloud via Dockerfile $\to$ Apptainer \\
+    Scope              & Life sciences & Science and engineering broadly \\
+    Novelty framing    & Taxonomy of reproducibility levels & Approach plus concept (computational lab) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 
 % =============================================================================
@@ -147,7 +423,21 @@
 \label{sec:conclusion}
 % =============================================================================
 
-% TODO
+\begin{itemize}
+  \item We contribute both an \textbf{approach} (SHOWME.how: Isolation,
+        Interoperation, Orchestration) and a \textbf{concept} (the
+        \emph{computational lab}), positioning heterogeneity --- across data,
+        methods, compute, and people --- rather than reproducibility as the
+        primary managed dimension; novel framing in the RSE literature.
+  \item Resulting labs are language-/format-/hardware-agnostic per unit; modular,
+        reusable, and portable laptop~$\to$~HPC~$\to$~cloud without unit-code
+        changes or wrapper-maintenance burden.
+  \item Demonstrated across all three generic patterns in biomedical engineering,
+        geophysical mass flow, and high-dimensional UQ methods development.
+  \item \textbf{Future work}: formalising robustness/heterogeneity-coverage criteria;
+        supporting heterogeneous accelerators and federated environments; extending
+        to streaming/digital-twin labs outside the batch-DAG paradigm.
+\end{itemize}
 
 
 \begin{acknowledge}
