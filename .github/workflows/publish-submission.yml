@@ -1,0 +1,82 @@
+name: publish submission
+
+# Build paper-submission.pdf and paper-submission.tar.gz with pdflatex/tinytex
+# and publish them to the main-pdf branch alongside paper.pdf and arxiv.tar.gz.
+# Runs independently of build.yml (showyourwork/tectonic) — our submission
+# rules build straight from src/tex/, no dependency on paper.pdf.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  publish-submission:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    concurrency: "submission-${{ github.ref }}"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup micromamba
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: env-tinytex.yml
+          environment-name: tinytex
+          cache-environment: true
+          cache-downloads: true
+
+      - name: Install snakemake
+        run: micromamba install -n tinytex -y -c conda-forge -c bioconda snakemake-minimal
+
+      - name: Cache snakemake conda envs and tinytex packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            .snakemake/conda
+            ~/.TinyTeX
+            build/.tinytex-installed
+          key: snakemake-tinytex-${{ runner.os }}-${{ hashFiles('env-tinytex.yml', 'Snakefile') }}
+
+      - name: Build submission PDF and tarball
+        shell: bash -l {0}
+        run: |
+          micromamba run -n tinytex snakemake -j1 --use-conda \
+              paper-submission.pdf paper-submission.tar.gz
+
+      - name: Upload artifacts (PR preview)
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: paper-submission
+          path: |
+            paper-submission.pdf
+            paper-submission.tar.gz
+
+      - name: Publish to main-pdf branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          # Stash before switching branches
+          mkdir -p /tmp/submission
+          cp paper-submission.pdf paper-submission.tar.gz /tmp/submission/
+
+          git fetch origin main-pdf || true
+          if git ls-remote --exit-code --heads origin main-pdf >/dev/null; then
+            git checkout main-pdf
+          else
+            # Showyourwork hasn't created main-pdf yet (first run)
+            git checkout --orphan main-pdf
+            git rm -rf . || true
+          fi
+
+          cp /tmp/submission/paper-submission.pdf .
+          cp /tmp/submission/paper-submission.tar.gz .
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add paper-submission.pdf paper-submission.tar.gz
+          git commit -m "Update submission artifacts [skip ci]" || echo "No changes"
+          git push origin main-pdf

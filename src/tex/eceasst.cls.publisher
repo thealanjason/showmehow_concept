@@ -1,6 +1,16 @@
 % *************************************************************
 % * Class file for the Electronic Communications of the EASST *
 % *************************************************************
+%
+% PRISTINE PUBLISHER VERSION — use for ECEASST submission.
+% The active eceasst.cls in this directory has a small patch
+% (\let\eceasst@includegraphics\includegraphics + matching call
+% sites) needed for showyourwork's dependency tracking. That patch
+% must NOT be present in the submitted source.
+%
+% To submit: replace src/tex/eceasst.cls with this file.
+% To resume local builds: restore the patched version from git.
+%
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{eceasst}[2009/07/08 ECEASST document class v1.6]
 % Derived from the article class, fixing it to be two-sided 11pt output
@@ -40,12 +50,6 @@
 \RequirePackage{courier}
 % Graphics
 \RequirePackage{graphicx}
-% Save a reference to the original \includegraphics so that showyourwork's
-% redefinition (which logs <GRAPHICS> XML records for dependency tracking)
-% does not pick up the easst logo used in the page headers/cover. Without
-% this, showyourwork records "easst" as a free-floating graphic and fails
-% to resolve it (no file at src/tex/easst without extension).
-\let\eceasst@includegraphics\includegraphics
 % Colors
 \RequirePackage{xcolor}
 \definecolor{easstblue}{rgb}{.05,.32,.66}
@@ -149,7 +153,7 @@
 % Odd page header
 % ---------------
 \def\@oddhead{\vbox{%
-  \eceasst@includegraphics[width=30pt]{easst}% Logo on the left
+  \includegraphics[width=30pt]{easst}% Logo on the left
   \hfill%
   \textsf{ECEASST}% ECEASST on the right
   \vskip 3pt%
@@ -167,7 +171,7 @@
 \def\@evenhead{\vbox{%
   \textsf{\ecshort}% Short title on the left
   \hfill%
-  \eceasst@includegraphics[width=30pt]{easst}% Logo on the right
+  \includegraphics[width=30pt]{easst}% Logo on the right
   \vskip 3pt%
   {\color{easstblue}\hrule height 2pt}}}
 % Even page footer
@@ -198,7 +202,7 @@
     \vspace{6pt}}}
   % EASST logo
   \begin{flushright}
-    \eceasst@includegraphics[height=80pt]{easst}
+    \includegraphics[height=80pt]{easst}
   \end{flushright}}
 % Foot building block for the cover page
 \newcommand{\eccoverfoot}{%

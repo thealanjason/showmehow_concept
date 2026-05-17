@@ -1,0 +1,3 @@
+name: tinytex
+dependencies:
+  - genomedk::tinytex

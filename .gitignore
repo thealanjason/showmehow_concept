@@ -7,6 +7,10 @@
 report.html
 arxiv.tar.gz
 
+# Submission build artifacts
+/build/
+/paper-submission.tar.gz
+
 # Figure output
 src/tex/figures/*
 

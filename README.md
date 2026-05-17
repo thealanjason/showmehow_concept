@@ -10,7 +10,13 @@
 <img src="https://img.shields.io/badge/article-tarball-blue.svg?style=flat" alt="Article tarball"/>
 </a>
 <a href="https://github.com/thealanjason/showmehow_concept/raw/main-pdf/paper.pdf">
-<img src="https://img.shields.io/badge/view-pdf-blue.svg?style=flat" alt="Download the PDF"/>
+<img src="https://img.shields.io/badge/view-pdf%20(tectonic)-blue.svg?style=flat" alt="Download the PDF (tectonic preview)"/>
+</a>
+<a href="https://github.com/thealanjason/showmehow_concept/raw/main-pdf/paper-submission.pdf">
+<img src="https://img.shields.io/badge/view-pdf%20(submission)-green.svg?style=flat" alt="Download the submission PDF"/>
+</a>
+<a href="https://github.com/thealanjason/showmehow_concept/raw/main-pdf/paper-submission.tar.gz">
+<img src="https://img.shields.io/badge/download-submission%20tarball-green.svg?style=flat" alt="Download the submission tarball"/>
 </a>
 <a href="https://github.com/showyourwork/showyourwork">
 <img src="https://img.shields.io/badge/built%20with-showyourwork!-red.svg?style=flat" alt="showyourwork"/>
