@@ -11,6 +11,7 @@
 % NOTE: axessibility with [accsupp] and \pdfcompresslevel use pdfTeX-only primitives
 % incompatible with tectonic (XeTeX). Re-enable only if compiling with pdflatex directly.
 
+\usepackage{float}
 % \usepackage{graphicx}
 % \usepackage{tikz}
 % \usetikzlibrary{arrows.meta, shapes.geometric, shapes.symbols, positioning, fit, backgrounds, calc}
@@ -116,9 +117,9 @@
         \end{enumerate}
 \end{itemize}
 
-\begin{figure}[t]
+\begin{figure}[H]
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/example.pdf}
+  \includegraphics[width=0.85\linewidth]{figures/computational_lab_heterogeneity.pdf}
   \caption{Dimensions of heterogeneity in a computational lab: data, models and
            algorithms, and compute environment. People with different expertise
            operate across all dimensions.}
