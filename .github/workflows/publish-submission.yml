@@ -2,24 +2,27 @@ name: publish submission
 
 # Build article.pdf and article.tar.gz with pdflatex/tinytex and publish them
 # to the main-pdf branch alongside paper.pdf and arxiv.tar.gz.
-# Runs independently of build.yml (showyourwork/tectonic) — our submission
-# rules build straight from src/tex/, no dependency on paper.pdf.
+# Chained after the showyourwork builds via `workflow_run` so submission only
+# runs once the upstream tectonic build has gone green — keeps a broken
+# paper.pdf from masking a broken article.pdf (and vice versa).
 
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_run:
+    workflows: ["build", "build pull request"]
+    types: [completed]
 
 jobs:
   publish-submission:
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     permissions: write-all
-    concurrency: "submission-${{ github.ref }}"
+    concurrency: "submission-${{ github.event.workflow_run.head_branch }}"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Setup micromamba
         uses: mamba-org/setup-micromamba@v1
@@ -48,7 +51,7 @@ jobs:
               article.pdf article.tar.gz
 
       - name: Upload artifacts (PR preview)
-        if: github.event_name == 'pull_request'
+        if: github.event.workflow_run.event == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: article-submission
@@ -57,7 +60,7 @@ jobs:
             article.tar.gz
 
       - name: Publish to main-pdf branch
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main'
         run: |
           # Stash before switching branches
           mkdir -p /tmp/submission
