@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
    version="1.2"
-   viewBox="951 6120 31966 6851"
+   viewBox="951 6120 5000 1071.6073"
    preserveAspectRatio="xMidYMid"
    fill-rule="evenodd"
    stroke-width="28.222"
@@ -9,9 +9,12 @@
    xml:space="preserve"
    id="svg123"
    sodipodi:docname="showmehow_concept.svg"
-   width="31966"
-   height="6851"
+   width="5000"
+   height="1071.6073"
    inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   inkscape:export-filename="showmehow_concept.pdf"
+   inkscape:export-xdpi="20"
+   inkscape:export-ydpi="20"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -26,9 +29,9 @@
    inkscape:pageopacity="0.0"
    inkscape:pagecheckerboard="0"
    inkscape:deskcolor="#d1d1d1"
-   inkscape:zoom="0.028452105"
-   inkscape:cx="15271.278"
-   inkscape:cy="11176.677"
+   inkscape:zoom="0.11380842"
+   inkscape:cx="3844.1795"
+   inkscape:cy="1748.5525"
    inkscape:window-width="1920"
    inkscape:window-height="1011"
    inkscape:window-x="0"
@@ -414,11 +417,16 @@
    id="path55" />
   </g>
  </defs>
- <g
-   id="g124"
-   transform="translate(0,12)"><g
+ 
+<g
+   id="g125"
+   inkscape:export-filename="g125.pdf"
+   inkscape:export-xdpi="30.030001"
+   inkscape:export-ydpi="30.030001"
+   transform="matrix(0.15641619,0,0,0.15641619,802.2482,5162.7329)"><g
      class="Group"
-     id="g75">
+     id="g75"
+     transform="translate(0,12)">
    <g
    class="com.sun.star.drawing.CustomShape"
    id="g59">
@@ -694,11 +702,10 @@
          id="tspan72">Containerization</tspan></tspan></tspan></text>
     </g>
    </g>
-  </g></g><g
-   id="g123"
-   transform="translate(0,-47)"><g
+  </g><g
      class="Group"
-     id="g97">
+     id="g97"
+     transform="translate(0,-47)">
    <g
    class="com.sun.star.drawing.CustomShape"
    id="g79">
@@ -998,8 +1005,7 @@
    id="image94" />
     </g>
    </g>
-  </g></g><g
-   id="g125"><g
+  </g><g
      class="Group"
      id="g122">
    <g
@@ -1265,5 +1271,4 @@
    id="image119" />
     </g>
    </g>
-  </g></g>
-</svg>
+  </g></g></svg>
