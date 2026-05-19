@@ -84,26 +84,90 @@
 \label{sec:complab}
 % =============================================================================
 
+% AC===========================================================================
+We define a \emph{computational lab} as a goal-oriented sociotechnical system
+whose purpose is to enable scientific discovery and to address complex
+engineering challenges through computational means. Typical goals range from answering
+research questions, developing new models and algorithms, and understanding
+complex natural phenomena, to solving inverse problems, performing
+optimisation, and benchmarking competing methods for application-driven tasks.
+
+The computational lab is to computation-driven research what the wet lab is to
+experimental science. In both settings, work proceeds through a continuous
+cycle of hypothesis, experiment, observation, analysis, and conclusion, applied
+by scientists pursuing discovery and by engineers solving problems.
+In practice, wet labs and computational labs are not disjoint. Contemporary
+wet labs increasingly rely on computational labs for data acquisition,
+processing, analysis, and modelling.
+
+A computational lab is composed of three classes of components: computational
+units, data, and human collaborators. A \emph{computational unit} couples a
+\emph{model} or \emph{algorithm}, in its concrete implementation, with the
+\emph{compute environment} in which it runs. The compute environment has two
+layers. The software ecosystem covers the programming language and operating
+system required by the implementation. The hardware platform covers the
+physical resources on which the computational unit executes. \emph{Data} comprises the inputs
+consumed by computational units, the outputs they produce, and the intermediate
+artefacts exchanged between them. \emph{Human collaborators} are the
+researchers, engineers, and domain experts who design and operate the lab, and
+interpret its results. In principle this role could also be filled by AI agents, but we
+restrict our attention to human collaborators in this work.
+
+A central challenge in the operation of a computational lab is the management
+of its heterogeneity. Each component is heterogeneous along its own axis.
+Data appears in many formats and structures, from geometries, boundary
+conditions, and observations as inputs, to quantities of interest,
+visualisations, and reports as outputs. These data may reside on local disks,
+in cloud object storage, or in community data repositories.
+Models and algorithms span physics-based simulators, data-driven surrogates,
+and frameworks for optimisation, inference, and analysis, each typically tied
+to a particular language. Compute environments vary in both software ecosystem and hardware platform.
+The software ecosystem ranges across programming languages such as Python,
+Julia, R, C++, Fortran, and MATLAB, among others, and operating systems such as Linux,
+macOS, and Windows. The hardware platform ranges across local workstations,
+HPC clusters, and cloud, with accelerators such as GPUs alongside CPUs. This diversity is not incidental but a
+direct consequence of the human collaborators themselves: domain specialists,
+methods experts, data scientists, and research software engineers each bring
+different skills, training, and preferred toolsets to the lab. A computational
+lab must therefore reconcile multiple ecosystems rather than impose a single
+one.
+
+The notion of a computational lab is distinct from several related terms. A
+\emph{scientific workflow} captures the pipeline of computational steps but
+treats neither heterogeneity nor human collaborators as first-class concerns.
+A \emph{digital laboratory} (or \emph{e-lab}) usually denotes a domain-specific
+platform built around LIMS or ELN systems for experimental data management.
+The term \emph{computational laboratory} appears occasionally in the literature
+but is used colloquially, without a formal definition.
+
+Figure~\ref{fig:heterogeneous} illustrates these components in a representative
+computational lab: the Bayesian parameter calibration of a shallow mass flow
+model used in geophysical hazard simulation.
+This inverse problem is solved by chaining a forward simulator, a surrogate
+emulator, and a calibration step, each a separate computational unit developed and
+operated by collaborators with complementary expertise. How these components are made
+to work together is the subject of Section~\ref{sec:approach}.
+% AC===========================================================================
+
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/computational_lab_heterogeneity.pdf}
+  \caption{A computational lab and the dimensions of its heterogeneity in
+           data, models and algorithms, and compute environment. \textbf{Top:}
+           a representative lab in action: human collaborators with different
+           expertise coordinate computational units that consume and produce
+           data to carry out a research task. \textbf{Bottom:} the anatomy of
+           a computational unit, which transforms input data into output data
+           through a model or algorithm executed in a compute environment.
+           Visual encoding: computational units are drawn as black-bordered
+           boxes, data as blue clouds, and human collaborators as green
+           rectangles.}
+  \label{fig:heterogeneous}
+\end{figure}
+
 \begin{itemize}
-  \item A \emph{computational lab} comprises four components: \emph{data},
-        \emph{computational units}, an \emph{orchestration layer}, and
-        \emph{collaborators}; a sociotechnical system whose central challenge is
-        managing heterogeneity across all four dimensions.
-  \item Collaborators are treated as beneficiaries rather than a separate
-        technical pillar: the three pillars let them keep their preferred
-        languages, OS, and tools. Operationalising roles (RSE / domain / methods
-        expert) as first-class interfaces is left to future work.
-  \item Distinct from related terms: \emph{scientific workflow} (no people/heterogeneity
-        as first-class), \emph{virtual laboratory} (AI-focused), \emph{digital/e-lab}
-        (domain-specific LIMS/ELN), \emph{computational laboratory} (colloquial, no
-        formal definition).
-  \item Dimensions of heterogeneity (Figure~\ref{fig:heterogeneous}): data (inputs,
-        outputs, intermediates), models/algorithms (simulators, surrogates,
-        statistics), compute environment (hardware, OS, language), and people
-        (domain experts, methods specialists, RSEs).
-  \item Scope: SHOWME.how manages boundaries \emph{between} units; tightly-coupled
-        internals (e.g., MPI multi-physics) are left to the unit itself. Loosely-coupled
-        multi-model workflows are in scope.
+
   \item Three recurring abstract workflow patterns motivate the design:
         \begin{enumerate}
           \item \textbf{Data-based model training from a physics-based source} ---
@@ -114,16 +178,12 @@
                 of a model with a meta-method (UQ, optimisation, calibration, data
                 assimilation) as a client--server pair.
         \end{enumerate}
+  \item A computational unit may internally house tightly coupled components,
+        such as a co-simulation or an MPI-parallel multi-physics solver.
 \end{itemize}
 
-\begin{figure}[!ht]
-  \centering
-  \includegraphics[width=0.95\linewidth]{figures/computational_lab_heterogeneity.pdf}
-  \caption{Dimensions of heterogeneity in a computational lab: data, models and
-           algorithms, and compute environment. People with different expertise
-           operate across all dimensions.}
-  \label{fig:heterogeneous}
-\end{figure}
+
+
 
 
 % =============================================================================
@@ -159,6 +219,9 @@
   \item Three complementary principles --- Isolation, Interoperation, Orchestration
         (Figure~\ref{fig:three_pillars}); use cases (Section~\ref{sec:usecases})
         instantiate the patterns from Section~\ref{sec:complab}.
+  \item Collaborators are beneficiaries of the three pillars rather than a
+        separate technical pillar themselves: the pillars let each collaborator
+        keep their preferred language, operating system, and toolset.
 \end{itemize}
 
 \begin{figure}[t]
@@ -440,7 +503,9 @@
         geophysical mass flow, and high-dimensional UQ methods development.
   \item \textbf{Future work}: formalising robustness/heterogeneity-coverage criteria;
         supporting heterogeneous accelerators and federated environments; extending
-        to streaming/digital-twin labs outside the batch-DAG paradigm.
+        to streaming/digital-twin labs outside the batch-DAG paradigm;
+        operationalising collaborator roles (RSE, domain expert, methods
+        expert) as first-class interfaces.
 \end{itemize}
 
 
