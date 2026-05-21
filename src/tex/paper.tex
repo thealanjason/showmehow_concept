@@ -16,6 +16,7 @@
 % \usetikzlibrary{arrows.meta, shapes.geometric, shapes.symbols, positioning, fit, backgrounds, calc}
 \usepackage{subcaption}
 \usepackage{booktabs}
+\usepackage{placeins}
 % \usepackage{xcolor}
 % \usepackage{hyperref}
 
@@ -217,20 +218,14 @@ co-simulation.
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.95\linewidth]{figures/lab_patterns.pdf}
-  \caption{Three recurring patterns in computational labs. In
-           \emph{Pattern A, queue-based data pipeline}, a \texttt{Generator} produces
-           a large set of inputs, each of which is independently dispatched to
-           a \texttt{Method}; the outputs are aggregated by a \texttt{Collector}. In
-           \emph{Pattern B, method benchmarking}, shared inputs fan out to
-           competing implementations whose outputs are gathered for
-           comparison. In \emph{Pattern C, model-based $X$ in an online loop},
-           a model is coupled at run time with a meta-method, such as
-           uncertainty quantification, optimisation, calibration, or data
-           assimilation, as a client/server pair. Visual encoding as in
-           Figure~\ref{fig:heterogeneous}.}
+  \includegraphics[width=0.85\linewidth]{figures/lab_patterns.pdf}
+  \caption{Three recurring patterns in computational labs: Pattern A
+           (queue-based data pipeline), Pattern B (fan-out/fan-in), and
+           Pattern C (model-based $X$ in an online loop). Visual encoding
+           as in Figure~\ref{fig:heterogeneous}.}
   \label{fig:lab_patterns}
 \end{figure}
+\FloatBarrier
 
 % -----------------------------------------------------------------------------
 \subsection{Robustness}
