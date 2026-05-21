@@ -165,6 +165,11 @@ to work together is the subject of Section~\ref{sec:approach}.
   \label{fig:heterogeneous}
 \end{figure}
 
+% -----------------------------------------------------------------------------
+\subsection{Recurring Patterns}
+\label{sec:patterns}
+% -----------------------------------------------------------------------------
+
 % AC===========================================================================
 Three patterns recur across computational labs in science and engineering
 (Figure~\ref{fig:lab_patterns}); we introduce them here as they are
@@ -227,8 +232,37 @@ co-simulation.
   \label{fig:lab_patterns}
 \end{figure}
 
+% -----------------------------------------------------------------------------
+\subsection{Robustness}
+\label{sec:robustness_def}
+% -----------------------------------------------------------------------------
 
+% AC===========================================================================
+Productive science and engineering requires that methods be reusable and
+that new work can build on existing ones; to satisfy this, a computational
+lab must keep running correctly as its data, methods, dependencies,
+collaborators, and infrastructure change. Drawing on the general engineering
+sense of the word, we say that a computational lab is \emph{robust} if it
+satisfies four properties:
 
+\begin{enumerate}
+  \item \textbf{Tolerate perturbations}: remain functional when individual
+        computational units are updated or replaced.
+  \item \textbf{Handle variability}: remain effective across diverse operating
+        systems, programming languages, hardware platforms, and data formats.
+  \item \textbf{Withstand adverse conditions}: remain operational under
+        infrastructure migration and collaborator changes, and recoverable on
+        interruption of a long-running computation.
+  \item \textbf{Support modular extensibility}: accommodate new computational
+        units and new collaborators added after the lab is first assembled,
+        without breaking existing ones.
+\end{enumerate}
+
+The fourth is added because computational labs are by design constantly
+evolving: they grow as new scientific questions are asked and new methods
+become available. A robustness framing that does not account for this growth
+is insufficient for the research setting.
+% WIP=========================================================================
 
 % =============================================================================
 \section{Status Quo and Challenges}
@@ -251,6 +285,8 @@ co-simulation.
         convert data or switch languages, undermining heterogeneity. Concretely,
         \texttt{.jld2} is HDF5-based but Julia type metadata is lost when read in
         Python via \texttt{h5py} --- only raw array data is recoverable.
+  \item What is missing is not more tools, but an approach that makes
+        computational labs robust by design.
 \end{itemize}
 
 
@@ -423,20 +459,6 @@ co-simulation.
 % =============================================================================
 
 \begin{itemize}
-  \item A computational lab must keep running correctly as dependencies, collaborators,
-        and infrastructure change. Four properties:
-        \begin{enumerate}
-          \item \textbf{Tolerate perturbations}: remain functional when components
-                are updated or replaced.
-          \item \textbf{Handle variability}: remain effective across OS, languages,
-                hardware, and data conventions.
-          \item \textbf{Withstand adverse conditions}: maintain reproducibility under
-                infrastructure migration, collaborator turnover, or loss of original
-                environment.
-          \item \textbf{Support modular extensibility}: accommodate new units added
-                after assembly without breaking existing ones (lab-specific addition
-                to the general engineering view).
-        \end{enumerate}
   \item \textbf{Robustness checklist}, with each criterion answering a status-quo
         failure mode (Section~\ref{sec:statusquo}):
         \begin{itemize}
