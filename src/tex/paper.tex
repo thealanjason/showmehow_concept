@@ -128,9 +128,8 @@ macOS, and Windows. The hardware platform ranges across local workstations,
 HPC clusters, and cloud, with accelerators such as GPUs alongside CPUs. This diversity is not incidental but a
 direct consequence of the human collaborators themselves: domain specialists,
 methods experts, data scientists, and research software engineers each bring
-different skills, training, and preferred toolsets to the lab. A computational
-lab must therefore reconcile multiple ecosystems rather than impose a single
-one.
+different skills, training, and preferred toolsets to the lab. A computational lab must therefore accommodate the tools and environments its
+collaborators bring, rather than impose a single one.
 
 The notion of a computational lab is distinct from several related terms. A
 \emph{scientific workflow} captures the pipeline of computational steps but
@@ -166,22 +165,67 @@ to work together is the subject of Section~\ref{sec:approach}.
   \label{fig:heterogeneous}
 \end{figure}
 
-\begin{itemize}
+% AC===========================================================================
+Three patterns recur across computational labs in science and engineering
+(Figure~\ref{fig:lab_patterns}); we introduce them here as they are
+referenced throughout the paper.
 
-  \item Three recurring abstract workflow patterns motivate the design:
-        \begin{enumerate}
-          \item \textbf{Data-based model training from a physics-based source} ---
-                high-throughput data generation for a downstream surrogate.
-          \item \textbf{Method benchmarking in fan-out/fan-in style} --- parallel
-                evaluation of multiple implementations against shared inputs.
-          \item \textbf{Model-based $X$ in an online live loop} --- run-time coupling
-                of a model with a meta-method (UQ, optimisation, calibration, data
-                assimilation) as a client--server pair.
-        \end{enumerate}
-  \item A computational unit may internally house tightly coupled components,
-        such as a co-simulation or an MPI-parallel multi-physics solver.
-\end{itemize}
+\paragraph{Pattern A: Queue-Based Data Pipeline}
+A \texttt{Generator} produces a large set of inputs (parameter sweeps,
+different initial conditions, or sampled configurations); each generated
+input is independently dispatched to a \texttt{Method} (a model or algorithm).
+The \texttt{Method} processes each input and produces an output; the
+outputs are collected by a \texttt{Collector} and aggregated into a
+dataset for downstream use.
+Common instances include training a surrogate emulator from a physics-based
+simulator using a space-filling sampling scheme (see Figure~\ref{fig:heterogeneous}),
+forward uncertainty propagation via Monte Carlo sampling where output statistics
+are derived from the ensemble, and Sobol sensitivity analysis where the full
+(input, output) dataset is processed to compute variance-based sensitivity indices.
 
+\paragraph{Pattern B: Fan-Out/Fan-In}
+A \texttt{Generator} produces a shared input that is dispatched to multiple
+\texttt{Method} implementations; each produces an output, and the outputs
+are gathered by a \texttt{Collector} for comparison.
+Herein, the \texttt{Method} implementations are of the same model or algorithm,
+differing in their mathematical formulation, programming language, or both.
+Common instances include method benchmarking, where competing implementations
+are evaluated against a shared input; ensemble runs with different random seeds,
+whose outputs are aggregated to characterise variability or assess convergence;
+and inference diagnostics, where shared inference results are fanned out to
+complementary analyses and gathered into a report.
+
+\paragraph{Pattern C: Model-Based $X$ in an Online Loop}
+A \texttt{Model} and an \texttt{Algorithm} are coupled at run time as a
+client--server pair; the \texttt{Algorithm} drives the \texttt{Model}
+iteratively, requiring both to run simultaneously.
+Common instances include inverse uncertainty quantification, such as parameter
+calibration, model selection, and data selection, and optimisation, where
+the model is queried iteratively to infer properties or search for optimal
+inputs, and data assimilation, where the model state is updated sequentially
+as new observations arrive.
+
+In all three patterns, a computational unit may itself house tightly coupled
+internal components, such as an MPI-parallel multi-physics solver or a
+co-simulation.
+% AC===========================================================================
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/lab_patterns.pdf}
+  \caption{Three recurring patterns in computational labs. In
+           \emph{Pattern A, queue-based data pipeline}, a \texttt{Generator} produces
+           a large set of inputs, each of which is independently dispatched to
+           a \texttt{Method}; the outputs are aggregated by a \texttt{Collector}. In
+           \emph{Pattern B, method benchmarking}, shared inputs fan out to
+           competing implementations whose outputs are gathered for
+           comparison. In \emph{Pattern C, model-based $X$ in an online loop},
+           a model is coupled at run time with a meta-method, such as
+           uncertainty quantification, optimisation, calibration, or data
+           assimilation, as a client/server pair. Visual encoding as in
+           Figure~\ref{fig:heterogeneous}.}
+  \label{fig:lab_patterns}
+\end{figure}
 
 
 
