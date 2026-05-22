@@ -221,6 +221,7 @@ the model is queried iteratively to infer properties or search for optimal
 inputs, and data assimilation, where the model state is updated sequentially
 as new observations arrive.
 
+\medskip
 In all three patterns, a computational unit may itself house tightly coupled
 internal components, such as an MPI-parallel multi-physics solver or a
 co-simulation.
@@ -262,13 +263,14 @@ satisfies four properties:
         without breaking existing ones.
 \end{enumerate}
 
+
 The fourth is added because computational labs are by design constantly
 evolving: they grow as new scientific questions are asked and new methods
 become available. A robustness framing that does not account for this growth
 is insufficient for the research setting.
 % WIP=========================================================================
 
-\FloatBarrier
+
 % =============================================================================
 \section{Challenges in Building Computational Labs}
 \label{sec:challenges}
@@ -369,7 +371,7 @@ outputs go becomes error-prone and unsustainable. Interrupted runs compound the 
 requiring manual identification of completed steps and selective re-execution. 
 Such a process is both fragile and time-consuming.
 
-
+\medskip
 What we need is not more tools, but a principled approach that addresses these
 challenges at their root and makes computational labs robust as they grow.
 SHOWME.how is such an approach.
@@ -390,7 +392,7 @@ SHOWME.how is such an approach.
         keep their preferred language, operating system, and toolset.
 \end{itemize}
 
-\begin{figure}[t]
+\begin{figure}[!ht]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/showmehow_concept.pdf}
   \caption{Overview of the SHOWME.how approach: Isolation, Interoperation, and
