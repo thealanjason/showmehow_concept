@@ -43,16 +43,26 @@
   RWTH Aachen University, Aachen, Germany%
 }
 \abstract{%
-  Modern research: highly computational, heterogeneous data/methods/infrastructure/people.
-  FAIR principles: necessary, not sufficient. Contribution: the \emph{computational lab}
-  --- data + computational units + orchestration layer + collaborators, with heterogeneity
-  as the first-class managed dimension. Approach: SHOWME.how, three pillars ---
-  \emph{Isolation} (conda-lock, Docker, Apptainer), \emph{Interoperation}
-  (HDF5/Zarr, UMBridge), \emph{Orchestration} (Nextflow, Snakemake). Outcome:
-  language-/format-/hardware-agnostic units; laptop, HPC, and cloud portability
-  without unit-code changes; no wrapper-maintenance burden. Companion website
-  (concept, guide, use-case index): \url{https://mbd-rwth.github.io/showmehow/};
-  source: \url{https://github.com/mbd-rwth/showmehow}.%
+  Scientific discovery and engineering problem solving rely on computational
+  methods implemented in diverse software ecosystems and executed on heterogeneous
+  hardware platforms by collaborators with complementary skills and toolsets.
+  We introduce the \emph{computational lab}: a goal-oriented sociotechnical system
+  of \emph{computational units}, \emph{data}, and \emph{human collaborators}.
+  Managing heterogeneity across all three makes assembling and sustaining such a lab
+  non-trivial from the outset. Without a principled approach, the lab grows
+  increasingly fragile as its components evolve independently.
+  We present SHOWME.how, an approach built on three complementary pillars:
+  \emph{Isolation}, \emph{Interoperation}, and \emph{Orchestration}.
+  Computational units are isolated with their dependencies in a self-contained
+  environment; they interoperate through language-agnostic data formats and
+  transfer protocols; and data movement, scheduling, and resource management
+  are orchestrated using workflow management systems.
+  Together, the pillars ensure that labs tolerate updates to individual units,
+  handle variability across languages and platforms, and accommodate new units
+  without modifying existing ones, allowing them to sustainably grow and scale.
+  We demonstrate the approach in three use cases: Bayesian parameter calibration
+  in blood hemolysis and geophysical mass flow simulation, and benchmarking of
+  high-dimensional Gaussian process emulators.%
 }
 \keywords{scientific workflows, heterogeneity, reproducibility, FAIR, computational labs,
           high-throughput computing, inverse problems, benchmarking}
