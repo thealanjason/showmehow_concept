@@ -270,29 +270,110 @@ is insufficient for the research setting.
 
 \FloatBarrier
 % =============================================================================
-\section{Status Quo and Challenges}
-\label{sec:statusquo}
+\section{Challenges in Building Computational Labs}
+\label{sec:challenges}
 % =============================================================================
 
-\begin{itemize}
-  \item \textbf{Lack of unit-level reproducibility}: missing/incomplete environment
-        specs prevent rebuilding; workflow reproducibility also needs RNG seeds, OS
-        behaviour, and parallel ordering to be pinned.
-  \item \textbf{Data feedforward approach}: manual file transfer between
-        collaborators preserves environments but loses versioning, traceability, and
-        provenance; physically infeasible for tight loops like Bayesian calibration
-        that need thousands of model queries.
-  \item \textbf{Software wrapper approach}: unified interfaces enable in-memory
-        sharing but go stale, lock the lab to old versions, and block adoption of
-        newly published methods in other languages.
-  \item \textbf{Language-tied data formats} (\texttt{.pkl}, \texttt{.npy},
-        \texttt{.jld2}): convenient within one ecosystem, but force collaborators to
-        convert data or switch languages, undermining heterogeneity. Concretely,
-        \texttt{.jld2} is HDF5-based but Julia type metadata is lost when read in
-        Python via \texttt{h5py} --- only raw array data is recoverable.
-  \item What is missing is not more tools, but an approach that makes
-        computational labs robust by design.
-\end{itemize}
+% AC===========================================================================
+A computational lab is constantly evolving: computational units are updated or
+replaced, new data formats emerge, collaborators join or leave, new computing
+infrastructure becomes available, and problem sizes grow. Each such event is a
+potential point of failure. In practice, the approaches that teams use to manage
+heterogeneity fall short when the lab evolves.
+
+\subsection{Current Approaches and Their Limitations}
+\label{sec:challenges:approaches}
+
+\paragraph{Data feedforward.}
+Collaborators complete their part of the computation and manually transfer results
+to the next collaborator via shared drives or messaging. This preserves each
+collaborator's environment, at the cost of data versioning, traceability, and provenance.
+For labs following Pattern~C (Section~\ref{sec:patterns}), such as Bayesian
+parameter calibration, where a UQ method must query a forward model iteratively
+throughout the inference process, the approach is not merely inefficient but
+physically infeasible.
+
+\paragraph{Software wrappers.}
+An alternative is to write wrapper libraries that expose models and algorithms
+implemented in different programming languages through a unified interface,
+allowing all computational units to run in a single shared environment.
+While this enables in-memory data passing, it ties the computational unit to
+the wrapper's implementation: when the underlying library updates, the wrapper
+must follow. Such wrappers frequently go stale, either breaking the lab or
+locking it to an older, suboptimal version of the model or algorithm.
+Moreover, adopting a newly published model or algorithm in a different
+programming language requires a new wrapper or forgoing it entirely.
+
+The limitations of the above two approaches reveal deeper technical challenges
+that persist regardless of which is adopted.
+
+\subsection{Technical Challenges}
+\label{sec:challenges:challenges}
+
+\subsubsection*{Computational Units}
+
+\paragraph{Unit-level reproducibility.}
+A reproducible computational lab requires that each computational unit be
+individually reproducible. In practice, missing or incomplete environment
+specifications often make it impossible to rebuild the software environment
+in which a unit was intended to run. Workflow-level reproducibility additionally
+requires explicit pinning of RNG seeds, operating system behaviour, and parallel
+execution ordering.
+
+\paragraph{Dependency conflicts.}
+Computational units developed independently sometimes require incompatible versions of
+the same library or runtime. Sharing a single environment, as in the software wrapper approach, makes these
+conflicts irreconcilable, forcing collaborators to compromise on versions or
+maintain fragile patches.
+
+\paragraph{Environment drift.}
+Even without deliberate changes, a computational unit that ran correctly months ago
+may silently fail today, as upstream packages are updated, system libraries change,
+and package registries remove older versions. Without explicit environment pinning,
+the software ecosystem drifts over time and results become irreproducible.
+
+\subsubsection*{Data}
+
+\paragraph{Language-tied data formats.}
+Data is commonly serialised in formats tied to a specific language, for example
+\texttt{.pkl} or \texttt{.npy} in Python, or \texttt{.jld2} in Julia. These are
+convenient within one language ecosystem but become barriers when a new collaborator
+or method works in a different language, forcing data conversion or language
+adoption. Adopting a newly published model or algorithm in a different language compounds
+the problem, as it either cannot read existing data or requires a conversion
+step, adding friction precisely where rapid prototyping matters most.
+
+\paragraph{Provenance and traceability.}
+As data flows between computational units, tracking which version of which unit
+produced a given result becomes non-trivial. Without explicit provenance,
+debugging unexpected results requires reconstructing the chain of computation
+by hand, which is expensive when units involve
+long-running HPC jobs. More broadly, without provenance, scientific claims
+produced by the lab cannot be verified by reviewers or collaborators.
+
+\subsubsection*{Compute Environment}
+
+\paragraph{Infrastructure portability.}
+Moving a computational lab from a local workstation to an HPC cluster or cloud
+environment surfaces assumptions baked into computational units about the host
+environment: container runtimes differ, schedulers vary, and what runs on a laptop
+may not run on HPC without unit-code changes. A further complication arises when
+different units must run on different infrastructure simultaneously, such as a
+computationally expensive model on HPC alongside a lighter unit running locally,
+requiring the lab to coordinate across infrastructure boundaries at runtime.
+
+\paragraph{Coordination overhead.}
+As a computational lab grows in the number of units and the complexity of their
+dependencies, manually tracking which units to run, in what order, and where their
+outputs go becomes error-prone and unsustainable. Interrupted runs compound the problem, 
+requiring manual identification of completed steps and selective re-execution. 
+Such a process is both fragile and time-consuming.
+
+
+What we need is not more tools, but a principled approach that addresses these
+challenges at their root and makes computational labs robust as they grow.
+SHOWME.how is such an approach.
+% AC===========================================================================
 
 
 % =============================================================================
@@ -465,7 +546,7 @@ is insufficient for the research setting.
 
 \begin{itemize}
   \item \textbf{Robustness checklist}, with each criterion answering a status-quo
-        failure mode (Section~\ref{sec:statusquo}):
+        failure mode (Section~\ref{sec:challenges}):
         \begin{itemize}
           \item \emph{Perturbations} (vs.\ missing env specs): per-OS/per-arch lock
                 files for every unit; container-wrapped locked env where
