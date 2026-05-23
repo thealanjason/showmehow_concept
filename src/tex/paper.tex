@@ -382,14 +382,12 @@ SHOWME.how is such an approach.
 \label{sec:approach}
 % =============================================================================
 
-\begin{itemize}
-  \item Three complementary principles --- Isolation, Interoperation, Orchestration
-        (Figure~\ref{fig:three_pillars}); use cases (Section~\ref{sec:usecases})
-        instantiate the patterns from Section~\ref{sec:complab}.
-  \item Collaborators are beneficiaries of the three pillars rather than a
-        separate technical pillar themselves: the pillars let each collaborator
-        keep their preferred language, operating system, and toolset.
-\end{itemize}
+The SHOWME.how approach is built on three complementary pillars: Isolation,
+Interoperation, and Orchestration (Figure~\ref{fig:three_pillars}). Each pillar
+addresses a distinct class of challenges identified in
+Section~\ref{sec:challenges}. The pillars are independent. A lab can adopt any one of them and already gain
+robustness along that dimension, adding the others as the lab grows and its
+requirements evolve.
 
 \begin{figure}[!ht]
   \centering
@@ -403,6 +401,28 @@ SHOWME.how is such an approach.
 \subsection{Isolation}
 \label{sec:isolation}
 % -----------------------------------------------------------------------------
+
+The goal of Isolation is that any computational unit can participate in the lab
+regardless of its programming language, operating system, and dependencies,
+without interfering with any other unit. We can achieve this by encapsulating the
+compute environment of each unit through package management and containerisation,
+so that units remain self-contained and portable.
+
+The right isolation strategy depends on the specific requirements of the lab.
+The following questions help identify it:
+
+\begin{enumerate}
+  \item What software ecosystem does each unit require: programming language,
+        operating system, and dependencies?
+  \item Where will each unit run: on a collaborator's laptop, an HPC cluster,
+        or a cloud environment?
+  \item What level of reproducibility is required: numerically equivalent
+        results across platforms, or a fully controlled environment that also
+        pins system libraries and floating-point behaviour?
+  \item How heterogeneous is the lab in terms of collaborators, operating
+        systems, CPU architectures, and infrastructure, and how much is it
+        expected to change?
+\end{enumerate}
 
 \begin{itemize}
   \item Encapsulates each computational unit with its full dependencies in a
@@ -442,6 +462,26 @@ SHOWME.how is such an approach.
 \label{sec:interoperation}
 % -----------------------------------------------------------------------------
 
+The goal of Interoperation is that data can flow between computational units
+regardless of the programming language each unit uses or the infrastructure on
+which it runs. We can achieve this by adopting language-agnostic data interchange
+formats and platform-agnostic data exchange protocols at unit boundaries.
+
+The right interoperation strategy depends on the specific requirements of the
+lab. The following questions help identify it:
+
+\begin{enumerate}
+  \item What is the nature of the data being exchanged: tabular, hierarchical,
+        or multi-dimensional arrays?
+  \item What is the pattern of data exchange: a single large transfer after
+        each step completes, or repeated smaller exchanges during execution?
+  \item Do all units run locally, or does the lab span multiple compute
+        locations such as a laptop and an HPC cluster?
+  \item How might the interoperation needs of the lab grow: in the volume of
+        data transferred across units, or in the heterogeneity of the units
+        that need to exchange it?
+\end{enumerate}
+
 \begin{itemize}
   \item Once units are isolated, data must flow between them; maps onto the
         Interoperability dimension of FAIR~\cite{wilkinson2016fair}.
@@ -471,6 +511,32 @@ SHOWME.how is such an approach.
 \subsection{Orchestration}
 \label{sec:orchestration}
 % -----------------------------------------------------------------------------
+
+The goal of Orchestration is that the lab runs reliably end-to-end as it grows
+in units, collaborators, and infrastructure. We can achieve this by using a
+workflow management system to automate scheduling, data movement, and
+checkpointing, so the lab runs reliably and scales seamlessly as its needs grow.
+
+The right orchestration strategy depends on the specific requirements of the
+lab. The following questions help identify it:
+
+\begin{enumerate}
+  \item Is the lab complex enough to warrant a workflow manager: how many units
+        are there, and how complex is their structure relative to the patterns
+        of Section~\ref{sec:complab}?
+  \item Does the lab need to execute across different infrastructure, such as
+        running some units locally and others on an HPC cluster or cloud, and
+        what job schedulers or cloud executors does that require?
+  \item Does the lab involve computationally demanding jobs --- whether
+        long-running or large in number --- where restarting from scratch on
+        failure would be costly?
+  \item What workflow managers and community workflows are already established
+        in the collaborators' scientific domain?
+  \item How might the orchestration needs of the lab evolve: will it remain a
+        fixed sequence of steps with known dependencies, or will it eventually
+        require more advanced execution patterns such as service processes,
+        dynamic workflows, or streaming data?
+\end{enumerate}
 
 \begin{itemize}
   \item Automates coordination as labs grow: data movement, dependency-based
