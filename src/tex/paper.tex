@@ -424,7 +424,7 @@ The following questions help identify it:
         expected to change?
 \end{enumerate}
 
-\paragraph{Level 1 --- Package management.}
+\paragraph{Iso1 --- Package management.}
 Isolation at this level is achieved using a cross-platform, language-agnostic
 package manager. We recommend conda, mamba, or micromamba~\cite{conda,mamba},
 as they are natively supported by the workflow managers we discuss in
@@ -441,7 +441,7 @@ collaborator uses. Other package managers such as pixi~\cite{pixi} and the Julia
 package manager~\cite{juliapkg} have locking built in by default, but are not
 yet natively supported by the workflow managers we consider.
 
-\paragraph{Level 2 --- Containerisation.}
+\paragraph{Iso2 --- Containerisation.}
 When package managers with pinned lock files are not sufficient — for units
 that rely on legacy software, C++ or Fortran codebases with complex build
 systems, or dependencies not available on conda — containerisation is the next
@@ -456,7 +456,7 @@ to be pulled automatically.\footnote{\texttt{docker buildx} is a Docker CLI
 plugin that enables building images for multiple CPU architectures from a
 single command, producing a multi-architecture manifest.}
 
-\paragraph{Level 3 --- HPC.}
+\paragraph{Iso3 --- HPC.}
 A Docker image is sufficient for laptop and cloud environments. HPC clusters
 typically restrict Docker for security reasons, making
 Apptainer~\cite{apptainer,kurtzer2017singularity} the container runtime of
@@ -471,11 +471,11 @@ caching during development, while producing an Apptainer image ready for HPC
 deployment.
 
 
-\paragraph{Automating the isolation setup.}
+\paragraph{Iso4 --- Automation.}
 Maintaining lock files across operating systems and architectures, and building
 container images across CPU architectures, is combinatorial work that does not
 scale when done manually. We recommend automating this process using continuous
-integration. A matrix build can regenerate per-OS, per-architecture conda-lock
+integration (CI). A matrix build can regenerate per-OS, per-architecture conda-lock
 files whenever the \texttt{environment.yml} changes, and build and publish
 multi-architecture container images whenever the \texttt{Dockerfile} changes.
 This shifts the maintenance burden from individual collaborators to a single
@@ -495,7 +495,9 @@ artefact that can be built and automated in the same CI pipeline.
 The goal of Interoperation is that data can flow between computational units
 regardless of the programming language each unit uses or the infrastructure on
 which it runs. We can achieve this by adopting language-agnostic data interchange
-formats and platform-agnostic data exchange protocols at unit boundaries.
+formats and platform-agnostic data exchange protocols at unit boundaries. This
+addresses the Interoperability dimension of FAIR~\cite{wilkinson2016fair} at
+the level of practical implementation.
 
 The right interoperation strategy depends on the specific requirements of the
 lab. The following questions help identify it:
@@ -503,15 +505,48 @@ lab. The following questions help identify it:
 \begin{enumerate}
   \item What is the nature of the data being exchanged: tabular, hierarchical,
         or multi-dimensional arrays?
-  \item What is the pattern of data exchange: a single large transfer after
-        each step completes, or repeated smaller exchanges during execution?
   \item Do all units run locally, or does the lab span multiple compute
         locations such as a laptop and an HPC cluster?
+  \item What is the pattern of data exchange: a single large transfer after
+        each step completes, or repeated smaller exchanges during execution?
   \item How might the interoperation needs of the lab grow: in the volume of
         data transferred across units, or in the heterogeneity of the units
         that need to exchange it?
 \end{enumerate}
 
+\paragraph{Int1 --- Data formats.}
+Regardless of where units run or how they exchange data, all data at unit
+boundaries must use language-agnostic interchange formats. Text formats such as CSV and JSON are human-readable but poorly suited to
+numerical data. Language-specific formats such as \texttt{.pkl},
+\texttt{.npy}, and \texttt{.jld2} must not appear at unit boundaries, as they
+lock collaborators into a single language ecosystem. We recommend HDF5~\cite{hdf5} or netCDF for hierarchical and
+structured data, and Zarr~\cite{moore2023zarr} for multi-dimensional arrays.
+
+
+\paragraph{Int2 --- Location.}
+For units running on the same machine, filesystem exchange is the simplest and
+most robust starting point: a unit writes its output to an agreed file path,
+and the next unit reads from it. For units running on different machines or
+infrastructure, remote storage protocols such as S3 or SFTP allow data to
+cross infrastructure boundaries without shared mounts.
+
+\paragraph{Int3 --- Throughput.}
+When the pattern of exchange is a live loop, where one unit queries another
+repeatedly during execution, filesystem exchange introduces unacceptable
+latency. UMBridge~\cite{seelinger2023umbridge} provides a cross-language
+HTTP-based client--server interface for this pattern, enabling online
+model--UQ coupling without manual data transfer. Its JSON payload introduces
+overhead for large numerical arrays; binary protocols such as MessagePack or
+Protocol Buffers can reduce this overhead but require protocol extensions not
+yet available in UMBridge. One caveat: on Windows and macOS, Docker containers
+cannot access host-side shared memory or Unix sockets, so IPC-based
+high-throughput exchange is not available between containerised units on those
+platforms; filesystem or network exchange must be used instead. For bulk data
+transfer over the network or object
+storage, Zarr~\cite{moore2023zarr} is preferred over HDF5, as it is
+optimised for chunked access over HTTP and S3.
+
+% -- bullets to check coverage --
 \begin{itemize}
   \item Once units are isolated, data must flow between them; maps onto the
         Interoperability dimension of FAIR~\cite{wilkinson2016fair}.
@@ -519,20 +554,14 @@ lab. The following questions help identify it:
         (protocol).
   \item \textbf{Interchange formats}: CSV/JSON are human-readable but poor for
         numerics; language-specific binaries (\texttt{.npy}, \texttt{.pkl},
-        \texttt{.jld2}) are not portable. Use:
-        \begin{itemize}
-          \item \textbf{HDF5}/netCDF for hierarchical, structured
-                data~\cite{hdf5}.
-          \item \textbf{Zarr} for multi-dimensional array data, with HTTP/S3
-                optimisation~\cite{moore2023zarr}.
-        \end{itemize}
+        \texttt{.jld2}) are not portable. Use HDF5/netCDF for hierarchical
+        data~\cite{hdf5}; Zarr for multi-dimensional arrays~\cite{moore2023zarr}.
   \item \textbf{Exchange protocols}: start with file-system exchange; use in-process
         IPC via \texttt{/tmp} only when throughput demands it (and not with Docker
         on non-Linux).
   \item \textbf{UMBridge}~\cite{seelinger2023umbridge}: cross-language client--server
-        coupling over JSON/HTTP, enabling online model--UQ coupling without manual
-        transfer. JSON is a throughput bottleneck for large arrays; no binary wire
-        format yet.
+        coupling over JSON/HTTP; JSON is a throughput bottleneck for large arrays;
+        no binary wire format yet.
   \item Decision heuristic: file-system $\to$ in-process IPC $\to$ HTTP/UMBridge or
         object storage (S3) for cross-infrastructure or high-throughput coupling.
 \end{itemize}
