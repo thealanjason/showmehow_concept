@@ -424,38 +424,68 @@ The following questions help identify it:
         expected to change?
 \end{enumerate}
 
-\begin{itemize}
-  \item Encapsulates each computational unit with its full dependencies in a
-        self-contained, portable environment.
-  \item \textbf{conda/mamba}~\cite{conda,mamba}: cross-platform, language-agnostic
-        package managers; \texttt{environment.yml} alone is not reproducible.
-  \item \textbf{conda-lock files} pin every package per (OS $\times$ architecture):
-        \texttt{linux-64}, \texttt{linux-aarch64}, \texttt{osx-64}, \texttt{osx-arm64},
-        \texttt{win-64}; sufficient for numerically equivalent reproducibility.
-  \item Bit-identical reproducibility additionally requires controlling host system
-        libraries (\texttt{glibc}), BLAS variants/threading, and floating-point
-        nondeterminism in parallel reductions.
-  \item \textbf{Docker/Apptainer}~\cite{merkel2014docker,kurtzer2017singularity,apptainer}:
-        package the OS layer; Docker on Windows/macOS runs in a Linux VM, so host-side
-        IPC primitives (Unix sockets, named pipes, \texttt{/dev/shm}) are not
-        reachable.
-  \item HPC clusters typically forbid Docker; pipeline:
-        \texttt{Dockerfile} $\to$ Docker image (laptop/cloud) $\to$ Apptainer
-        \texttt{.sif} (HPC).
-  \item Multi-architecture images (\texttt{linux/amd64} + \texttt{linux/arm64})
-        built via \texttt{docker buildx} under a single manifest.
-  \item \textbf{Containerising conda environments}: wrap locked conda env in a
-        container to remove host leakage. Snakemake's \texttt{--containerize}
-        bundles all workflow envs into one image~\cite{molder2021snakemake};
-        Nextflow's Wave provisions per-process images on
-        demand~\cite{ditommaso2017nextflow}.
-  \item Trade-off: bundled image (single artefact, shared OS layer) vs.\ per-unit
-        images (true unit-level isolation, more artefacts). Per-unit aligns with
-        SHOWME.how.
-  \item \textbf{CI automation}: matrix builds regenerate lock files on
-        \texttt{environment.yml} changes and publish multi-arch images on Dockerfile
-        changes, shifting maintenance from collaborators to a single pipeline.
-\end{itemize}
+\paragraph{Level 1 --- Package management.}
+Isolation at this level is achieved using a cross-platform, language-agnostic
+package manager. We recommend conda, mamba, or micromamba~\cite{conda,mamba},
+as they are natively supported by the workflow managers we discuss in
+Section~\ref{sec:orchestration}. A unit's software dependencies are specified
+in an \texttt{environment.yml} file, but this alone does not guarantee
+reproducibility: package versions and all their indirect dependencies are not
+pinned, and some packages resolve differently across operating systems and CPU
+architectures. We therefore generate \emph{conda-lock files}, one per operating
+system and architecture, which pin every package to an exact version so that
+the software dependencies of a unit can be recreated identically on any
+matching platform. Per-OS, per-architecture locks are sufficient for numerically equivalent
+reproducibility, ensuring consistent results across the platforms each
+collaborator uses. Other package managers such as pixi~\cite{pixi} and the Julia
+package manager~\cite{juliapkg} have locking built in by default, but are not
+yet natively supported by the workflow managers we consider.
+
+\paragraph{Level 2 --- Containerisation.}
+When package managers with pinned lock files are not sufficient — for units
+that rely on legacy software, C++ or Fortran codebases with complex build
+systems, or dependencies not available on conda — containerisation is the next
+step. A container packages not just the software dependencies but the entire
+operating system layer, so that the unit is fully independent of the host
+operating system. Each unit requires a \texttt{Dockerfile} as its build definition, which can then be built into a container image using Docker,
+Podman, or any compatible container runtime. We recommend one container image per unit, so that a dependency change in one
+unit cannot affect any other. Container images are architecture-specific; when the lab spans multiple CPU
+architectures, we need to build multi-architecture manifests that bundle
+architecture-specific images under a single tag, allowing the correct variant
+to be pulled automatically.\footnote{\texttt{docker buildx} is a Docker CLI
+plugin that enables building images for multiple CPU architectures from a
+single command, producing a multi-architecture manifest.}
+
+\paragraph{Level 3 --- HPC.}
+A Docker image is sufficient for laptop and cloud environments. HPC clusters
+typically restrict Docker for security reasons, making
+Apptainer~\cite{apptainer,kurtzer2017singularity} the container runtime of
+choice. Apptainer can build images directly from an
+Apptainer definition file, but when the build definition requires frequent
+iteration, the lack of layer-based caching makes development slow, as every change
+triggers a full rebuild. We therefore recommend
+the pipeline \texttt{Dockerfile} $\to$ Docker image $\to$ Apptainer
+\texttt{.sif}, converting the Docker image to an Apptainer image as a final
+step. This keeps a single build definition that benefits from Docker's layer
+caching during development, while producing an Apptainer image ready for HPC
+deployment.
+
+
+\paragraph{Automating the isolation setup.}
+Maintaining lock files across operating systems and architectures, and building
+container images across CPU architectures, is combinatorial work that does not
+scale when done manually. We recommend automating this process using continuous
+integration. A matrix build can regenerate per-OS, per-architecture conda-lock
+files whenever the \texttt{environment.yml} changes, and build and publish
+multi-architecture container images whenever the \texttt{Dockerfile} changes.
+This shifts the maintenance burden from individual collaborators to a single
+automated pipeline.
+
+For units where conda-lock alone is insufficient but a full Dockerfile is too
+heavy, a middle ground exists, achieved by wrapping a locked conda environment inside
+a minimal container image. This combines conda's resolution of language-level
+dependencies with the container's control over the system layer, in a single
+artefact that can be built and automated in the same CI pipeline.
 
 % -----------------------------------------------------------------------------
 \subsection{Interoperation}
