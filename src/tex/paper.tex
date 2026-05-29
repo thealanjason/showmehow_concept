@@ -495,9 +495,10 @@ artefact that can be built and automated in the same CI pipeline.
 The goal of Interoperation is that data can flow between computational units
 regardless of the programming language each unit uses or the infrastructure on
 which it runs. We can achieve this by adopting language-agnostic data interchange
-formats and platform-agnostic data exchange protocols at unit boundaries. This
-addresses the Interoperability dimension of FAIR~\cite{wilkinson2016fair} at
-the level of practical implementation.
+formats and platform-agnostic data exchange protocols at unit boundaries. This directly addresses the Interoperability dimension of
+FAIR~\cite{wilkinson2016fair}, which calls for data to use broadly applicable
+language for knowledge representation, here realised through concrete format
+and protocol choices at unit boundaries.
 
 The right interoperation strategy depends on the specific requirements of the
 lab. The following questions help identify it:
@@ -506,7 +507,7 @@ lab. The following questions help identify it:
   \item What is the nature of the data being exchanged: tabular, hierarchical,
         or multi-dimensional arrays?
   \item Do all units run locally, or does the lab span multiple compute
-        locations such as a laptop and an HPC cluster?
+        locations such as a laptop, an HPC cluster, or cloud infrastructure?
   \item What is the pattern of data exchange: a single large transfer after
         each step completes, or repeated smaller exchanges during execution?
   \item How might the interoperation needs of the lab grow: in the volume of
@@ -515,56 +516,73 @@ lab. The following questions help identify it:
 \end{enumerate}
 
 \paragraph{Int1 --- Data formats.}
-Regardless of where units run or how they exchange data, all data at unit
-boundaries must use language-agnostic interchange formats. Text formats such as CSV and JSON are human-readable but poorly suited to
-numerical data. Language-specific formats such as \texttt{.pkl},
-\texttt{.npy}, and \texttt{.jld2} must not appear at unit boundaries, as they
-lock collaborators into a single language ecosystem. We recommend HDF5~\cite{hdf5} or netCDF for hierarchical and
-structured data, and Zarr~\cite{moore2023zarr} for multi-dimensional arrays.
-
+All data at unit boundaries must use language-agnostic interchange formats,
+so that adding a unit in a new programming language never requires changes to
+existing units. Language-specific binary formats such as \texttt{.pkl}
+(Python), \texttt{.npy} (NumPy/Python), and \texttt{.jld2} (Julia) should not
+appear at boundaries, as a collaborator using R or C++ would need to install
+and maintain a Python or Julia runtime solely to read another unit's output.
+Text formats such as CSV and JSON are portable and an acceptable starting point
+when the data is not numerically heavy; they become a poor choice when the data
+consists primarily of floating-point values, as they are string-based, which
+introduces significant storage overhead and risks precision loss when
+insufficient digits are written.\footnote{A 64-bit double requires 17
+significant decimal digits for a guaranteed round-trip, leading to string
+representations of 20--24 ASCII characters (160--192 bits) versus 64 bits in
+binary (a bloat factor of approximately 2.5--3$\times$).} For data consisting
+primarily of floating-point values, we recommend binary formats: HDF5~\cite{hdf5}
+or netCDF for hierarchical and structured data, Zarr~\cite{moore2023zarr} for
+multi-dimensional arrays, and Apache Arrow/Parquet~\cite{apachearrow} for
+tabular data.
 
 \paragraph{Int2 --- Location.}
-For units running on the same machine, filesystem exchange is the simplest and
-most robust starting point: a unit writes its output to an agreed file path,
-and the next unit reads from it. For units running on different machines or
-infrastructure, remote storage protocols such as S3 or SFTP allow data to
-cross infrastructure boundaries without shared mounts.
+The exchange mechanism depends on where the units execute. Filesystem exchange is the
+simplest starting point, with no network dependency; each
+unit writes its output to a file path and the next unit reads from it.
+This holds whether units execute on a single laptop or across nodes of an HPC
+cluster with a shared filesystem such as Lustre or GPFS. On Windows and macOS,
+Docker containers run inside a Linux virtual machine and cannot directly access
+the host's inter-process communication mechanisms; filesystem exchange remains
+the only reliable option for same-machine exchange between a containerised unit
+and a non-containerised one. We recommend starting with filesystem exchange and
+switching to remote storage
+only when the lab spans separate infrastructures with no shared
+filesystem between them, such as a laptop and a cloud instance or two separate
+HPC systems. S3-compatible object storage suits this case well, as
+it is accessible from any infrastructure via HTTP and requires no shared mount.
+When the source or destination exposes a filesystem rather than an object store,
+such as a remote workstation or an existing dataset on a collaborator's server,
+SFTP is more appropriate.
 
 \paragraph{Int3 --- Throughput.}
-When the pattern of exchange is a live loop, where one unit queries another
-repeatedly during execution, filesystem exchange introduces unacceptable
-latency. UMBridge~\cite{seelinger2023umbridge} provides a cross-language
-HTTP-based client--server interface for this pattern, enabling online
-model--UQ coupling without manual data transfer. Its JSON payload introduces
-overhead for large numerical arrays; binary protocols such as MessagePack or
-Protocol Buffers can reduce this overhead but require protocol extensions not
-yet available in UMBridge. One caveat: on Windows and macOS, Docker containers
-cannot access host-side shared memory or Unix sockets, so IPC-based
-high-throughput exchange is not available between containerised units on those
-platforms; filesystem or network exchange must be used instead. For bulk data
-transfer over the network or object
-storage, Zarr~\cite{moore2023zarr} is preferred over HDF5, as it is
-optimised for chunked access over HTTP and S3.
+Throughput governs how much data can flow between units per unit time. It
+becomes the limiting factor in two situations: when units exchange large volumes
+of data in bulk over a network; and when units exchange data at high frequency,
+as in Pattern~C (Section~\ref{sec:patterns}), where one unit queries another
+repeatedly during execution. For bulk transfers, we recommend
+Zarr~\cite{moore2023zarr} over HDF5; unlike HDF5, Zarr is designed for chunked
+access over HTTP and S3, making it well-suited to large array data moving across
+a network or object storage. For high-frequency exchange, we recommend an
+HTTP-based client--server approach, where one unit acts as a server exposing
+its computation and the other acts as a client that queries it repeatedly. The
+approach requires choosing a transport protocol and a serialization format. HTTP
+provides a simple, cross-language point-to-point interface with broad support.
+For the serialization format, JSON is acceptable when payloads are small, but
+its overhead grows with array size and can become a bottleneck for large
+numerical payloads; binary formats such as MessagePack or Protocol Buffers are
+significantly faster. UMBridge~\cite{seelinger2023umbridge} provides a
+ready-made implementation of this approach for model-based uncertainty
+quantification; it uses HTTP and JSON and requires no manual data transfer, but
+its interface accepts only array-based inputs and outputs, making it unsuitable
+when units need to exchange data that is not array-based.
 
-% -- bullets to check coverage --
-\begin{itemize}
-  \item Once units are isolated, data must flow between them; maps onto the
-        Interoperability dimension of FAIR~\cite{wilkinson2016fair}.
-  \item Two sub-concerns: \emph{data interchange} (format) and \emph{data exchange}
-        (protocol).
-  \item \textbf{Interchange formats}: CSV/JSON are human-readable but poor for
-        numerics; language-specific binaries (\texttt{.npy}, \texttt{.pkl},
-        \texttt{.jld2}) are not portable. Use HDF5/netCDF for hierarchical
-        data~\cite{hdf5}; Zarr for multi-dimensional arrays~\cite{moore2023zarr}.
-  \item \textbf{Exchange protocols}: start with file-system exchange; use in-process
-        IPC via \texttt{/tmp} only when throughput demands it (and not with Docker
-        on non-Linux).
-  \item \textbf{UMBridge}~\cite{seelinger2023umbridge}: cross-language client--server
-        coupling over JSON/HTTP; JSON is a throughput bottleneck for large arrays;
-        no binary wire format yet.
-  \item Decision heuristic: file-system $\to$ in-process IPC $\to$ HTTP/UMBridge or
-        object storage (S3) for cross-infrastructure or high-throughput coupling.
-\end{itemize}
+As a rule of thumb, start with CSV or JSON and filesystem exchange; move to
+binary formats such as HDF5, Zarr, or Arrow/Parquet as the data becomes
+primarily floating-point. For the exchange mechanism, switch to remote storage
+when the lab spans separate infrastructures; adopt an HTTP-based client--server
+approach only when units need to exchange data at high frequency during
+execution.
+
 
 % -----------------------------------------------------------------------------
 \subsection{Orchestration}
