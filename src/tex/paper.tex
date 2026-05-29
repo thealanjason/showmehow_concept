@@ -56,7 +56,7 @@
   Computational units are isolated with their dependencies in a self-contained
   environment; they interoperate through language-agnostic data formats and
   transfer protocols; and data movement, scheduling, and resource management
-  are orchestrated using scientific workflow management systems~(WMS).
+  are orchestrated using scientific workflow management systems~(SWMS).
   Together, the pillars ensure that labs tolerate updates to individual units,
   handle variability across languages and platforms, and accommodate new units
   without modifying existing ones, allowing them to sustainably grow and scale.
@@ -427,7 +427,7 @@ The following questions help identify it:
 \paragraph{Iso1 --- Package management.}
 Isolation at this level is achieved using a cross-platform, language-agnostic
 package manager. We recommend conda, mamba, or micromamba~\cite{conda,mamba},
-as they are natively supported by the WMSs we discuss in
+as they are natively supported by the SWMSs we discuss in
 Section~\ref{sec:orchestration}. A unit's software dependencies are specified
 in an \texttt{environment.yml} file, but this alone does not guarantee
 reproducibility: package versions and all their indirect dependencies are not
@@ -439,7 +439,7 @@ matching platform. Per-OS, per-architecture locks are sufficient for numerically
 reproducibility, ensuring consistent results across the platforms each
 collaborator uses. Other package managers such as pixi~\cite{pixi} and the Julia
 package manager~\cite{juliapkg} have locking built in by default, but are not
-yet natively supported by the WMSs we consider.
+yet natively supported by the SWMSs we consider.
 
 \paragraph{Iso2 --- Containerisation.}
 When package managers with pinned lock files are not sufficient — for units
@@ -590,7 +590,7 @@ execution.
 
 The goal of Orchestration is that the lab runs reliably end-to-end, even as
 units are added, collaborators change, or the infrastructure it runs on evolves.
-We can achieve this by using a WMS to automate
+We can achieve this by using a SWMS to automate
 scheduling, data movement, and checkpointing, so the lab can operate
 seamlessly as its needs grow.
 
@@ -598,7 +598,7 @@ The right orchestration strategy depends on the specific requirements of the
 lab. The following questions help identify it:
 
 \begin{enumerate}
-  \item Is the lab complex enough to warrant a WMS? How many units
+  \item Is the lab complex enough to warrant a SWMS? How many units
         are there, and how complex are their dependencies?
   \item Does the lab need to execute across different infrastructure, such as
         running some units locally and others on an HPC cluster or cloud, and
@@ -612,7 +612,7 @@ lab. The following questions help identify it:
 
 \paragraph{Orch1 --- Automation.}
 A lab that runs once, with few units and no need for cross-infrastructure
-execution, can be coordinated with a script. A WMS becomes
+execution, can be coordinated with a script. A SWMS becomes
 necessary when the lab needs to run repeatedly, when units span different
 environments or infrastructure, or when manual data movement and environment
 activation becomes a bottleneck.
@@ -639,7 +639,7 @@ full dependency graph before execution begins and submitting each unit only
 when its declared inputs are available. They differ in how dependencies are
 expressed; Nextflow uses a dataflow paradigm where units are connected by
 explicit data channels, and Snakemake uses a file-based paradigm where
-dependencies are inferred from input and output file paths. A WMS
+dependencies are inferred from input and output file paths. A SWMS
 submits each unit to the appropriate executor automatically, whether a local
 process on a laptop, a SLURM job on an HPC cluster, or a cloud executor. In most cases, moving the lab to a different
 infrastructure requires no changes
@@ -647,7 +647,7 @@ to unit code; only the configuration specifying where and how units execute
 changes.
 
 \paragraph{Orch3 --- Incremental execution.}
-Incremental execution means the WMS tracks which units have
+Incremental execution means the SWMS tracks which units have
 completed successfully and skips them on rerun, so a failure mid-run restarts
 from the last completed unit rather than from scratch. This becomes essential when individual units are long-running or the lab must
 execute a large number of them.  Snakemake tracks completion via output
@@ -670,7 +670,7 @@ setup.
 \paragraph{Orch4 --- Service processes.}
 Pattern~C (Section~\ref{sec:patterns}) requires a unit to run as a long-lived
 service process, specifically a model server that must remain alive while a
-client unit queries it repeatedly. Scientific WMSs assume each
+client unit queries it repeatedly. Scientific SWMSs assume each
 unit starts, runs, and exits; a service process breaks this assumption. In
 Snakemake, a unit can be declared as a service rule; it is started before
 dependent units and terminated automatically once all consumers have finished.
@@ -701,16 +701,17 @@ in practice.
 \begin{table}[h]
   \centering
   \small
-  \caption{Overview of SHOWME.how use cases, mapped to the three generic workflow
-           patterns from Section~\ref{sec:complab}.}
+  \caption{SHOWME.how use cases mapped to the recurring patterns from
+           Section~\ref{sec:patterns} and the approach recommendations from
+           Section~\ref{sec:approach}.}
   \label{tab:usecases}
-  \begin{tabular}{lllll}
+  \begin{tabular}{lll}
     \toprule
-    \textbf{Use Case} & \textbf{Domain} & \textbf{Pattern} & \textbf{WMS} & \textbf{Key Heterogeneity} \\
+    \textbf{Use Case} & \textbf{Pattern} & \textbf{Approach} \\
     \midrule
-    Bayesian Calibration       & Blood Hemolysis      & C     & Nextflow          & 3 OS, Python/Julia/R \\
-    Bayesian Calibration       & Mass Flow Simulation & A+C   & Nextflow          & Julia/Python/R, local/HPC \\
-    Benchmarking of GP Emulators & High-Dim UQ        & B     & Nextflow/Snakemake & Python/R, 8$+$ emulators \\
+    Bayesian Calibration, Blood Hemolysis      & C   & Iso2, Iso3, Int1, Orch4 \\
+    Bayesian Calibration, Mass Flow Simulation & A+C & Iso2, Iso3, Int1, Int3, Orch4 \\
+    GP Emulator Benchmarking                   & B   & Iso1, Iso4, Int1, Orch2, Orch3 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -818,7 +819,7 @@ functions and real-world phenomena including a rock avalanche, a synthetic
 landslide, and a tsunami simulation; raw data is fetched from Zenodo and Figshare
 at setup time and standardised to HDF5 by a shared preprocessing unit. The lab
 is implemented in both Nextflow and Snakemake, demonstrating that the
-Orchestration pillar is not tied to any particular WMS; both versions support
+Orchestration pillar is not tied to any particular SWMS; both versions support
 local and SLURM execution profiles (Orch2), and the Snakemake version uses
 file-based incremental execution to skip completed emulator runs on rerun
 (Orch3). GPU-accelerated execution is supported for PyTorch-based emulators in
@@ -973,7 +974,7 @@ extend, or reproduce the lab without manual environment reconstruction, format
 negotiation, or infrastructure rework.
 Cohen-Boulakia et al.~\cite{cohenboulakia2017workflows} define four levels of
 reproducibility for scientific workflows (repeat, replicate, reproduce, reuse)
-and evaluate representative WMSs against reproducibility-friendly criteria.
+and evaluate representative SWMSs against reproducibility-friendly criteria.
 Their system-wide packaging criterion, which most evaluated systems failed to
 meet, directly motivated SHOWME.how's Isolation pillar; SHOWME.how applies
 environment packaging per unit rather than system-wide, so that dependency
@@ -984,16 +985,16 @@ Iso4 addresses this by automating lock file regeneration in CI whenever a
 unit's environment specification changes. Their analysis also notes that
 connecting workflows across different systems generally requires high technical
 skill; SHOWME.how sidesteps this by working at unit boundaries through
-language-agnostic formats, rather than requiring WMS-level interoperability.
+language-agnostic formats, rather than requiring SWMS-level interoperability.
 Their analysis addresses life-science pipelines in which units share a common
 runtime; SHOWME.how extends to the setting where units are heterogeneous in
 language, operating system, and infrastructure simultaneously.
 
 \paragraph{Scientific workflow management systems.}
 Nextflow~\cite{ditommaso2017nextflow} and Snakemake~\cite{molder2021snakemake}
-are the WMSs used throughout this paper as representative examples; SHOWME.how
+are the SWMSs used throughout this paper as representative examples; SHOWME.how
 is not tied to either. Suter et al.~\cite{suter2025terminology} provide a
-unified terminology for WMSs, distinguishing scheduling models, environment
+unified terminology for SWMSs, distinguishing scheduling models, environment
 integration, and data handling as key axes of variation across systems.
 Leser et al.~\cite{leser2026workflowsystems} decompose modern SWMS into three
 component classes: containers or virtual machines for portability, distributed
@@ -1001,7 +1002,7 @@ file systems for data exchange, and workflow engines paired with resource manage
 for execution.
 SHOWME.how's three pillars map directly onto these component classes: Isolation
 addresses environment portability, Interoperation addresses data exchange at unit
-boundaries, and Orchestration addresses workflow execution and scheduling. Dierckx et al.~\cite{dierckx2022evaluation} evaluate six WMSs against
+boundaries, and Orchestration addresses workflow execution and scheduling. Dierckx et al.~\cite{dierckx2022evaluation} evaluate six SWMSs against
 reproducibility and reuse criteria, finding Nextflow and Snakemake best suited
 for portable workflows through per-process environment specification, the
 model SHOWME.how's Isolation and Orchestration pillars build on. They also
@@ -1018,13 +1019,13 @@ Nix and Guix~\cite{courtes2015guix} provide bit-identical reproducible builds
 through cryptographic hashing of the full dependency graph, offering stronger
 guarantees than conda-lock. The tradeoff is adoption friction: neither is
 natively integrated into Nextflow or Snakemake, so using either requires
-additional tooling or custom wrapper scripts outside the standard WMS
+additional tooling or custom wrapper scripts outside the standard SWMS
 environment directives. SHOWME.how recommends conda-lock because it provides
-numerically-equivalent reproducibility within the toolchain the WMSs already
+numerically-equivalent reproducibility within the toolchain the SWMSs already
 support, lowering the barrier to adoption. Computational labs with stricter
 requirements, such as bit-identical builds or environments where upstream
 package registries cannot be trusted, can consider Nix or Guix, though neither
-integrates natively with WMS environment directives and requires custom setup
+integrates natively with SWMS environment directives and requires custom setup
 beyond what is described here.
 
 \paragraph{Complementary standards.}
@@ -1038,7 +1039,7 @@ inputs, outputs, environment, and script, that CWL requires to describe a
 workflow, CWL description is a natural path toward cross-system portability
 and sharing via WorkflowHub~\cite{goble2021workflowhub}. The W3C PROV
 ontology~\cite{lebo2013provo} defines the standard provenance data model;
-SHOWME.how relies on WMS-native provenance records rather than requiring a
+SHOWME.how relies on SWMS-native provenance records rather than requiring a
 dedicated provenance store.
 
 \paragraph{Similar problems, different approaches.}
@@ -1048,7 +1049,7 @@ movement, and fault tolerance at scale. It treats each computational unit as a b
 how units should be packaged or what format data should take at their boundaries,
 assuming these have already been decided. SHOWME.how addresses precisely those
 questions through the Isolation and Interoperation pillars, and relies on existing
-WMSs for the scheduling and fault-tolerance concerns that are Pegasus's primary focus.
+SWMSs for the scheduling and fault-tolerance concerns that are Pegasus's primary focus.
 The Galaxy Project~\cite{galaxycommunity2024galaxy} enforces reproducibility through a
 managed tool ecosystem, primarily for bioinformatics. Reproducibility is
 achieved by requiring each tool to be registered in Galaxy's ToolShed with a
@@ -1059,11 +1060,11 @@ interoperation are applied at unit boundaries without modifying unit code.
 AiiDA~\cite{huber2020aiida} provides graph-database provenance tracking and
 automated workflow execution, originally designed for materials science and now
 spanning multiple research domains. Its provenance guarantees are stronger than
-WMS-native reporting: all computational steps and data dependencies are
+SWMS-native reporting: all computational steps and data dependencies are
 captured in a queryable graph database. The tradeoff is infrastructure
 overhead: AiiDA requires a dedicated message broker (RabbitMQ), a running
 database instance, and Python plugin wrappers for each code in the workflow.
-SHOWME.how accepts weaker provenance in exchange: its records are WMS-native
+SHOWME.how accepts weaker provenance in exchange: its records are SWMS-native
 and require no additional infrastructure, but lack the queryable graph
 structure and fine-grained dependency capture that AiiDA provides.
 
@@ -1080,7 +1081,7 @@ broker-based orchestration) converge with the three pillars of SHOWME.how,
 arrived at independently and for a different user community. The practical
 difference is in the orchestration layer. ColonyOS requires a dedicated
 Colonies server and database as a persistent broker; SHOWME.how relies on
-WMSs already established in scientific practice, with file or HTTP exchange
+SWMSs already established in scientific practice, with file or HTTP exchange
 at unit boundaries and no additional broker infrastructure.
 
 
