@@ -1028,7 +1028,14 @@ but does not prescribe how units should be isolated from one another, how data
 should be serialised at unit boundaries, or how Pattern~C
 (Section~\ref{sec:patterns}) should be handled when a unit must run as a
 long-lived service process. SHOWME.how's three pillars address these gaps. Because a SHOWME.how lab already makes explicit the unit contracts, namely
-inputs, outputs, environment, and script, that CWL requires to describe a
+inputs, outputs, environment, and script,\footnote{The mapping onto CWL is
+direct rather than identical. A unit's inputs and outputs correspond to a
+\texttt{CommandLineTool}'s \texttt{inputs} and \texttt{outputs}, its script to
+\texttt{baseCommand} and \texttt{arguments}, and its environment to a
+\texttt{DockerRequirement} (or the lighter-weight \texttt{SoftwareRequirement}
+where containerisation is not used); CWL further
+distinguishes \texttt{CommandLineTool} documents from \texttt{Workflow}
+documents that wire steps together.} that CWL requires to describe a
 workflow, CWL description is a natural path toward cross-system portability
 and sharing via WorkflowHub~\cite{goble2021workflowhub}. The W3C PROV
 ontology~\cite{lebo2013provo} defines the standard provenance data model;
