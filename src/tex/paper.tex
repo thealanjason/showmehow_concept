@@ -690,31 +690,13 @@ native service rules; labs using Nextflow can use the sentinel workaround.
 \label{sec:usecases}
 % =============================================================================
 
-\begin{itemize}
-  \item Applied across several domains (Table~\ref{tab:usecases}); not exhaustive of
-        the approach's scope.
-  \item \textbf{Bayesian calibration --- blood hemolysis}: pattern~(3); domain
-        expert (macOS, Python), UQ-methods expert (Windows, R+Python), and RSE
-        (Linux, multi-language) collaborating without changing tools; the RSE
-        ported the domain expert's Python models to Julia for a 10--100$\times$
-        speedup over the original NumPy baseline. Observational evidence: ported
-        laptop~$\to$~HPC with only manager-profile changes (scheduler +
-        Docker~$\to$~Apptainer), no unit-code changes; runs end-to-end on Linux,
-        macOS, Windows with the same isolated units (Python/Julia via HDF5);
-        diagnostic units added post-hoc without touching existing ones. conda-lock
-        pinning and per-thread RNG seeding planned, not yet demonstrated.
-        Repository: \url{https://github.com/nicodirkes/bpc_hemolysis}.
-  \item \textbf{Bayesian calibration --- mass flow simulation}: patterns~(1)+(3);
-        expensive HPC simulator $\to$ surrogate training $\to$ UMBridge-coupled UQ
-        loop; three isolated environments; bulk file exchange + live HTTP coupling;
-        lab in development.
-        Repository: \url{https://github.com/thealanjason/bpc_massflow}.
-  \item \textbf{Benchmarking of GP emulators for high-dimensional UQ}: pattern~(2);
-        multiple GP implementations across languages, including newly published
-        methods; language-agnostic shared benchmark data; parallel execution with
-        incremental checkpointing; lab in development.
-        Repository: \url{https://github.com/gary8564/gpe-bench}.
-\end{itemize}
+The three labs summarised in Table~\ref{tab:usecases} span biomedical engineering,
+geophysical hazard simulation, and high-dimensional uncertainty quantification
+methods development. Together they instantiate all three recurring patterns from
+Section~\ref{sec:patterns} and cover a range of heterogeneity in programming
+language, operating system, and computing infrastructure. They are not exhaustive
+of SHOWME.how's scope but representative of how the three pillars are applied
+in practice.
 
 \begin{table}[h]
   \centering
@@ -722,16 +704,131 @@ native service rules; labs using Nextflow can use the sentinel workaround.
   \caption{Overview of SHOWME.how use cases, mapped to the three generic workflow
            patterns from Section~\ref{sec:complab}.}
   \label{tab:usecases}
-  \begin{tabular}{llll}
+  \begin{tabular}{lllll}
     \toprule
-    \textbf{Use Case} & \textbf{Domain} & \textbf{Pattern} & \textbf{Key Heterogeneity} \\
+    \textbf{Use Case} & \textbf{Domain} & \textbf{Pattern} & \textbf{WMS} & \textbf{Key Heterogeneity} \\
     \midrule
-    Bayesian Calibration       & Blood Hemolysis      & (3)     & 3 OS, Python/Julia/R \\
-    Bayesian Calibration       & Mass Flow Simulation & (1)+(3) & Multi-language, local/HPC \\
-    Benchmarking of GP Emulators & High-Dim UQ        & (2)     & Parallel implementations \\
+    Bayesian Calibration       & Blood Hemolysis      & C     & Nextflow          & 3 OS, Python/Julia/R \\
+    Bayesian Calibration       & Mass Flow Simulation & A+C   & Nextflow          & Julia/Python/R, local/HPC \\
+    Benchmarking of GP Emulators & High-Dim UQ        & B     & Nextflow/Snakemake & Python/R, 8$+$ emulators \\
     \bottomrule
   \end{tabular}
 \end{table}
+
+% -----------------------------------------------------------------------------
+\subsection{Bayesian Calibration of a Hemolysis Model}
+\label{sec:usecase:hemolysis}
+% -----------------------------------------------------------------------------
+
+Blood hemolysis models predict red blood cell damage under mechanical stress and
+are used to evaluate the safety of ventricular assist devices. The goal of this
+lab is to infer the parameters of a hemolysis model from experimental
+measurements via Bayesian parameter calibration. The lab is an instance of
+Pattern~C: the MCMC calibration process must query the forward model repeatedly
+throughout inference, requiring both to run simultaneously as a client--server
+pair. Three collaborators with complementary expertise contribute to the lab: a
+domain expert operating on macOS in Python, a UQ-methods expert on Windows in
+R and Python, and an RSE on Linux working across multiple languages. The RSE
+ported the domain expert's Python forward model to Julia, yielding a
+10--100$\times$ speedup over the NumPy baseline; both implementations coexist
+as alternatives selectable at runtime.
+
+Each computational unit runs in its own Docker container (Iso2), with one image
+per unit so that a dependency change in one cannot affect any other. The same
+Dockerfile drives both Docker images for local development and Apptainer images
+for HPC deployment (Iso3), so that moving the lab between infrastructure requires
+no changes to unit code. Field data is downloaded from a remote repository and
+preprocessed to CSV; MCMC outputs are written in NetCDF format compatible with
+standard Bayesian diagnostics tooling, so downstream analysis units can consume
+results regardless of language (Int1). The forward model server and MCMC client
+communicate via a filesystem sentinel: the server writes a readiness flag to a
+shared directory, and the MCMC process declares that file as an input dependency
+in Nextflow, so the calibration starts only once the server is confirmed
+ready (Orch4).
+
+The lab has been ported from laptop to HPC by changing only the Nextflow executor
+profile, switching the job scheduler and converting Docker images to Apptainer;
+no unit code was modified. Diagnostic units were added after the lab was first
+assembled without modifying any existing unit, demonstrating modular
+extensibility. Conda-lock pinning and CI automation (Iso1, Iso4) are planned
+but not yet in place. The lab is available at
+\url{https://github.com/nicodirkes/bpc_hemolysis}.
+
+% -----------------------------------------------------------------------------
+\subsection{Bayesian Calibration of a Mass Flow Model}
+\label{sec:usecase:massflow}
+% -----------------------------------------------------------------------------
+
+Geophysical mass flow simulators model natural hazards such as landslides and
+avalanches. Running the forward simulator is computationally expensive; Bayesian
+calibration therefore proceeds in two stages. First, a Latin Hypercube Sampling
+process generates a parameter design, the forward simulator evaluates each
+configuration on HPC, and the responses are collected to train a Gaussian process
+surrogate (Pattern~A). Second, the trained surrogate is coupled to a Markov
+chain Monte Carlo process for parameter inference, with the surrogate serving
+predictions on demand throughout the run (Pattern~C). The four computational
+units span four language ecosystems: Latin Hypercube Sampling in Julia, the
+physics-based forward simulator in Python, surrogate training and serving in R,
+and MCMC inference in Python.
+
+Each unit is packaged in a dedicated Apptainer container (Iso2, Iso3), providing
+fully isolated environments and enabling HPC deployment without modifying unit
+code. Latin Hypercube samples and forward model responses are exchanged as CSV
+files; MCMC output arrays are written in NumPy format. The surrogate unit is
+decomposed into a training process and a serving process so that the emulator
+need not be retrained on every run; the trained model is exchanged between these
+two sub-processes as an RDS file, which is appropriate here because both
+sub-processes share an R environment and no language crossing occurs at that seam.
+The serving process exposes the surrogate over HTTP following the UMBridge
+model-server interface~\cite{seelinger2023umbridge}, implemented in R using
+httpuv and jsonlite;\footnote{The R server implementation of the UMBridge
+interface is an ongoing contribution to the UMBridge project.} the Python MCMC
+client queries it over HTTP without any language bridging, applying the
+client--server approach from Int3.
+
+The lab is in active development. Apptainer container images are defined per
+unit and the full workflow is assembled in Nextflow; end-to-end execution and
+HPC deployment are the immediate next steps. The lab is available at
+\url{https://github.com/thealanjason/bpc_massflow}.
+
+% -----------------------------------------------------------------------------
+\subsection{Benchmarking of Gaussian Process Emulators}
+\label{sec:usecase:gpe}
+% -----------------------------------------------------------------------------
+
+High-dimensional uncertainty quantification requires surrogate emulators that
+scale to large input and output spaces. This lab benchmarks a range of Gaussian
+process emulator implementations against shared datasets to provide
+reproducible, language-agnostic comparisons for the UQ methods community. It is
+an instance of Pattern~B: a shared dataset is fanned out to multiple emulator
+implementations in parallel, each producing results independently, and the
+outputs are gathered and scored by a metrics aggregation unit. The emulator
+implementations span two language ecosystems: ExactGP and DKL via
+PyTorch/GPyTorch in Python, and RGaSP, PCA-RGaSP, PPGaSP, BiGP, and MTGP via
+RobustGaSP in R, with autoencoder and variational autoencoder variants also in
+Python.
+
+Each emulator runs in its own conda environment with a pinned lock file (Iso1),
+so that adding a new emulator implementation introduces no dependency conflict
+with any other. Data at all unit boundaries uses HDF5, so any emulator,
+regardless of language, reads and writes through the same format without
+conversion (Int1). Five benchmark datasets are included, spanning synthetic
+functions and real-world phenomena including a rock avalanche, a synthetic
+landslide, and a tsunami simulation; raw data is fetched from Zenodo and Figshare
+at setup time and standardised to HDF5 by a shared preprocessing unit. The lab
+is implemented in both Nextflow and Snakemake, demonstrating that the
+Orchestration pillar is not tied to any particular WMS; both versions support
+local and SLURM execution profiles (Orch2), and the Snakemake version uses
+file-based incremental execution to skip completed emulator runs on rerun
+(Orch3). GPU-accelerated execution is supported for PyTorch-based emulators in
+the SLURM profile.
+
+CI is fully automated: conda lock files are regenerated whenever an environment
+specification changes (Iso4), and a benchmark run is triggered on every push to
+the main branch, with results uploaded as a GitHub artifact for inspection. The
+lab is available in two versions: Nextflow at
+\url{https://github.com/gary8564/gpe_bench_nxf} and Snakemake at
+\url{https://github.com/gary8564/gpe_bench_smk}.
 
 
 % =============================================================================
