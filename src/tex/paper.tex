@@ -778,67 +778,131 @@ native service rules; labs using Nextflow can use the sentinel workaround.
 \label{sec:related}
 % =============================================================================
 
-\begin{itemize}
-  \item \textbf{FAIR}~\cite{wilkinson2016fair,barker2022fair4rs,goble2020fairworkflows,wilkinson2025fairworkflows}:
-        normative framework; SHOWME.how is a concrete implementation strategy for
-        Interoperability and Reusability dimensions.
-  \item \textbf{Scientific workflow systems}: Nextflow~\cite{ditommaso2017nextflow},
-        Snakemake~\cite{molder2021snakemake}; broader surveys by Suter et
-        al.~\cite{suter2025terminology}, Leser et al.~\cite{leser2026workflowsystems};
-        reproducibility evaluation by Dierckx et al.~\cite{dierckx2022evaluation}.
-  \item \textbf{Reproducibility}: Cohen-Boulakia et al.~\cite{cohenboulakia2017workflows}
-        focus on reproducibility in life-science workflows; SHOWME.how generalises
-        to heterogeneity management with reproducibility as a consequence
-        (Table~\ref{tab:cohenboulakia}).
-  \item \textbf{UMBridge}~\cite{seelinger2023umbridge}: key enabling tool for
-        Interoperation; language-agnostic HTTP client--server for model--UQ
-        coupling without wrappers.
-  \item \textbf{Workflow standards/packaging}:
-        CWL~\cite{amstutz2016cwl} (vendor-neutral portable workflow standard),
-        WorkflowHub~\cite{goble2021workflowhub} (community registry),
-        RO-Crate Workflow profile~\cite{soilandreyes2022rocrate} (FAIR packaging);
-        complementary to SHOWME.how, which uses managers directly.
-  \item \textbf{HPC-native/reproducible package management}:
-        Spack~\cite{gamblin2015spack},
-        Nix/Guix~\cite{courtes2015guix} (cryptographic reproducibility); stricter
-        than conda-lock; compatible with SHOWME.how, which uses conda-lock as a
-        pragmatic default.
-  \item \textbf{Columnar formats}: Apache Arrow/Parquet~\cite{apachearrow} for
-        zero-copy, language-agnostic tabular data --- complements HDF5/Zarr for
-        tabular workflows.
-  \item \textbf{Orchestration and provenance}: AiiDA~\cite{huber2020aiida}
-        (graph-database provenance), Pegasus~\cite{deelman2015pegasus} (large-scale
-        HPC/cloud planning), PROV-O~\cite{lebo2013provo} (W3C provenance
-        ontology); future direction for SHOWME.how.
-  \item \textbf{ColonyOS}~\cite{kristiansson2025colonyos}: open-source
-        meta-OS for edge-to-cloud continuums; coordinates distributed
-        workloads via FaaS isolation, language-agnostic exchange, and
-        declarative broker-based orchestration. Independently converges on
-        the same core principles as SHOWME.how from a different community,
-        strengthening the case that these principles are fundamental.
-        Practical distinction: requires dedicated broker infrastructure,
-        where SHOWME.how reuses WMSs already established in
-        scientific practice.
-\end{itemize}
+\paragraph{Motivating frameworks.}
+The FAIR principles~\cite{wilkinson2016fair,barker2022fair4rs,goble2020fairworkflows,wilkinson2025fairworkflows}
+define normative criteria for making research outputs Findable, Accessible,
+Interoperable, and Reusable. SHOWME.how is a concrete implementation strategy for the Interoperability and
+Reusability dimensions of FAIR. The Interoperation pillar addresses the FAIR
+Interoperability dimension by requiring data at unit boundaries to use broadly
+applicable knowledge representation formats
+(Section~\ref{sec:interoperation}). Isolation supports the FAIR4RS Reusability
+dimension~\cite{barker2022fair4rs} by ensuring that the software environment of
+each unit is fully specified and reconstructible
+(Section~\ref{sec:isolation}). Taken together, all three pillars enable
+reusability of the computational lab as a whole: a collaborator can take over,
+extend, or reproduce the lab without manual environment reconstruction, format
+negotiation, or infrastructure rework.
+Cohen-Boulakia et al.~\cite{cohenboulakia2017workflows} define four levels of
+reproducibility for scientific workflows (repeat, replicate, reproduce, reuse)
+and evaluate representative WMSs against reproducibility-friendly criteria.
+Their system-wide packaging criterion, which most evaluated systems failed to
+meet, directly motivated SHOWME.how's Isolation pillar; SHOWME.how applies
+environment packaging per unit rather than system-wide, so that dependency
+conflicts between units are structurally prevented. They further identify
+automatic dependency maintenance as an open challenge: no evaluated system
+could update a broken environment without manual intervention. SHOWME.how's
+Iso4 addresses this by automating lock file regeneration in CI whenever a
+unit's environment specification changes. Their analysis also notes that
+connecting workflows across different systems generally requires high technical
+skill; SHOWME.how sidesteps this by working at unit boundaries through
+language-agnostic formats, rather than requiring WMS-level interoperability.
+Their analysis addresses life-science pipelines in which units share a common
+runtime; SHOWME.how extends to the setting where units are heterogeneous in
+language, operating system, and infrastructure simultaneously.
 
-\begin{table}[h]
-  \centering
-  \small
-  \caption{SHOWME.how compared to Cohen-Boulakia et al.~\cite{cohenboulakia2017workflows}.}
-  \label{tab:cohenboulakia}
-  \begin{tabular}{p{0.22\linewidth}p{0.34\linewidth}p{0.34\linewidth}}
-    \toprule
-    \textbf{Aspect} & \textbf{Cohen-Boulakia et al. 2017} & \textbf{SHOWME.how} \\
-    \midrule
-    Central goal       & Reproducibility & Managing heterogeneity (reproducibility a consequence) \\
-    Collaborators      & Not explicitly addressed & Stakeholders whose tool/language/OS heterogeneity is accommodated \\
-    Interoperation     & Assumed; not a distinct pillar & Explicit pillar: formats + protocols \\
-    Infrastructure portability & Mentioned & Explicit: laptop $\to$ HPC $\to$ cloud via Dockerfile $\to$ Apptainer \\
-    Scope              & Life sciences & Science and engineering broadly \\
-    Novelty framing    & Taxonomy of reproducibility levels & Approach plus concept (computational lab) \\
-    \bottomrule
-  \end{tabular}
-\end{table}
+\paragraph{Scientific workflow management systems.}
+Nextflow~\cite{ditommaso2017nextflow} and Snakemake~\cite{molder2021snakemake}
+are the WMSs used throughout this paper as representative examples; SHOWME.how
+is not tied to either. Suter et al.~\cite{suter2025terminology} provide a
+unified terminology for WMSs, distinguishing scheduling models, environment
+integration, and data handling as key axes of variation across systems.
+Leser et al.~\cite{leser2026workflowsystems} decompose modern SWMS into three
+component classes: containers or virtual machines for portability, distributed
+file systems for data exchange, and workflow engines paired with resource managers
+for execution.
+SHOWME.how's three pillars map directly onto these component classes: Isolation
+addresses environment portability, Interoperation addresses data exchange at unit
+boundaries, and Orchestration addresses workflow execution and scheduling. Dierckx et al.~\cite{dierckx2022evaluation} evaluate six WMSs against
+reproducibility and reuse criteria, finding Nextflow and Snakemake best suited
+for portable workflows through per-process environment specification, the
+model SHOWME.how's Isolation and Orchestration pillars build on. They also
+identify a tradeoff between strongly-typed process interfaces and wrapper
+overhead; SHOWME.how resolves this by requiring language-agnostic data formats
+at unit boundaries rather than typed wrappers, so unit code requires no
+modification.
+
+\paragraph{Alternative environment management.}
+Spack~\cite{gamblin2015spack} is an HPC-focused package manager providing
+source-based builds with fine-grained control over compiler flags and
+dependencies; it is natively supported by Nextflow as an alternative to conda.
+Nix and Guix~\cite{courtes2015guix} provide bit-identical reproducible builds
+through cryptographic hashing of the full dependency graph, offering stronger
+guarantees than conda-lock. The tradeoff is adoption friction: neither is
+natively integrated into Nextflow or Snakemake, so using either requires
+additional tooling or custom wrapper scripts outside the standard WMS
+environment directives. SHOWME.how recommends conda-lock because it provides
+numerically-equivalent reproducibility within the toolchain the WMSs already
+support, lowering the barrier to adoption. Computational labs with stricter
+requirements, such as bit-identical builds or environments where upstream
+package registries cannot be trusted, can consider Nix or Guix, though neither
+integrates natively with WMS environment directives and requires custom setup
+beyond what is described here.
+
+\paragraph{Complementary standards.}
+CWL~\cite{amstutz2016cwl} provides a vendor-neutral standard for portable
+workflow definitions. It specifies \emph{what} to run and how steps connect,
+but does not prescribe how units should be isolated from one another, how data
+should be serialised at unit boundaries, or how Pattern~C
+(Section~\ref{sec:patterns}) should be handled when a unit must run as a
+long-lived service process. SHOWME.how's three pillars address these gaps. Because a SHOWME.how lab already makes explicit the unit contracts, namely
+inputs, outputs, environment, and script, that CWL requires to describe a
+workflow, CWL description is a natural path toward cross-system portability
+and sharing via WorkflowHub~\cite{goble2021workflowhub}. The W3C PROV
+ontology~\cite{lebo2013provo} defines the standard provenance data model;
+SHOWME.how relies on WMS-native provenance records rather than requiring a
+dedicated provenance store.
+
+\paragraph{Similar problems, different approaches.}
+Pegasus~\cite{deelman2015pegasus} focuses on executing large-scale workflows
+across heterogeneous distributed infrastructure, handling job scheduling, data
+movement, and fault tolerance at scale. It treats each computational unit as a black box and makes no prescription about
+how units should be packaged or what format data should take at their boundaries,
+assuming these have already been decided. SHOWME.how addresses precisely those
+questions through the Isolation and Interoperation pillars, and relies on existing
+WMSs for the scheduling and fault-tolerance concerns that are Pegasus's primary focus.
+The Galaxy Project~\cite{galaxycommunity2024galaxy} enforces reproducibility through a
+managed tool ecosystem, primarily for bioinformatics. Reproducibility is
+achieved by requiring each tool to be registered in Galaxy's ToolShed with a
+descriptor specifying its software dependencies and input/output parameters in
+Galaxy's format, coupling reproducibility to Galaxy's own ecosystem.
+SHOWME.how requires no tool registration or descriptor; isolation and
+interoperation are applied at unit boundaries without modifying unit code.
+AiiDA~\cite{huber2020aiida} provides graph-database provenance tracking and
+automated workflow execution, originally designed for materials science and now
+spanning multiple research domains. Its provenance guarantees are stronger than
+WMS-native reporting: all computational steps and data dependencies are
+captured in a queryable graph database. The tradeoff is infrastructure
+overhead: AiiDA requires a dedicated message broker (RabbitMQ), a running
+database instance, and Python plugin wrappers for each code in the workflow.
+SHOWME.how accepts weaker provenance in exchange: its records are WMS-native
+and require no additional infrastructure, but lack the queryable graph
+structure and fine-grained dependency capture that AiiDA provides.
+
+ColonyOS~\cite{kristiansson2025colonyos} is an open-source meta-OS targeting
+IoT-to-HPC computing continuums for AI and machine-learning workflows. Its
+central design constraint is that compute nodes may be geographically
+dispersed, behind firewalls, or intermittently available; all coordination
+therefore flows through a centralised Colonies server that executors poll over
+HTTP rather than through direct connections. Executors are language-agnostic
+microservices (SDKs exist for Python, Julia, Rust, Go, and others) that
+exchange data via a meta-filesystem layer backed by S3 or IPFS. The three
+concerns that result (per-executor isolation, language-agnostic exchange, and
+broker-based orchestration) converge with the three pillars of SHOWME.how,
+arrived at independently and for a different user community. The practical
+difference is in the orchestration layer. ColonyOS requires a dedicated
+Colonies server and database as a persistent broker; SHOWME.how relies on
+WMSs already established in scientific practice, with file or HTTP exchange
+at unit boundaries and no additional broker infrastructure.
 
 
 % =============================================================================
@@ -861,7 +925,9 @@ native service rules; labs using Nextflow can use the sentinel workaround.
         supporting heterogeneous accelerators and federated environments; extending
         to streaming/digital-twin labs outside the batch-DAG paradigm;
         operationalising collaborator roles (RSE, domain expert, methods
-        expert) as first-class interfaces.
+        expert) as first-class interfaces; describing labs in CWL and packaging
+        them as RO-Crates~\cite{soilandreyes2022rocrate} for sharing via
+        WorkflowHub~\cite{goble2021workflowhub}.
 \end{itemize}
 
 
