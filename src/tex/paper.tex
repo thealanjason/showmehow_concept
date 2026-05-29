@@ -838,39 +838,6 @@ lab is available in two versions: Nextflow at
 \label{sec:robustness}
 % =============================================================================
 
-% ORIGINAL BULLETS — check each is covered in the prose above before removing
-% \begin{itemize}
-%   \item \textbf{Robustness checklist}, with each criterion answering a status-quo
-%         failure mode (Section~\ref{sec:challenges}):
-%         \begin{itemize}
-%           \item \emph{Perturbations} (vs.\ missing env specs): per-OS/per-arch lock
-%                 files for every unit; container-wrapped locked env where
-%                 bit-identical reproducibility is required; explicit RNG seeding
-%                 per-thread/rank and per-library (a single global seed is
-%                 insufficient under OpenMP/MPI; NumPy legacy vs.\ \texttt{Generator},
-%                 Julia \texttt{Random}/\texttt{MersenneTwister}, R \texttt{set.seed},
-%                 and third-party libs must each be seeded);
-%                 workflow-manager checkpointing enabled.
-%           \item \emph{Variability} (vs.\ language-tied formats): workflow runs on
-%                 $>1$ host OS with same locks/images; no language-tied serialisation
-%                 on unit boundaries; cross-infrastructure coupling via language-/
-%                 host-agnostic protocol (HTTP via UMBridge, S3).
-%           \item \emph{Adverse conditions} (vs.\ wrappers and feedforward): single
-%                 Dockerfile drives both Docker (laptop) and Apptainer (HPC) images
-%                 with no unit-code changes; multi-arch manifests where needed; no
-%                 wrapper code bridges languages in shared address space; lock/image
-%                 generation automated in CI.
-%           \item \emph{Modular extensibility} (vs.\ wrapper lock-in): each unit
-%                 declares inputs/outputs/script/env as a self-contained contract;
-%                 adding a new unit requires no edits or revalidation of existing
-%                 units.
-%         \end{itemize}
-%   \item \textbf{Honest assessment}: no quantitative measurements (glue-code lines,
-%         onboarding time, build times, cross-OS numerical equivalence, restart
-%         overhead, post-hoc additions without regression) collected systematically;
-%         quantitative evaluation against the checklist remains future work.
-% \end{itemize}
-% =============================================================================
 
 % AC===========================================================================
 The three pillars of SHOWME.how were designed to address the failure modes of
