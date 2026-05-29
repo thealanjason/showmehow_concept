@@ -56,7 +56,7 @@
   Computational units are isolated with their dependencies in a self-contained
   environment; they interoperate through language-agnostic data formats and
   transfer protocols; and data movement, scheduling, and resource management
-  are orchestrated using workflow management systems.
+  are orchestrated using scientific workflow management systems~(WMS).
   Together, the pillars ensure that labs tolerate updates to individual units,
   handle variability across languages and platforms, and accommodate new units
   without modifying existing ones, allowing them to sustainably grow and scale.
@@ -152,9 +152,9 @@ but is used colloquially, without a formal definition.
 Figure~\ref{fig:heterogeneous} illustrates these components in a representative
 computational lab: the Bayesian parameter calibration of a shallow mass flow
 model used in geophysical hazard simulation.
-This inverse problem is solved by chaining a forward simulator, a surrogate
-emulator, and a calibration step, each a separate computational unit developed and
-operated by collaborators with complementary expertise. How these components are made
+This inverse problem is solved by chaining three computational units: a
+forward simulator, a surrogate emulator, and a calibration process, each
+developed and operated by collaborators with complementary expertise. How these components are made
 to work together is the subject of Section~\ref{sec:approach}.
 % AC===========================================================================
 
@@ -385,7 +385,7 @@ SHOWME.how is such an approach.
 The SHOWME.how approach is built on three complementary pillars: Isolation,
 Interoperation, and Orchestration (Figure~\ref{fig:three_pillars}). Each pillar
 addresses a distinct class of challenges identified in
-Section~\ref{sec:challenges}. The pillars are independent. A lab can adopt any one of them and already gain
+Section~\ref{sec:challenges}. A lab can adopt any one of the pillars independently and already gain
 robustness along that dimension, adding the others as the lab grows and its
 requirements evolve.
 
@@ -412,13 +412,13 @@ The right isolation strategy depends on the specific requirements of the lab.
 The following questions help identify it:
 
 \begin{enumerate}
-  \item What software ecosystem does each unit require: programming language,
-        operating system, and dependencies?
-  \item Where will each unit run: on a collaborator's laptop, an HPC cluster,
+  \item What software ecosystem does each unit require, in terms of
+        programming language, operating system, and dependencies?
+  \item Where will each unit run? On a collaborator's laptop, an HPC cluster,
         or a cloud environment?
-  \item What level of reproducibility is required: numerically equivalent
-        results across platforms, or a fully controlled environment that also
-        pins system libraries and floating-point behaviour?
+  \item What level of reproducibility is required? Is numerical equivalence
+        across platforms sufficient, or is a fully controlled environment that
+        also pins system libraries and floating-point behaviour needed?
   \item How heterogeneous is the lab in terms of collaborators, operating
         systems, CPU architectures, and infrastructure, and how much is it
         expected to change?
@@ -427,7 +427,7 @@ The following questions help identify it:
 \paragraph{Iso1 --- Package management.}
 Isolation at this level is achieved using a cross-platform, language-agnostic
 package manager. We recommend conda, mamba, or micromamba~\cite{conda,mamba},
-as they are natively supported by the workflow managers we discuss in
+as they are natively supported by the WMSs we discuss in
 Section~\ref{sec:orchestration}. A unit's software dependencies are specified
 in an \texttt{environment.yml} file, but this alone does not guarantee
 reproducibility: package versions and all their indirect dependencies are not
@@ -439,7 +439,7 @@ matching platform. Per-OS, per-architecture locks are sufficient for numerically
 reproducibility, ensuring consistent results across the platforms each
 collaborator uses. Other package managers such as pixi~\cite{pixi} and the Julia
 package manager~\cite{juliapkg} have locking built in by default, but are not
-yet natively supported by the workflow managers we consider.
+yet natively supported by the WMSs we consider.
 
 \paragraph{Iso2 --- Containerisation.}
 When package managers with pinned lock files are not sufficient — for units
@@ -504,15 +504,14 @@ The right interoperation strategy depends on the specific requirements of the
 lab. The following questions help identify it:
 
 \begin{enumerate}
-  \item What is the nature of the data being exchanged: tabular, hierarchical,
-        or multi-dimensional arrays?
+  \item What is the nature of the data being exchanged? Is it tabular,
+        hierarchical, or multi-dimensional arrays?
   \item Do all units run locally, or does the lab span multiple compute
         locations such as a laptop, an HPC cluster, or cloud infrastructure?
-  \item What is the pattern of data exchange: a single large transfer after
-        each step completes, or repeated smaller exchanges during execution?
-  \item How might the interoperation needs of the lab grow: in the volume of
-        data transferred across units, or in the heterogeneity of the units
-        that need to exchange it?
+  \item What is the pattern of data exchange? Does the lab transfer data once
+        per unit, or does it involve repeated exchanges during execution?
+  \item How might the interoperation needs of the lab grow? Will the volume
+        of data increase, or will the heterogeneity of units exchanging it?
 \end{enumerate}
 
 \paragraph{Int1 --- Data formats.}
@@ -589,49 +588,101 @@ execution.
 \label{sec:orchestration}
 % -----------------------------------------------------------------------------
 
-The goal of Orchestration is that the lab runs reliably end-to-end as it grows
-in units, collaborators, and infrastructure. We can achieve this by using a
-workflow management system to automate scheduling, data movement, and
-checkpointing, so the lab runs reliably and scales seamlessly as its needs grow.
+The goal of Orchestration is that the lab runs reliably end-to-end, even as
+units are added, collaborators change, or the infrastructure it runs on evolves.
+We can achieve this by using a WMS to automate
+scheduling, data movement, and checkpointing, so the lab can operate
+seamlessly as its needs grow.
 
 The right orchestration strategy depends on the specific requirements of the
 lab. The following questions help identify it:
 
 \begin{enumerate}
-  \item Is the lab complex enough to warrant a workflow manager: how many units
-        are there, and how complex is their structure relative to the patterns
-        of Section~\ref{sec:complab}?
+  \item Is the lab complex enough to warrant a WMS? How many units
+        are there, and how complex are their dependencies?
   \item Does the lab need to execute across different infrastructure, such as
         running some units locally and others on an HPC cluster or cloud, and
-        what job schedulers or cloud executors does that require?
-  \item Does the lab involve computationally demanding jobs --- whether
-        long-running or large in number --- where restarting from scratch on
-        failure would be costly?
-  \item What workflow managers and community workflows are already established
-        in the collaborators' scientific domain?
-  \item How might the orchestration needs of the lab evolve: will it remain a
-        fixed sequence of steps with known dependencies, or will it eventually
-        require more advanced execution patterns such as service processes,
-        dynamic workflows, or streaming data?
+        what schedulers or executors does that require?
+  \item Would restarting the lab from scratch on failure be costly, either
+        because individual units are long-running or because the lab involves
+        a large number of unit executions?
+  \item Does the lab require any unit to run as a long-lived service process,
+        as in Pattern~C, rather than completing after a single execution?
 \end{enumerate}
 
-\begin{itemize}
-  \item Automates coordination as labs grow: data movement, dependency-based
-        scheduling, checkpointing, resource monitoring, and laptop $\to$ HPC $\to$
-        cloud portability without modification.
-  \item We use \textbf{Nextflow}~\cite{ditommaso2017nextflow} and
-        \textbf{Snakemake}~\cite{molder2021snakemake} as representative examples;
-        SHOWME.how is not tied to any manager. Broader landscape in the Workflows
-        Community Initiative~\cite{suter2025terminology}.
-  \item Both share the contract: each step declares inputs, outputs, script, and
-        compute environment (conda or container) --- maps directly onto isolation.
-  \item \textbf{Nextflow}: dataflow paradigm, highly structured; UNIX-only (WSL on
-        Windows); extensions require Groovy/JVM; no native service-process support
-        (worked around with file-based sentinels for UMBridge servers).
-  \item \textbf{Snakemake}: file-based paradigm, Python extension --- cross-platform
-        and familiar to scientists; well-positioned for the full orchestration ideal.
-        Docker is second-class (transparently swapped for Apptainer).
-\end{itemize}
+\paragraph{Orch1 --- Automation.}
+A lab that runs once, with few units and no need for cross-infrastructure
+execution, can be coordinated with a script. A WMS becomes
+necessary when the lab needs to run repeatedly, when units span different
+environments or infrastructure, or when manual data movement and environment
+activation becomes a bottleneck.
+
+We use Nextflow~\cite{ditommaso2017nextflow} and
+Snakemake~\cite{molder2021snakemake} as representative examples throughout
+this section; SHOWME.how is not tied to any particular manager, and a broader
+survey of the landscape is available in Suter et al.~\cite{suter2025terminology}
+and Dierckx et al.~\cite{dierckx2022evaluation}. Nextflow runs on Linux and
+macOS (with WSL on Windows); Snakemake is cross-platform. Workflow extensions
+in Nextflow require Groovy and the JVM; Snakemake extensions are written in
+Python. Both managers share the same unit contract,
+where each unit declares its inputs, outputs, script, and compute
+environment.\footnote{Snakemake's native container runtime is Apptainer; Docker
+images declared in the environment are converted automatically.} This contract
+ties directly to both preceding pillars; the environment declaration activates
+the isolation strategy defined for each unit, and the input/output declarations
+specify where and how data crosses unit boundaries.
+
+\paragraph{Orch2 --- Scheduling.}
+Scheduling determines where and how units execute. Both Nextflow and Snakemake
+follow a static planning approach~\cite{suter2025terminology}, resolving the
+full dependency graph before execution begins and submitting each unit only
+when its declared inputs are available. They differ in how dependencies are
+expressed; Nextflow uses a dataflow paradigm where units are connected by
+explicit data channels, and Snakemake uses a file-based paradigm where
+dependencies are inferred from input and output file paths. A WMS
+submits each unit to the appropriate executor automatically, whether a local
+process on a laptop, a SLURM job on an HPC cluster, or a cloud executor. In most cases, moving the lab to a different
+infrastructure requires no changes
+to unit code; only the configuration specifying where and how units execute
+changes.
+
+\paragraph{Orch3 --- Incremental execution.}
+Incremental execution means the WMS tracks which units have
+completed successfully and skips them on rerun, so a failure mid-run restarts
+from the last completed unit rather than from scratch. This becomes essential when individual units are long-running or the lab must
+execute a large number of them.  Snakemake tracks completion via output
+file timestamps and checksums; a unit is considered done if its output exists
+and is newer than its inputs. This can be fooled by manually copying or
+touching output files, and changing the unit code does not automatically
+trigger a rerun. Nextflow uses a work directory with per-task hashes derived
+from inputs and script content, so script changes do trigger reruns
+automatically; the work directory accumulates heavily over time and requires
+periodic cleanup with \texttt{nextflow clean}, and the \texttt{--resume} flag
+requires the work directory to still exist. Neither manager tracks changes to
+external dependencies outside the declared environment, and incremental
+execution assumes deterministic outputs. Both managers also capture basic
+execution provenance. Snakemake generates
+an HTML report with DAG visualisation, runtime statistics, and input/output
+records; Nextflow supports provenance through the \texttt{nf-prov} plugin,
+which produces records in RO-Crate or PROV format but requires explicit
+setup.
+
+\paragraph{Orch4 --- Service processes.}
+Pattern~C (Section~\ref{sec:patterns}) requires a unit to run as a long-lived
+service process, specifically a model server that must remain alive while a
+client unit queries it repeatedly. Scientific WMSs assume each
+unit starts, runs, and exits; a service process breaks this assumption. In
+Snakemake, a unit can be declared as a service rule; it is started before
+dependent units and terminated automatically once all consumers have finished.
+Nextflow has no native support for service processes. The common
+workaround is a file-based sentinel, where the server writes a file when it is
+ready and the client unit declares that file as an input dependency. The
+workaround has two failure modes. If the server crashes before writing the
+sentinel, the client unit never starts and the workflow stalls; if the server
+crashes after the client has started, the client cannot reach the server's URL
+and port and crashes with a connection error. Labs using Snakemake can use
+native service rules; labs using Nextflow can use the sentinel workaround.
+
 
 
 % =============================================================================
@@ -766,7 +817,7 @@ lab. The following questions help identify it:
         the same core principles as SHOWME.how from a different community,
         strengthening the case that these principles are fundamental.
         Practical distinction: requires dedicated broker infrastructure,
-        where SHOWME.how reuses workflow managers already established in
+        where SHOWME.how reuses WMSs already established in
         scientific practice.
 \end{itemize}
 
