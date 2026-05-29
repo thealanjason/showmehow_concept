@@ -837,37 +837,118 @@ lab is available in two versions: Nextflow at
 \label{sec:robustness}
 % =============================================================================
 
-\begin{itemize}
-  \item \textbf{Robustness checklist}, with each criterion answering a status-quo
-        failure mode (Section~\ref{sec:challenges}):
-        \begin{itemize}
-          \item \emph{Perturbations} (vs.\ missing env specs): per-OS/per-arch lock
-                files for every unit; container-wrapped locked env where
-                bit-identical reproducibility is required; explicit RNG seeding
-                per-thread/rank and per-library (a single global seed is
-                insufficient under OpenMP/MPI; NumPy legacy vs.\ \texttt{Generator},
-                Julia \texttt{Random}/\texttt{MersenneTwister}, R \texttt{set.seed},
-                and third-party libs must each be seeded);
-                workflow-manager checkpointing enabled.
-          \item \emph{Variability} (vs.\ language-tied formats): workflow runs on
-                $>1$ host OS with same locks/images; no language-tied serialisation
-                on unit boundaries; cross-infrastructure coupling via language-/
-                host-agnostic protocol (HTTP via UMBridge, S3).
-          \item \emph{Adverse conditions} (vs.\ wrappers and feedforward): single
-                Dockerfile drives both Docker (laptop) and Apptainer (HPC) images
-                with no unit-code changes; multi-arch manifests where needed; no
-                wrapper code bridges languages in shared address space; lock/image
-                generation automated in CI.
-          \item \emph{Modular extensibility} (vs.\ wrapper lock-in): each unit
-                declares inputs/outputs/script/env as a self-contained contract;
-                adding a new unit requires no edits or revalidation of existing
-                units.
-        \end{itemize}
-  \item \textbf{Honest assessment}: no quantitative measurements (glue-code lines,
-        onboarding time, build times, cross-OS numerical equivalence, restart
-        overhead, post-hoc additions without regression) collected systematically;
-        quantitative evaluation against the checklist remains future work.
-\end{itemize}
+% ORIGINAL BULLETS — check each is covered in the prose above before removing
+% \begin{itemize}
+%   \item \textbf{Robustness checklist}, with each criterion answering a status-quo
+%         failure mode (Section~\ref{sec:challenges}):
+%         \begin{itemize}
+%           \item \emph{Perturbations} (vs.\ missing env specs): per-OS/per-arch lock
+%                 files for every unit; container-wrapped locked env where
+%                 bit-identical reproducibility is required; explicit RNG seeding
+%                 per-thread/rank and per-library (a single global seed is
+%                 insufficient under OpenMP/MPI; NumPy legacy vs.\ \texttt{Generator},
+%                 Julia \texttt{Random}/\texttt{MersenneTwister}, R \texttt{set.seed},
+%                 and third-party libs must each be seeded);
+%                 workflow-manager checkpointing enabled.
+%           \item \emph{Variability} (vs.\ language-tied formats): workflow runs on
+%                 $>1$ host OS with same locks/images; no language-tied serialisation
+%                 on unit boundaries; cross-infrastructure coupling via language-/
+%                 host-agnostic protocol (HTTP via UMBridge, S3).
+%           \item \emph{Adverse conditions} (vs.\ wrappers and feedforward): single
+%                 Dockerfile drives both Docker (laptop) and Apptainer (HPC) images
+%                 with no unit-code changes; multi-arch manifests where needed; no
+%                 wrapper code bridges languages in shared address space; lock/image
+%                 generation automated in CI.
+%           \item \emph{Modular extensibility} (vs.\ wrapper lock-in): each unit
+%                 declares inputs/outputs/script/env as a self-contained contract;
+%                 adding a new unit requires no edits or revalidation of existing
+%                 units.
+%         \end{itemize}
+%   \item \textbf{Honest assessment}: no quantitative measurements (glue-code lines,
+%         onboarding time, build times, cross-OS numerical equivalence, restart
+%         overhead, post-hoc additions without regression) collected systematically;
+%         quantitative evaluation against the checklist remains future work.
+% \end{itemize}
+% =============================================================================
+
+% AC===========================================================================
+The three pillars of SHOWME.how were designed to address the failure modes of
+Section~\ref{sec:challenges} directly. By doing so, each primarily secures one
+or more robustness properties from Section~\ref{sec:robustness_def}: Isolation
+secures the ability to tolerate perturbations; Interoperation secures the
+ability to handle variability across languages and platforms; Orchestration
+secures the ability to withstand adverse conditions and to support modular
+extensibility, jointly covering all four. The following criteria make that
+coverage explicit and checkable against a concrete lab.
+
+\begin{table}[htb]
+  \centering
+  \small
+  \caption{Robustness checklist for a computational lab. A lab satisfying all
+           criteria can absorb change at every level without requiring
+           coordinated updates across its units.}
+  \label{tab:robustness}
+  \begin{tabular}{p{2.4cm}p{7.2cm}p{1.8cm}}
+    \toprule
+    \textbf{Property} & \textbf{Criterion} & \textbf{Approach} \\
+    \midrule
+    \textbf{Tolerate perturbations}
+      & Per-OS, per-architecture lock file or container image per unit.
+      & Iso1--Iso2 \\
+      & All random state seeded per thread, rank, and library.$^\dagger$
+      & --- \\
+      & Checkpointing enabled in the workflow manager.
+      & Orch3 \\
+    \midrule
+    \textbf{Handle variability}
+      & No language-tied serialisation format at any unit boundary.
+      & Int1 \\
+      & Workflow runs without unit-code changes on more than one operating system.
+      & Iso1--Iso3 \\
+      & Live-loop coupling (Pattern~C, Section~\ref{sec:patterns}) uses a
+        language-agnostic protocol.
+      & Int3 \\
+    \midrule
+    \textbf{Withstand adverse conditions}
+      & A single \texttt{Dockerfile} drives both Docker and Apptainer images;
+        porting to HPC requires no unit-code changes.
+      & Iso3 \\
+      & Executor configuration handles scheduler and runtime differences.
+      & Orch2 \\
+      & Multi-architecture manifests and CI-automated builds kept current.
+      & Iso2, Iso4 \\
+    \midrule
+    \textbf{Support modular extensibility}
+      & Each unit declares inputs, outputs, script, and environment as a
+        self-contained contract.
+      & Orch1 \\
+      & No unit bridges programming languages through wrapper code.
+      & Iso1--Iso2, Int1 \\
+      & Adding a unit requires no edits to and no revalidation of existing units.
+      & Orch1, Iso1--Iso2, Int1 \\
+    \bottomrule
+  \end{tabular}
+
+  \smallskip
+  \raggedright\footnotesize{$^\dagger$~A single global seed is insufficient
+  under parallel execution; each thread, rank, and library maintaining
+  independent state must be seeded separately (e.g.\ NumPy's
+  \texttt{Generator}, Julia's \texttt{Random.seed!}, R's \texttt{set.seed}
+  each manage independent state).}
+\end{table}
+
+This rubric is prescriptive: it states what a robust lab must satisfy, not
+what any particular lab has been shown to satisfy. The hemolysis use case
+(Section~\ref{sec:usecases}) satisfies several criteria by direct observation:
+the lab runs end-to-end without unit-code changes on Linux, macOS, and
+Windows, and diagnostic units were added post-hoc without modifying existing
+ones. All boundary files use HDF5 or CSV, and a new collaborator reproduced
+the lab with a \texttt{git clone}, a single conda environment for the workflow
+manager, and one run command. Numerical equivalence of outputs across operating systems has
+not been verified systematically; the lab involves stochastic units, and
+cross-OS equivalence is contingent on the random-state seeding criterion
+being fully implemented. That verification remains open.
+% AC===========================================================================
 
 
 
