@@ -75,19 +75,41 @@
 \label{sec:intro}
 % =============================================================================
 
-\begin{itemize}
-  \item Modern research is highly computational and spans large data, complex
-        infrastructure, accelerators, and cross-disciplinary
-        collaboration~\cite{cohenboulakia2017workflows,suter2025terminology}.
-  \item FAIR principles guide management of data, software, and
-        workflows~\cite{wilkinson2016fair,barker2022fair4rs,wilkinson2025fairworkflows,goble2020fairworkflows},
-        but translating them into working infrastructure that handles real-world
-        heterogeneity is non-trivial.
-  \item Heterogeneity (data, methods, infrastructure, people) is the central
-        unmanaged dimension. We introduce the \emph{computational lab}
-        (Section~\ref{sec:complab}) and SHOWME.how (Section~\ref{sec:approach}),
-        structured around three pillars: Isolation, Interoperation, Orchestration.
-\end{itemize}
+Modern science and engineering are computational through and through, and
+increasingly collaborative. A single research question now routinely draws on
+large datasets, methods implemented in several programming languages, hardware
+ranging from laptops to HPC clusters and cloud, and a team whose members bring
+different expertise and different toolsets~\cite{cohenboulakia2017workflows,suter2025terminology}.
+A computational engineer may work alongside a domain scientist, a specialist in
+statistical inference, and a research software engineer, each most productive in
+their own language, operating system, and compute environment. This diversity
+is not a defect to be eliminated but an intrinsic property of how real research
+teams work. The systems built from these parts tend to start working and then
+grow fragile, as each component evolves on its own schedule and the connections
+between them quietly break.
+
+The FAIR principles~\cite{wilkinson2016fair,barker2022fair4rs,wilkinson2025fairworkflows,goble2020fairworkflows}
+articulate what well-managed research data, software, and workflows should look
+like, and the scientific workflow community has made reproducibility a central
+goal~\cite{cohenboulakia2017workflows}. Yet knowing what to aim for leaves open
+the harder question of how to build infrastructure that survives real
+heterogeneity across data, methods, compute environments, and people at the
+same time. Reproducibility is necessary but not sufficient; the broader and
+largely unmanaged challenge is heterogeneity itself, which persists even when
+every individual result can be reproduced.
+
+This paper makes two contributions. First, we introduce the \emph{computational
+lab} (Section~\ref{sec:complab}), a goal-oriented sociotechnical system of
+computational units, data, and human collaborators, as a framing that treats
+heterogeneity as the dimension to be managed rather than designed away. Second,
+we present SHOWME.how (Section~\ref{sec:approach}), an approach built on three
+complementary pillars, Isolation, Interoperation, and Orchestration, that
+together make a lab robust enough to tolerate perturbations, handle variability,
+withstand adverse conditions, and grow with new units and collaborators. We
+ground the approach in three use cases spanning biomedical engineering,
+geophysical hazard simulation, and high-dimensional uncertainty quantification
+(Section~\ref{sec:usecases}). An open-source repository of workflow examples,
+isolation templates, and patterns accompanies the paper.
 
 
 % =============================================================================
@@ -1053,29 +1075,45 @@ at unit boundaries and no additional broker infrastructure.
 
 
 % =============================================================================
-\section{Conclusion}
+\section{Conclusion and Outlook}
 \label{sec:conclusion}
 % =============================================================================
 
-\begin{itemize}
-  \item We contribute both an \textbf{approach} (SHOWME.how: Isolation,
-        Interoperation, Orchestration) and a \textbf{concept} (the
-        \emph{computational lab}), positioning heterogeneity --- across data,
-        methods, compute, and people --- rather than reproducibility as the
-        primary managed dimension; novel framing in the RSE literature.
-  \item Resulting labs are language-/format-/hardware-agnostic per unit; modular,
-        reusable, and portable laptop~$\to$~HPC~$\to$~cloud without unit-code
-        changes or wrapper-maintenance burden.
-  \item Demonstrated across all three generic patterns in biomedical engineering,
-        geophysical mass flow, and high-dimensional UQ methods development.
-  \item \textbf{Future work}: formalising robustness/heterogeneity-coverage criteria;
-        supporting heterogeneous accelerators and federated environments; extending
-        to streaming/digital-twin labs outside the batch-DAG paradigm;
-        operationalising collaborator roles (RSE, domain expert, methods
-        expert) as first-class interfaces; describing labs in CWL and packaging
-        them as RO-Crates~\cite{soilandreyes2022rocrate} for sharing via
-        WorkflowHub~\cite{goble2021workflowhub}.
-\end{itemize}
+This paper made two contributions. We introduced the \emph{computational lab}, a
+goal-oriented sociotechnical system of computational units, data, and human
+collaborators, a framing that, to our knowledge, is novel in the research software
+engineering literature. It treats heterogeneity across data, methods, compute, and
+people as the dimension to be managed, with reproducibility following as a
+consequence rather than standing as the sole goal. We then presented
+SHOWME.how, an approach resting on three complementary pillars, Isolation,
+Interoperation, and Orchestration, that together let these heterogeneous parts be
+combined without forcing any collaborator to abandon their own language, operating
+system, or preferred tools.
+
+The resulting labs are agnostic to the language, data format, and hardware of any
+individual unit; modular and reusable across labs; portable from laptop to HPC and
+cloud with no code changes to the units themselves; and free of the
+wrapper-maintenance burden that has historically tied heterogeneous workflows to
+stale interfaces. We grounded the approach in three use cases spanning biomedical
+engineering, geophysical mass flow, and high-dimensional uncertainty
+quantification, between them exercising all three recurring workflow patterns.
+This is a concept paper, and the evidence we report is observational rather than a
+quantitative evaluation against the robustness rubric of
+Section~\ref{sec:robustness}.
+
+Several directions remain open. The robustness rubric invites quantitative
+criteria for scoring the robustness and heterogeneity coverage of a lab, which we
+have not yet measured systematically. The tooling could be extended to better
+support emerging infrastructure such as heterogeneous accelerators and federated
+compute. It could also extend to streaming and digital-twin labs in which a model
+receives continuous live input and updates online, a setting that sits outside the
+batch directed-acyclic-graph paradigm of the workflow managers used here and would
+draw on the reactive and streaming managers catalogued by the Workflows Community
+Initiative~\cite{suter2025terminology}. Finally, a SHOWME.how lab already makes
+explicit the unit contracts
+that portable workflow descriptions require, so describing labs in CWL and
+packaging them as RO-Crates~\cite{soilandreyes2022rocrate} for sharing through
+WorkflowHub~\cite{goble2021workflowhub} is a natural next step.
 
 
 \begin{acknowledge}
