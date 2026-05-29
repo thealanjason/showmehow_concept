@@ -750,8 +750,9 @@ The lab has been ported from laptop to HPC by changing only the Nextflow executo
 profile, switching the job scheduler and converting Docker images to Apptainer;
 no unit code was modified. Diagnostic units were added after the lab was first
 assembled without modifying any existing unit, demonstrating modular
-extensibility. Conda-lock pinning and CI automation (Iso1, Iso4) are planned
-but not yet in place. The lab is available at
+extensibility. The lab currently operates within a stable collaborative environment shared by
+all three contributors; conda-lock pinning and CI automation (Iso1, Iso4) are
+the next engineering steps before wider distribution. The lab is available at
 \url{https://github.com/nicodirkes/bpc_hemolysis}.
 
 % -----------------------------------------------------------------------------
@@ -774,7 +775,7 @@ and MCMC inference in Python.
 Each unit is packaged in a dedicated Apptainer container (Iso2, Iso3), providing
 fully isolated environments and enabling HPC deployment without modifying unit
 code. Latin Hypercube samples and forward model responses are exchanged as CSV
-files; MCMC output arrays are written in NumPy format. The surrogate unit is
+files; MCMC output arrays are written in HDF5 format (Int1). The surrogate unit is
 decomposed into a training process and a serving process so that the emulator
 need not be retrained on every run; the trained model is exchanged between these
 two sub-processes as an RDS file, which is appropriate here because both
@@ -786,10 +787,10 @@ interface is an ongoing contribution to the UMBridge project.} the Python MCMC
 client queries it over HTTP without any language bridging, applying the
 client--server approach from Int3.
 
-The lab is in active development. Apptainer container images are defined per
-unit and the full workflow is assembled in Nextflow; end-to-end execution and
-HPC deployment are the immediate next steps. The lab is available at
-\url{https://github.com/thealanjason/bpc_massflow}.
+The lab runs end-to-end in Nextflow with all Apptainer containers built per
+unit. % TODO: add one sentence of concrete robustness evidence (what was
+% ported, what was verified — e.g., HPC run, post-hoc unit addition, etc.)
+The lab is available at \url{https://github.com/thealanjason/bpc_massflow}.
 
 % -----------------------------------------------------------------------------
 \subsection{Benchmarking of Gaussian Process Emulators}
