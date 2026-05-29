@@ -731,7 +731,7 @@ in practice.
     \toprule
     \textbf{Use Case} & \textbf{Pattern} & \textbf{Approach} \\
     \midrule
-    Bayesian Calibration, Blood Hemolysis      & C   & Iso2, Iso3, Int1, Orch4 \\
+    Bayesian Calibration, Blood Hemolysis      & B+C & Iso2, Iso3, Int1, Orch4 \\
     Bayesian Calibration, Mass Flow Simulation & A+C & Iso2, Iso3, Int1, Int3, Orch4 \\
     GP Emulator Benchmarking                   & B   & Iso1, Iso4, Int1, Orch2, Orch3 \\
     \bottomrule
@@ -746,10 +746,14 @@ in practice.
 Blood hemolysis models predict red blood cell damage under mechanical stress and
 are used to evaluate the safety of ventricular assist devices. The goal of this
 lab is to infer the parameters of a hemolysis model from experimental
-measurements via Bayesian parameter calibration. The lab is an instance of
-Pattern~C: the MCMC calibration process must query the forward model repeatedly
-throughout inference, requiring both to run simultaneously as a client--server
-pair. Three collaborators with complementary expertise contribute to the lab: a
+measurements via Bayesian parameter calibration. The lab instantiates
+Patterns~B and~C jointly. Each calibration couples an MCMC process to the forward
+model in an online client--server loop, requiring both to run simultaneously
+(Pattern~C). The lab fans this calibration out across a sweep of priors, hemolysis
+models, and datasets that run in parallel, and a collection step organises the
+per-run results into a single structured output directory for comparison across
+the sweep (Pattern~B).
+Three collaborators with complementary expertise contribute to the lab: a
 domain expert operating on macOS in Python, a UQ-methods expert on Windows in
 R and Python, and an RSE on Linux working across multiple languages. The RSE
 ported the domain expert's Python forward model to Julia, yielding a
