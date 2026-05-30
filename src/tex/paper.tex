@@ -23,10 +23,6 @@
 % Accessibility helpers
 \newcommand{\authorRef}[1]{\texorpdfstring{\autref{#1}}{}}
 \newcommand{\authorOrcid}[1]{\texorpdfstring{\thinspace\orcidlink{#1}\thinspace}{}}
-\newcommand{\geprislink}[1]{\href{https://gepris.dfg.de/gepris/projekt/#1?language=en}{#1}}
-
-\newcommand{\Eg}{E.\,g.}
-\newcommand{\eg}{e.\,g.}
 
 % Article frontmatter
 \title{SHOWME.how: An Approach to Build Robust Computational Labs for Science and Engineering}
@@ -56,7 +52,7 @@
   Computational units are isolated with their dependencies in a self-contained
   environment; they interoperate through language-agnostic data formats and
   transfer protocols; and data movement, scheduling, and resource management
-  are orchestrated using scientific workflow management systems~(SWMS).
+  are orchestrated using a scientific workflow management system~(SWMS).
   Together, the pillars ensure that labs tolerate updates to individual units,
   handle variability across languages and platforms, and accommodate new units
   without modifying existing ones, allowing them to sustainably grow and scale.
@@ -131,7 +127,7 @@ cycle of hypothesis, experiment, observation, analysis, and conclusion, applied
 by scientists pursuing discovery and by engineers solving problems.
 In practice, wet labs and computational labs are not disjoint. Contemporary
 wet labs increasingly rely on computational labs for data acquisition,
-processing, analysis, and modelling.
+processing, analysis, and modelling~\cite{wetlab_comp}.
 
 A computational lab is composed of three classes of components: computational
 units, data, and human collaborators. A \emph{computational unit} couples a
@@ -167,7 +163,7 @@ The notion of a computational lab is distinct from several related terms. A
 \emph{scientific workflow} captures the pipeline of computational steps but
 treats neither heterogeneity nor human collaborators as first-class concerns.
 A \emph{digital laboratory} (or \emph{e-lab}) usually denotes a domain-specific
-platform built around LIMS or ELN systems for experimental data management.
+platform built around LIMS or ELN systems~\cite{lims_eln} for experimental data management.
 The term \emph{computational laboratory} appears occasionally in the literature
 but is used colloquially, without a formal definition.
 
@@ -268,7 +264,7 @@ Productive science and engineering requires that methods be reusable and
 that new work can build on existing ones; to satisfy this, a computational
 lab must keep running correctly as its data, methods, dependencies,
 collaborators, and infrastructure change. Drawing on the general engineering
-sense of the word, we say that a computational lab is \emph{robust} if it
+sense of the word~\cite{robustness_eng}, we say that a computational lab is \emph{robust} if it
 satisfies four properties:
 
 \begin{enumerate}
@@ -339,7 +335,7 @@ that persist regardless of which is adopted.
 A reproducible computational lab requires that each computational unit be
 individually reproducible. In practice, missing or incomplete environment
 specifications often make it impossible to rebuild the software environment
-in which a unit was intended to run. Workflow-level reproducibility additionally
+in which a unit was intended to run~\cite{repro_study}. Workflow-level reproducibility additionally
 requires explicit pinning of RNG seeds, operating system behaviour, and parallel
 execution ordering.
 
@@ -454,7 +450,7 @@ Section~\ref{sec:orchestration}. A unit's software dependencies are specified
 in an \texttt{environment.yml} file, but this alone does not guarantee
 reproducibility: package versions and all their indirect dependencies are not
 pinned, and some packages resolve differently across operating systems and CPU
-architectures. We therefore generate \emph{conda-lock files}, one per operating
+architectures. We therefore generate \emph{conda-lock files}~\cite{condalock}, one per operating
 system and architecture, which pin every package to an exact version so that
 the software dependencies of a unit can be recreated identically on any
 matching platform. Per-OS, per-architecture locks are sufficient for numerically equivalent
@@ -464,13 +460,13 @@ package manager~\cite{juliapkg} have locking built in by default, but are not
 yet natively supported by the SWMSs we consider.
 
 \paragraph{Iso2 --- Containerisation.}
-When package managers with pinned lock files are not sufficient — for units
-that rely on legacy software, C++ or Fortran codebases with complex build
-systems, or dependencies not available on conda — containerisation is the next
-step. A container packages not just the software dependencies but the entire
+When package managers with pinned lock files are not sufficient,
+containerisation is the next step. This applies to units that rely on legacy
+software, C++ or Fortran codebases with complex build systems, or dependencies
+not available on conda. A container packages not just the software dependencies but the entire
 operating system layer, so that the unit is fully independent of the host
-operating system. Each unit requires a \texttt{Dockerfile} as its build definition, which can then be built into a container image using Docker,
-Podman, or any compatible container runtime. We recommend one container image per unit, so that a dependency change in one
+operating system. Each unit requires a \texttt{Dockerfile} as its build definition, which can then be built into a container image using Docker~\cite{merkel2014docker},
+Podman~\cite{heon2018podman}, or any compatible container runtime. We recommend one container image per unit, so that a dependency change in one
 unit cannot affect any other. Container images are architecture-specific; when the lab spans multiple CPU
 architectures, we need to build multi-architecture manifests that bundle
 architecture-specific images under a single tag, allowing the correct variant
@@ -518,7 +514,7 @@ The goal of Interoperation is that data can flow between computational units
 regardless of the programming language each unit uses or the infrastructure on
 which it runs. We can achieve this by adopting language-agnostic data interchange
 formats and platform-agnostic data exchange protocols at unit boundaries. This directly addresses the Interoperability dimension of
-FAIR~\cite{wilkinson2016fair}, which calls for data to use broadly applicable
+FAIR~\cite{wilkinson2016fair}, which calls for data to use a broadly applicable
 language for knowledge representation, here realised through concrete format
 and protocol choices at unit boundaries.
 
@@ -552,7 +548,7 @@ significant decimal digits for a guaranteed round-trip, leading to string
 representations of 20--24 ASCII characters (160--192 bits) versus 64 bits in
 binary (a bloat factor of approximately 2.5--3$\times$).} For data consisting
 primarily of floating-point values, we recommend binary formats: HDF5~\cite{hdf5}
-or netCDF for hierarchical and structured data, Zarr~\cite{moore2023zarr} for
+or netCDF~\cite{netcdf} for hierarchical and structured data, Zarr~\cite{moore2023zarr} for
 multi-dimensional arrays, and Apache Arrow/Parquet~\cite{apachearrow} for
 tabular data.
 
@@ -590,7 +586,7 @@ approach requires choosing a transport protocol and a serialization format. HTTP
 provides a simple, cross-language point-to-point interface with broad support.
 For the serialization format, JSON is acceptable when payloads are small, but
 its overhead grows with array size and can become a bottleneck for large
-numerical payloads; binary formats such as MessagePack or Protocol Buffers are
+numerical payloads; binary formats such as MessagePack~\cite{messagepack} or Protocol Buffers~\cite{protobuf} are
 significantly faster. UMBridge~\cite{seelinger2023umbridge} provides a
 ready-made implementation of this approach for model-based uncertainty
 quantification; it uses HTTP and JSON and requires no manual data transfer, but
@@ -673,19 +669,20 @@ Incremental execution means the SWMS tracks which units have
 completed successfully and skips them on rerun, so a failure mid-run restarts
 from the last completed unit rather than from scratch. This becomes essential when individual units are long-running or the lab must
 execute a large number of them.  Snakemake tracks completion via output
-file timestamps and checksums; a unit is considered done if its output exists
-and is newer than its inputs. This can be fooled by manually copying or
-touching output files, and changing the unit code does not automatically
-trigger a rerun. Nextflow uses a work directory with per-task hashes derived
-from inputs and script content, so script changes do trigger reruns
-automatically; the work directory accumulates heavily over time and requires
-periodic cleanup with \texttt{nextflow clean}, and the \texttt{--resume} flag
-requires the work directory to still exist. Neither manager tracks changes to
+file timestamps; a unit is considered done if its output exists and is newer
+than its inputs, though this can be fooled by manually copying or touching
+output files. It additionally tracks code, parameter, input, and
+software-environment changes by default through its rerun-triggers, so editing
+unit code triggers a rerun automatically. Nextflow achieves the same through a
+work directory with per-task hashes derived from inputs and script content; the
+work directory accumulates heavily over time and requires periodic cleanup with
+\texttt{nextflow clean}, and the \texttt{--resume} flag requires the work
+directory to still exist. Neither manager tracks changes to
 external dependencies outside the declared environment, and incremental
 execution assumes deterministic outputs. Both managers also capture basic
 execution provenance. Snakemake generates
 an HTML report with DAG visualisation, runtime statistics, and input/output
-records; Nextflow supports provenance through the \texttt{nf-prov} plugin,
+records; Nextflow supports provenance through the \texttt{nf-prov} plugin~\cite{nfprov},
 which produces records in RO-Crate or PROV format but requires explicit
 setup.
 
@@ -731,9 +728,9 @@ in practice.
     \toprule
     \textbf{Use Case} & \textbf{Pattern} & \textbf{Approach} \\
     \midrule
-    Bayesian Calibration, Blood Hemolysis      & B+C & Iso2, Iso3, Int1, Orch4 \\
+    Bayesian Calibration, Blood Hemolysis      & B+C & Iso2, Iso3, Int1, Int3, Orch4 \\
     Bayesian Calibration, Mass Flow Simulation & A+C & Iso2, Iso3, Int1, Int3, Orch4 \\
-    GP Emulator Benchmarking                   & B   & Iso1, Iso4, Int1, Orch2, Orch3 \\
+    Benchmarking Gaussian Process Emulators    & B   & Iso1, Iso4, Int1, Orch2, Orch3 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -767,11 +764,13 @@ for HPC deployment (Iso3), so that moving the lab between infrastructure require
 no changes to unit code. Field data is downloaded from a remote repository and
 preprocessed to CSV; MCMC outputs are written in NetCDF format compatible with
 standard Bayesian diagnostics tooling, so downstream analysis units can consume
-results regardless of language (Int1). The forward model server and MCMC client
-communicate via a filesystem sentinel: the server writes a readiness flag to a
-shared directory, and the MCMC process declares that file as an input dependency
-in Nextflow, so the calibration starts only once the server is confirmed
-ready (Orch4).
+results regardless of language (Int1). During calibration, the MCMC client queries the forward model server over HTTP
+following the UMBridge model-server interface, so the two exchange data without
+any language bridging (Int3). The forward model server and MCMC client
+coordinate startup via a filesystem sentinel, where the server writes a
+readiness flag to a shared directory and the MCMC process declares that file as
+an input dependency in Nextflow, so the calibration starts only once the server
+is confirmed ready (Orch4).
 
 The lab has been ported from laptop to HPC by changing only the Nextflow executor
 profile, switching the job scheduler and converting Docker images to Apptainer;
@@ -790,12 +789,12 @@ the next engineering steps before wider distribution. The lab is available at
 Geophysical mass flow simulators model natural hazards such as landslides and
 avalanches. Running the forward simulator is computationally expensive; Bayesian
 calibration therefore proceeds in two stages. First, a Latin Hypercube Sampling
-process generates a parameter design, the forward simulator evaluates each
+process~\cite{lhs} generates a parameter design, the forward simulator evaluates each
 configuration on HPC, and the responses are collected to train a Gaussian process
 surrogate (Pattern~A). Second, the trained surrogate is coupled to a Markov
 chain Monte Carlo process for parameter inference, with the surrogate serving
 predictions on demand throughout the run (Pattern~C). The four computational
-units span four language ecosystems: Latin Hypercube Sampling in Julia, the
+units span three language ecosystems: Latin Hypercube Sampling in Julia, the
 physics-based forward simulator in Python, surrogate training and serving in R,
 and MCMC inference in Python.
 
@@ -812,7 +811,11 @@ model-server interface~\cite{seelinger2023umbridge}, implemented in R using
 httpuv and jsonlite;\footnote{The R server implementation of the UMBridge
 interface is an ongoing contribution to the UMBridge project.} the Python MCMC
 client queries it over HTTP without any language bridging, applying the
-client--server approach from Int3.
+client--server approach from Int3. Because the surrogate serving process must
+remain alive while the MCMC client queries it, we keep it running as a service
+and coordinate it through Nextflow with a filesystem sentinel, where the server
+writes a readiness flag that the MCMC client declares as an input dependency
+(Orch4).
 
 The lab runs end-to-end in Nextflow with all Apptainer containers built per
 unit. % TODO: add one sentence of concrete robustness evidence (what was
@@ -832,8 +835,8 @@ an instance of Pattern~B: a shared dataset is fanned out to multiple emulator
 implementations in parallel, each producing results independently, and the
 outputs are gathered and scored by a metrics aggregation unit. The emulator
 implementations span two language ecosystems: ExactGP and DKL via
-PyTorch/GPyTorch in Python, and RGaSP, PCA-RGaSP, PPGaSP, BiGP, and MTGP via
-RobustGaSP in R, with autoencoder and variational autoencoder variants also in
+PyTorch/GPyTorch~\cite{pytorch,gpytorch} in Python, and RGaSP, PCA-RGaSP, PPGaSP, BiGP, and MTGP via
+RobustGaSP~\cite{robustgasp} in R, with autoencoder and variational autoencoder variants also in
 Python.
 
 Each emulator runs in its own conda environment with a pinned lock file (Iso1),
@@ -867,12 +870,13 @@ lab is available in two versions: Nextflow at
 
 % AC===========================================================================
 The three pillars of SHOWME.how were designed to address the failure modes of
-Section~\ref{sec:challenges} directly. By doing so, each primarily secures one
-or more robustness properties from Section~\ref{sec:robustness_def}: Isolation
-secures the ability to tolerate perturbations; Interoperation secures the
-ability to handle variability across languages and platforms; Orchestration
-secures the ability to withstand adverse conditions and to support modular
-extensibility, jointly covering all four. The following criteria make that
+Section~\ref{sec:challenges} directly. By doing so, each pillar primarily
+contributes to one or more robustness properties from
+Section~\ref{sec:robustness_def}, though no property is secured by a single
+pillar alone. Isolation mainly underpins the ability to tolerate
+perturbations, Interoperation the ability to handle variability across
+languages and platforms, and Orchestration the ability to withstand adverse
+conditions and to support modular extensibility. The criteria in Table~\ref{tab:robustness} make that
 coverage explicit and checkable against a concrete lab.
 
 \begin{table}[htb]
@@ -891,8 +895,6 @@ coverage explicit and checkable against a concrete lab.
       & Iso1--Iso2 \\
       & All random state seeded per thread, rank, and library.$^\dagger$
       & --- \\
-      & Checkpointing enabled in the workflow manager.
-      & Orch3 \\
     \midrule
     \textbf{Handle variability}
       & No language-tied serialisation format at any unit boundary.
@@ -911,6 +913,9 @@ coverage explicit and checkable against a concrete lab.
       & Orch2 \\
       & Multi-architecture manifests and CI-automated builds kept current.
       & Iso2, Iso4 \\
+      & Checkpointing in the workflow manager makes long-running computations
+        recoverable on interruption.
+      & Orch3 \\
     \midrule
     \textbf{Support modular extensibility}
       & Each unit declares inputs, outputs, script, and environment as a
@@ -1008,7 +1013,7 @@ modification.
 Spack~\cite{gamblin2015spack} is an HPC-focused package manager providing
 source-based builds with fine-grained control over compiler flags and
 dependencies; it is natively supported by Nextflow as an alternative to conda.
-Nix and Guix~\cite{courtes2015guix} provide bit-identical reproducible builds
+Nix and Guix~\cite{courtes2013guix} provide bit-identical reproducible builds
 through cryptographic hashing of the full dependency graph, offering stronger
 guarantees than conda-lock. The tradeoff is adoption friction: neither is
 natively integrated into Nextflow or Snakemake, so using either requires
@@ -1037,7 +1042,7 @@ where containerisation is not used); CWL further
 distinguishes \texttt{CommandLineTool} documents from \texttt{Workflow}
 documents that wire steps together.} that CWL requires to describe a
 workflow, CWL description is a natural path toward cross-system portability
-and sharing via WorkflowHub~\cite{goble2021workflowhub}. The W3C PROV
+and sharing via WorkflowHub~\cite{gustafsson2025workflowhub}. The W3C PROV
 ontology~\cite{lebo2013provo} defines the standard provenance data model;
 SHOWME.how relies on SWMS-native provenance records rather than requiring a
 dedicated provenance store.
@@ -1124,7 +1129,7 @@ Initiative~\cite{suter2025terminology}. Finally, a SHOWME.how lab already makes
 explicit the unit contracts
 that portable workflow descriptions require, so describing labs in CWL and
 packaging them as RO-Crates~\cite{soilandreyes2022rocrate} for sharing through
-WorkflowHub~\cite{goble2021workflowhub} is a natural next step.
+WorkflowHub~\cite{gustafsson2025workflowhub} is a natural next step.
 
 
 \begin{acknowledge}
