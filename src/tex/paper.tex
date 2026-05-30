@@ -163,7 +163,8 @@ The notion of a computational lab is distinct from several related terms. A
 \emph{scientific workflow} captures the pipeline of computational steps but
 treats neither heterogeneity nor human collaborators as first-class concerns.
 A \emph{digital laboratory} (or \emph{e-lab}) usually denotes a domain-specific
-platform built around LIMS or ELN systems~\cite{lims_eln} for experimental data management.
+platform built around laboratory information management systems (LIMS) or
+electronic lab notebook (ELN) systems for experimental data management.
 The term \emph{computational laboratory} appears occasionally in the literature
 but is used colloquially, without a formal definition.
 
@@ -795,7 +796,7 @@ the next engineering steps before wider distribution. The lab is available at
 Geophysical mass flow simulators model natural hazards such as landslides and
 avalanches. Running the forward simulator is computationally expensive; Bayesian
 calibration therefore proceeds in two stages. First, a Latin Hypercube Sampling
-process~\cite{lhs} generates a parameter design, the forward simulator evaluates each
+process generates a parameter design, the forward simulator evaluates each
 configuration on HPC, and the responses are collected to train a Gaussian process
 surrogate (Pattern~A). Second, the trained surrogate is coupled to a Markov
 chain Monte Carlo process for parameter inference, with the surrogate serving
