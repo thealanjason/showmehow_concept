@@ -501,7 +501,10 @@ automated pipeline.
 
 For units where conda-lock alone is insufficient but a full Dockerfile is too
 heavy, a middle ground exists, achieved by wrapping a locked conda environment inside
-a minimal container image. This combines conda's resolution of language-level
+a minimal container image.\footnote{Both SWMSs can also produce such images
+automatically. Snakemake's \texttt{-{}-containerize} flag emits a single Dockerfile
+bundling a workflow's conda environments, and Nextflow's Wave service builds a
+container image on demand for each declared conda environment.} This combines conda's resolution of language-level
 dependencies with the container's control over the system layer, in a single
 artefact that can be built and automated in the same CI pipeline.
 
