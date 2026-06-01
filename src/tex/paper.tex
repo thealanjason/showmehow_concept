@@ -85,15 +85,18 @@ between them quietly break.
 
 The FAIR principles~\cite{wilkinson2016fair,barker2022fair4rs,wilkinson2025fairworkflows,goble2020fairworkflows}
 articulate what well-managed research data, software, and workflows should look
-like, and the scientific workflow community has made reproducibility a central
-goal~\cite{cohenboulakia2017workflows}. Yet knowing what to aim for leaves open
+like, and the scientific workflow community has made reproducibility and reusability central
+goals~\cite{wilkinson2025fairworkflows,goble2020fairworkflows,cohenboulakia2017workflows}. Yet knowing what to aim for leaves open
 the harder question of how to build infrastructure that survives real
 heterogeneity across data, methods, compute environments, and people at the
-same time. Reproducibility is necessary but not sufficient; the broader and
-largely unmanaged challenge is heterogeneity itself, which persists even when
-every individual result can be reproduced.
+same time. The broader and largely unmanaged challenge is heterogeneity itself,
+which persists even when individual results are reproducible and individual
+components are reusable.
+Existing scientific workflow managers automate execution and scheduling, but do
+not prescribe how software environments should be managed per component or what
+data formats should cross component boundaries.
 
-This paper makes two contributions. First, we introduce the \emph{computational
+We make two contributions. First, we introduce the \emph{computational
 lab} (Section~\ref{sec:complab}), a goal-oriented sociotechnical system of
 computational units, data, and human collaborators, as a framing that treats
 heterogeneity as the dimension to be managed rather than designed away. Second,
@@ -314,9 +317,9 @@ throughout the inference process, the approach is not merely inefficient but
 physically infeasible.
 
 \paragraph{Software wrappers.}
-An alternative is to write wrapper libraries that expose models and algorithms
-implemented in different programming languages through a unified interface,
-allowing all computational units to run in a single shared environment.
+An alternative is to target composability. Wrapper libraries expose models and
+algorithms implemented in different programming languages through a unified
+interface, allowing all computational units to run in a single shared environment.
 While this enables in-memory data passing, it ties the computational unit to
 the wrapper's implementation: when the underlying library updates, the wrapper
 must follow. Such wrappers frequently go stale, either breaking the lab or
@@ -1104,12 +1107,12 @@ at unit boundaries and no additional broker infrastructure.
 \label{sec:conclusion}
 % =============================================================================
 
-This paper made two contributions. We introduced the \emph{computational lab}, a
+We made two contributions. We introduced the \emph{computational lab}, a
 goal-oriented sociotechnical system of computational units, data, and human
 collaborators, a framing that, to our knowledge, is novel in the research software
 engineering literature. It treats heterogeneity across data, methods, compute, and
-people as the dimension to be managed, with reproducibility following as a
-consequence rather than standing as the sole goal. We then presented
+people as the dimension to be managed, with reproducibility and reusability following as
+consequences rather than standing as the sole goals. We then presented
 SHOWME.how, an approach resting on three complementary pillars, Isolation,
 Interoperation, and Orchestration, that together let these heterogeneous parts be
 combined without forcing any collaborator to abandon their own language, operating
