@@ -70,45 +70,53 @@
 \label{sec:intro}
 % =============================================================================
 
-Modern science and engineering are computational through and through, and
-increasingly collaborative. A single research question now routinely draws on
-large datasets, methods implemented in several programming languages, hardware
-ranging from laptops to HPC clusters and cloud, and a team whose members bring
-different expertise and different toolsets~\cite{cohenboulakia2017workflows,suter2025terminology}.
-A computational engineer may work alongside a domain scientist, a specialist in
-statistical inference, and a research software engineer, each most productive in
-their own language, operating system, and compute environment. This diversity
-is not a defect to be eliminated but an intrinsic property of how real research
-teams work. The systems built from these parts tend to start working and then
-grow fragile, as each component evolves on its own schedule and the connections
-between them quietly break.
+Modern science and engineering are highly computational, and increasingly
+collaborative. To answer a scientific question, solve an engineering problem,
+or develop a novel method or design, we routinely rely on data from experiments,
+field observations, and simulations, on computational models and algorithms
+implemented in several programming languages, on computational infrastructure
+ranging from laptops to HPC clusters and cloud, and on a diverse team of
+collaborators having experience in different domains, methods, and
+tools~\cite{cohenboulakia2017workflows,suter2025terminology}.
+In practice, a computational scientist who can develop and implement
+computational models may work alongside a domain expert who has access to field
+data and application-specific knowledge, a specialist in uncertainty
+quantification who has knowledge of probabilistic and statistical methods, and a
+research software engineer who has expertise in building reliable and
+maintainable research software. This diversity is intrinsic to real-world research and development teams and necessary for
+productive science and engineering. Yet the systems these teams build are not only difficult to assemble, but
+also tend to grow fragile over time, resulting in work that is hard to reproduce
+and hard to reuse.
 
 The FAIR principles~\cite{wilkinson2016fair,barker2022fair4rs,wilkinson2025fairworkflows,goble2020fairworkflows}
-articulate what well-managed research data, software, and workflows should look
-like, and the scientific workflow community has made reproducibility and reusability central
-goals~\cite{wilkinson2025fairworkflows,goble2020fairworkflows,cohenboulakia2017workflows}. Yet knowing what to aim for leaves open
-the harder question of how to build infrastructure that survives real
-heterogeneity across data, methods, compute environments, and people at the
-same time. The broader and largely unmanaged challenge is heterogeneity itself,
-which persists even when individual results are reproducible and individual
-components are reusable.
-Existing scientific workflow managers automate execution and scheduling, but do
-not prescribe how software environments should be managed per component or what
-data formats should cross component boundaries.
+define the attributes that scientific data, software, and workflows should
+exhibit, making findability, accessibility, interoperability, and reusability
+central goals in scientific research. Yet while these goals are well established, a concrete path to achieve them
+in the face of heterogeneity across data, methods, computational infrastructure,
+and collaborators is far from straightforward. Having individually reproducible
+and reusable components does not guarantee a reproducible and reusable system.
+For example, two components that each run reliably in isolation may still fail
+when connected if their compute environments conflict.
+Some teams even resort to scientific workflow managers to build and operate
+these heterogeneous systems. However,
+these tools only automate execution and scheduling, offering no strategy for
+isolating components and making them interoperable.
 
-We make two contributions. First, we introduce the \emph{computational
+We make two contributions. First, we introduce the concept of the \emph{computational
 lab} (Section~\ref{sec:complab}), a goal-oriented sociotechnical system of
-computational units, data, and human collaborators, as a framing that treats
-heterogeneity as the dimension to be managed rather than designed away. Second,
-we present SHOWME.how (Section~\ref{sec:approach}), an approach built on three
-complementary pillars, Isolation, Interoperation, and Orchestration, that
-together make a lab robust enough to tolerate perturbations, handle variability,
-withstand adverse conditions, and grow with new units and collaborators. We characterise the practical challenges that motivate the approach
-(Section~\ref{sec:challenges}), ground it in three use cases spanning biomedical
-engineering, geophysical hazard simulation, and high-dimensional uncertainty
-quantification (Section~\ref{sec:usecases}), and assess how the pillars jointly
-satisfy the robustness properties (Section~\ref{sec:robustness}). Open-source documentation of workflow examples, isolation templates, and patterns
-accompanies the paper.
+computational units, data, and human collaborators. This framing treats
+heterogeneity as a dimension to be embraced and managed rather than eliminated.
+Second, we present SHOWME.how (Section~\ref{sec:approach}), an approach built
+on three complementary pillars, \emph{Isolation}, \emph{Interoperation}, and \emph{Orchestration}.
+We characterise the practical challenges that motivate the approach
+(Section~\ref{sec:challenges}), demonstrate it through three use cases spanning
+biomedical engineering, geophysical hazard simulation, and high-dimensional
+uncertainty quantification (Section~\ref{sec:usecases}), and assess how the
+pillars together allow a computational lab to tolerate perturbations, handle variability,
+withstand adverse conditions, and adapt to changes in data, units, and collaborators (Section~\ref{sec:robustness}).
+A gallery of use case implementations and living documentation is made
+available at \url{http://mbd-rwth.github.io/showmehow}.
+Finally, related work is discussed in Section~\ref{sec:relwork}.
 
 
 % =============================================================================
@@ -888,6 +896,7 @@ languages and platforms, and Orchestration the ability to withstand adverse
 conditions and to support modular extensibility. The criteria in Table~\ref{tab:robustness} make that
 coverage explicit and checkable against a concrete lab.
 
+\FloatBarrier
 \begin{table}[htb]
   \centering
   \small
