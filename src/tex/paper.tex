@@ -1102,39 +1102,39 @@ at unit boundaries and no additional broker infrastructure.
 \label{sec:conclusion}
 % =============================================================================
 
-We made two contributions. We introduced the \emph{computational lab}, a
-goal-oriented sociotechnical system of computational units, data, and human
-collaborators, a framing that, to our knowledge, is novel in the research software
-engineering literature. It treats heterogeneity across data, methods, compute, and
-people as the dimension to be managed, with reproducibility and reusability following as
-consequences rather than standing as the sole goals. We then presented
-SHOWME.how, an approach resting on three complementary pillars, Isolation,
-Interoperation, and Orchestration, that together let these heterogeneous parts be
-combined without forcing any collaborator to abandon their own language, operating
-system, or preferred tools.
+We presented SHOWME.how, an approach resting on three complementary pillars,
+Isolation, Interoperation, and Orchestration, that together let the heterogeneous components of a computational study be
+combined without forcing any collaborator to abandon
+their own language, operating system, or preferred tools. It treats
+heterogeneity across data, methods, compute, and people as the dimension to be
+managed, with reproducibility and reusability following as consequences rather
+than standing as the sole goals.
 
-The resulting labs are agnostic to the language, data format, and hardware of any
-individual unit; modular and reusable across labs; portable from laptop to HPC and
-cloud with no code changes to the units themselves; and free of the
-wrapper-maintenance burden that has historically tied heterogeneous workflows to
-stale interfaces. We grounded the approach in three use cases spanning biomedical
-engineering, geophysical mass flow, and high-dimensional uncertainty
-quantification, between them exercising all three recurring workflow patterns.
+The resulting studies can be made agnostic to the language, data format, and
+hardware of each unit; individual units can be reused in new studies without
+modification; studies are portable from laptop to HPC and cloud with no code
+changes to the units themselves; and the approach reduces the wrapper-maintenance
+burden that has tied heterogeneous workflows to stale interfaces~\cite{leser2026workflowsystems}.
+We grounded the approach in three use cases spanning Bayesian
+calibration of a hemolysis and a geophysical mass flow model, and benchmarking
+of Gaussian process emulators for high-dimensional problems, between them
+exercising all three recurring workflow patterns.
 This is a concept paper, and the evidence we report is observational rather than a
 quantitative evaluation against the robustness rubric of
-Section~\ref{sec:robustness}.
+Section~\ref{sec:robustness}, sufficient to demonstrate feasibility across
+diverse settings.
 
 Several directions remain open. The robustness rubric invites quantitative
-criteria for scoring the robustness and heterogeneity coverage of a lab, which we
+criteria for scoring the robustness and heterogeneity coverage of a study, which we
 have not yet measured systematically. The tooling could be extended to better
 support emerging infrastructure such as heterogeneous accelerators and federated
-compute. It could also extend to streaming and digital-twin labs in which a model
+compute. It could also extend to streaming and digital-twin studies in which a model
 receives continuous live input and updates online, a setting that sits outside the
 batch directed-acyclic-graph paradigm of the workflow managers used here and would
 draw on the reactive and streaming managers catalogued by the Workflows Community
-Initiative~\cite{suter2025terminology}. Finally, a SHOWME.how lab already makes
+Initiative~\cite{suter2025terminology}. Finally, a study following the SHOWME.how approach already makes
 explicit the unit contracts
-that portable workflow descriptions require, so describing labs in CWL and
+that portable workflow descriptions require, so describing studies in CWL and
 packaging them as RO-Crates~\cite{soilandreyes2022rocrate} for sharing through
 WorkflowHub~\cite{gustafsson2025workflowhub} is a natural next step.
 
@@ -1142,7 +1142,7 @@ WorkflowHub~\cite{gustafsson2025workflowhub} is a natural next step.
 \begin{acknowledge}
   Financial support from the Deutsche Forschungsgemeinschaft (DFG) through grant
   IRTG-2379 is gratefully acknowledged. The authors thank Nico Dirkes, Gary Chang, and all
-  collaborators whose labs are presented as use cases in this paper.
+  collaborators whose studies are presented as use cases in this paper.
 \end{acknowledge}
 
 \bibliographystyle{eceasst}
