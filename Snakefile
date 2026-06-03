@@ -41,7 +41,7 @@ rule setup_tinytex:
         tlmgr option repository \
             https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2025/tlnet-final \
             || true
-        tlmgr install hypcap caption booktabs pgf orcidlink rsfs courier placeins
+        tlmgr install hypcap caption booktabs pgf orcidlink rsfs courier placeins multirow tabularx
         """
 
 

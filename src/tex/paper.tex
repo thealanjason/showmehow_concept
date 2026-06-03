@@ -17,6 +17,8 @@
 \usepackage{subcaption}
 \usepackage{booktabs}
 \usepackage{placeins}
+\usepackage{multirow}
+\usepackage{tabularx}
 % \usepackage{xcolor}
 % \usepackage{hyperref}
 
@@ -979,21 +981,22 @@ coverage explicit and checkable against a concrete study.
 \begin{table}[htb]
   \centering
   \small
+  \renewcommand{\arraystretch}{1.3}
   \caption{Robustness checklist for a computational study. A study satisfying all
            criteria can absorb change at every level without requiring
            coordinated updates across its units.}
   \label{tab:robustness}
-  \begin{tabular}{p{2.4cm}p{7.2cm}p{1.8cm}}
+  \begin{tabularx}{\linewidth}{p{2.6cm}Xp{2.0cm}}
     \toprule
     \textbf{Capability} & \textbf{Criterion} & \textbf{Approach} \\
     \midrule
-    \textbf{Tolerate perturbations}
+    \multirow{2}{2.6cm}{\textbf{Tolerate perturbations}}
       & Per-OS, per-architecture lock file or container image per unit.
       & Iso1--Iso2 \\
       & All random state seeded per thread, rank, and library.$^\dagger$
       & --- \\
     \midrule
-    \textbf{Handle variability}
+    \multirow{3}{2.6cm}{\textbf{Handle variability}}
       & No language-tied serialisation format at any unit boundary.
       & Int1 \\
       & Workflow runs without unit-code changes on more than one operating system.
@@ -1002,7 +1005,7 @@ coverage explicit and checkable against a concrete study.
         language-agnostic protocol.
       & Int3 \\
     \midrule
-    \textbf{Withstand adverse conditions}
+    \multirow{4}{2.6cm}{\textbf{Withstand adverse conditions}}
       & A single \texttt{Dockerfile} drives both Docker and Apptainer images;
         porting to HPC requires no unit-code changes.
       & Iso3 \\
@@ -1014,7 +1017,7 @@ coverage explicit and checkable against a concrete study.
         recoverable on interruption.
       & Orch3 \\
     \midrule
-    \textbf{Support modular extensibility}
+    \multirow{4}{2.6cm}{\textbf{Support modular extensibility}}
       & Each unit declares inputs, outputs, script, and environment as a
         self-contained contract.
       & Orch1 \\
@@ -1026,7 +1029,7 @@ coverage explicit and checkable against a concrete study.
         environment for the workflow manager, and one run command.
       & Iso1--Iso2, Orch1 \\
     \bottomrule
-  \end{tabular}
+  \end{tabularx}
 
   \smallskip
   \raggedright\footnotesize{$^\dagger$~A single global seed is insufficient
