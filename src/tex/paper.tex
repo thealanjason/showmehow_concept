@@ -755,48 +755,52 @@ in practice.
 \label{sec:usecase:hemolysis}
 % -----------------------------------------------------------------------------
 
-Blood hemolysis models predict red blood cell damage under mechanical stress and
-are used to evaluate the safety of ventricular assist devices. The goal of this
-lab is to infer the parameters of a hemolysis model from experimental
-measurements via Bayesian parameter calibration. The lab instantiates
-Patterns~A, B, and~C jointly. Each calibration couples an MCMC process to the
-forward model in an online client--server loop, requiring both to run
-simultaneously (Pattern~C). These calibrations run in parallel across a sweep of
-datasets, a parameter sweep over input data (Pattern~A), and across competing
-formulations implemented as distinct computational units (Pattern~B), namely
-different hemolysis models differing in mathematical formulation and different
-calibration setups differing in priors and likelihoods. A collection step then
-aggregates the per-run results into a single structured output directory for
-comparison across the sweep.
+The goal of this lab is to infer the parameters of a computational hemolysis
+model that predicts red blood cell damage under mechanical stress, using
+Bayesian calibration against experimental measurements.
 Three collaborators with complementary expertise contribute to the lab: a
-domain expert operating on macOS in Python, a UQ-methods expert on Windows in
-R and Python, and an RSE on Linux working across multiple languages. The RSE
-ported the domain expert's Python forward model to Julia, yielding a
-10--100$\times$ speedup over the NumPy baseline; both implementations coexist
-as alternatives selectable at runtime.
+domain expert using macOS and familiar with Python, who has access to
+experimental data and can assess whether results are physically plausible; a
+UQ-methods expert on Windows in Python, who designs the calibration study and
+assesses whether the results are meaningful; and an RSE on Linux working across
+multiple languages, who builds and maintains the lab and supports experiments.
+The lab consists of a forward model, an MCMC unit, and a report unit.
+The forward model
+takes control variables and design parameters as inputs and returns a predicted
+hemolysis index; it is available in both Python and Julia, selectable at
+runtime. The MCMC unit queries the forward model in an online loop to infer
+model parameters (Pattern~C). The report unit compiles results and diagnostics from the
+MCMC outputs. The lab can run a single calibration or fan out across a sweep of
+experimental datasets (Pattern~A) or across competing hemolysis model
+implementations (Pattern~B), applying the same calibration setup to each
+variant.
 
-Each computational unit runs in its own Docker container (Iso2), with one image
-per unit so that a dependency change in one cannot affect any other. The same
-Dockerfile drives both Docker images for local development and Apptainer images
-for HPC deployment (Iso3), so that moving the lab between infrastructure requires
-no changes to unit code. Field data is downloaded from a remote repository and
-preprocessed to CSV; MCMC outputs are written in NetCDF format compatible with
-standard Bayesian diagnostics tooling, so downstream analysis units can consume
-results regardless of language (Int1). During calibration, the MCMC client queries the forward model server over HTTP
-following the UMBridge model-server interface, so the two exchange data without
-any language bridging (Int3). The forward model server and MCMC client
-coordinate startup via a filesystem sentinel, where the server writes a
-readiness flag to a shared directory and the MCMC process declares that file as
-an input dependency in Nextflow, so the calibration starts only once the server
-is confirmed ready (Orch4).
+The computational units are isolated in dedicated conda environments (Iso1);
+the Julia forward model is instead containerised in Docker (Iso2), as it cannot
+be managed through conda. A container definition file that mimics the
+Dockerfile creates the Apptainer image for HPC deployment (Iso3), so porting
+requires no changes to unit code. Field measurements are fetched from a remote repository at setup time and
+preprocessed to CSV; MCMC outputs are written in NetCDF using the ArviZ
+interface. Both are language-agnostic formats exchanged through the filesystem,
+so any unit can consume results regardless of language (Int1, Int2); on macOS
+and Windows, filesystem exchange is the only reliable option between the
+containerised Julia model and the MCMC client. The MCMC client queries the
+forward model via the UMBridge interface, so the two units exchange data
+without any language bridging (Int3).
+Each unit declares its inputs, outputs, script, and environment as a
+self-contained contract; the full workflow is automated in Nextflow (Orch1),
+which limits concurrency based on available resources when running calibrations
+in parallel (Orch2) and skips completed runs on rerun (Orch3). The forward
+model server writes a sentinel file containing its network port to a shared
+directory; the MCMC client starts and waits until the file is present before
+connecting (Orch4).
 
-The lab has been ported from laptop to HPC by changing only the Nextflow executor
-profile, switching the job scheduler and converting Docker images to Apptainer;
-no unit code was modified. Diagnostic units were added after the lab was first
-assembled without modifying any existing unit, demonstrating modular
-extensibility. The lab currently operates within a stable collaborative environment shared by
-all three contributors; conda-lock pinning and CI automation (Iso1, Iso4) are
-the next engineering steps before wider distribution. The lab is available at
+The lab was ported to HPC by updating the Nextflow executor profile and
+building Apptainer images from the container definition files; no unit code was
+modified. The Julia forward model was ported later by the RSE, yielding a
+10--100$\times$ speedup over the Python baseline. Diagnostic units were added
+after the lab was first assembled without modifying any existing unit. Conda lock files and CI automation (Iso1, Iso4) remain to be added before
+wider distribution. The lab is available at
 \url{https://github.com/nicodirkes/bpc_hemolysis}.
 
 % -----------------------------------------------------------------------------
