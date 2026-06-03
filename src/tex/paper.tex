@@ -724,31 +724,11 @@ native service rules; labs using Nextflow can use the sentinel workaround.
 \label{sec:usecases}
 % =============================================================================
 
-The three labs summarised in Table~\ref{tab:usecases} span biomedical engineering,
-geophysical hazard simulation, and high-dimensional uncertainty quantification
-methods development. Together they instantiate all three recurring patterns from
-Section~\ref{sec:patterns} and cover a range of heterogeneity in programming
-language, operating system, and computing infrastructure. They are not exhaustive
-of SHOWME.how's scope but representative of how the three pillars are applied
-in practice.
-
-\begin{table}[h]
-  \centering
-  \small
-  \caption{SHOWME.how use cases mapped to the recurring patterns from
-           Section~\ref{sec:patterns} and the approach recommendations from
-           Section~\ref{sec:approach}.}
-  \label{tab:usecases}
-  \begin{tabular}{lll}
-    \toprule
-    \textbf{Use Case} & \textbf{Pattern} & \textbf{Approach} \\
-    \midrule
-    Bayesian Calibration, Blood Hemolysis      & A+B+C & Iso2, Iso3, Int1, Int3, Orch4 \\
-    Bayesian Calibration, Mass Flow Simulation & A+C & Iso2, Iso3, Int1, Int3, Orch4 \\
-    Benchmarking Gaussian Process Emulators    & B   & Iso1, Iso4, Int1, Orch2, Orch3 \\
-    \bottomrule
-  \end{tabular}
-\end{table}
+We applied the SHOWME.how approach to three labs spanning biomedical
+engineering, geophysical mass flow simulation, and high-dimensional surrogate
+modelling, collectively covering all three patterns from
+Section~\ref{sec:patterns}. The three labs are illustrative rather than
+exhaustive, but representative of the approach in practice.
 
 % -----------------------------------------------------------------------------
 \subsection{Bayesian Calibration of a Hemolysis Model}
@@ -779,7 +759,7 @@ The computational units are isolated in dedicated conda environments (Iso1);
 the Julia forward model is instead containerised in Docker (Iso2), as it cannot
 be managed through conda. A container definition file that mimics the
 Dockerfile creates the Apptainer image for HPC deployment (Iso3), so porting
-requires no changes to unit code. Field measurements are fetched from a remote repository at setup time and
+requires no modifications to unit code. Field measurements are fetched from a remote repository at setup time and
 preprocessed to CSV; MCMC outputs are written in NetCDF using the ArviZ
 interface. Both are language-agnostic formats exchanged through the filesystem,
 so any unit can consume results regardless of language (Int1, Int2); on macOS
@@ -808,77 +788,103 @@ wider distribution. The lab is available at
 \label{sec:usecase:massflow}
 % -----------------------------------------------------------------------------
 
-Geophysical mass flow simulators model natural hazards such as landslides and
-avalanches. Running the forward simulator is computationally expensive; Bayesian
-calibration therefore proceeds in two stages. First, a Latin Hypercube Sampling
-process generates a parameter design, the forward simulator evaluates each
-configuration on HPC, and the responses are collected to train a Gaussian process
-surrogate (Pattern~A). Second, the trained surrogate is coupled to a Markov
-chain Monte Carlo process for parameter inference, with the surrogate serving
-predictions on demand throughout the run (Pattern~C). The four computational
-units span three language ecosystems: Latin Hypercube Sampling in Julia, the
-physics-based forward simulator in Python, surrogate training and serving in R,
-and MCMC inference in Python.
+The goal of this lab is to calibrate the parameters of a geophysical mass flow
+simulator that models natural hazards such as landslides and avalanches, using
+Bayesian inference with MCMC against field observations.
+Because the forward simulator is computationally expensive, calibration proceeds
+in two stages: first a surrogate is trained on simulator runs, then MCMC inference proceeds
+using the surrogate.
+Two collaborators with complementary expertise developed the lab: a UQ-methods
+researcher on Windows, proficient in Python and R, who wanted to apply
+surrogate-based calibration to a real-world use case that requires an expensive
+simulator; and a computational scientist with experience in high-fidelity mass
+flow simulators, who is also an RSE on Linux, and builds and maintains the lab.
+The lab spans four units across three language ecosystems: a Latin Hypercube
+Sampling unit in Julia generates a parameter design; the forward simulator in
+Python evaluates each input configuration from the design space and returns
+model responses; a surrogate training unit in R fits a Gaussian process emulator
+to the design and response (Pattern~A).
+A surrogate serving unit in R then provides access to predictions over HTTP, and an MCMC
+inference unit in Python queries it in an online loop to infer the model
+parameters (Pattern~C).
 
-Each unit is packaged in a dedicated Apptainer container (Iso2, Iso3), providing
-fully isolated environments and enabling HPC deployment without modifying unit
-code. Latin Hypercube samples and forward model responses are exchanged as CSV
-files; MCMC output arrays are written in HDF5 format (Int1). The surrogate unit is
-decomposed into a training process and a serving process so that the emulator
-need not be retrained on every run; the trained model is exchanged between these
-two sub-processes as an RDS file, which is appropriate here because both
-sub-processes share an R environment and no language crossing occurs at that seam.
-The serving process exposes the surrogate over HTTP following the UMBridge
-model-server interface~\cite{seelinger2023umbridge}, implemented in R using
-httpuv and jsonlite;\footnote{The R server implementation of the UMBridge
-interface is an ongoing contribution to the UMBridge project.} the Python MCMC
-client queries it over HTTP without any language bridging, applying the
-client--server approach from Int3. Because the surrogate serving process must
-remain alive while the MCMC client queries it, we keep it running as a service
-and coordinate it through Nextflow with a filesystem sentinel, where the server
-writes a readiness flag that the MCMC client declares as an input dependency
-(Orch4).
+Each unit is isolated in a dedicated conda environment (Iso1) and additionally
+containerised using Apptainer for running on HPC (Iso2, Iso3), so no unit code
+needs to be modified.
+Latin Hypercube samples and forward model responses are exchanged as CSV files;
+MCMC outputs are written in HDF5.
+Both are language-agnostic formats exchanged through the filesystem (Int1,
+Int2), bridging the Julia, Python, and R units across the pipeline.
+The surrogate unit is decomposed into a training sub-process and a serving
+sub-process so that the emulator need not be retrained on every run; they
+exchange the trained model as an RDS file.
+The surrogate server provides access to predictions via the UMBridge
+interface; the Python MCMC client queries it without any language bridging
+(Int3).
+The full workflow is automated in Nextflow (Orch1), which sequences the two
+stages so that MCMC calibration starts only after the surrogate is trained
+(Orch2) and skips completed computational model simulations on rerun, so an
+interrupted run need not repeat the expensive simulation stage (Orch3).
+The surrogate server signals readiness by writing its network port to a sentinel
+file; the MCMC client connects once the file appears (Orch4).
 
-The lab runs end-to-end in Nextflow with all Apptainer containers built per
-unit, and has been executed on Windows and Linux, both locally and on HPC,
-without changes to unit code. The lab is available at \url{https://github.com/thealanjason/bpc_massflow}.
+This was the first lab developed using the SHOWME.how approach; building it is
+where the sentinel file pattern (Orch4) was first identified as a reusable
+solution for service-process coordination.
+An R server implementation of the UMBridge interface was not yet available when
+the lab was developed; it was implemented locally here, and an upstream
+contribution is underway.
+The lab has been executed end-to-end on Windows and Linux laptops and on a
+local Linux cluster.
+The lab is available at \url{https://github.com/thealanjason/bpc_massflow}.
 
 % -----------------------------------------------------------------------------
-\subsection{Benchmarking of Gaussian Process Emulators}
+\subsection{Benchmarking Gaussian Process Emulators for High-Dimensional Problems}
 \label{sec:usecase:gpe}
 % -----------------------------------------------------------------------------
 
-High-dimensional uncertainty quantification requires surrogate emulators that
-scale to large input and output spaces. This lab benchmarks a range of Gaussian
-process emulator implementations against shared datasets to provide
-reproducible, language-agnostic comparisons for the UQ methods community. It is
-an instance of Pattern~B: a shared dataset is fanned out to multiple emulator
-implementations in parallel, each producing results independently, and the
-outputs are gathered and scored by a metrics aggregation unit. The emulator
-implementations span two language ecosystems: ExactGP and DKL via
-PyTorch/GPyTorch~\cite{pytorch,gpytorch} in Python, and RGaSP, PCA-RGaSP, PPGaSP, BiGP, and MTGP via
-RobustGaSP~\cite{robustgasp} in R, with autoencoder and variational autoencoder variants also in
-Python.
+The goal of this lab is to benchmark Gaussian process emulator implementations
+against five benchmark datasets, with a focus on high-dimensional inputs and
+outputs.
+The lab was developed by a master's student on macOS, proficient in Python, who
+was developing a new GPE method and needed a reproducible setup to compare it
+against existing implementations.
+The lab fans out these datasets to multiple emulator implementations in
+parallel, then aggregates and scores the results (Pattern~B).
+The datasets span synthetic and real-world scenarios, generated locally or
+fetched from Figshare and Zenodo; all are preprocessed by a shared
+preprocessing unit.
+The emulator implementations span two language ecosystems, with twelve
+implementations built on GPyTorch~\cite{pytorch,gpytorch} in Python and
+RobustGaSP~\cite{robustgasp} in R, covering exact inference, deep kernel
+learning, dimensionality reduction, and multi-output methods.
+Each emulator unit reads the preprocessed data, runs independently, and writes
+results; a metrics aggregation unit gathers all outputs and scores them for
+comparison.
 
-Each emulator runs in its own conda environment with a pinned lock file (Iso1),
-so that adding a new emulator implementation introduces no dependency conflict
-with any other. Data at all unit boundaries uses HDF5, so any emulator,
-regardless of language, reads and writes through the same format without
-conversion (Int1). Five benchmark datasets are included, spanning synthetic
-functions and real-world phenomena including a rock avalanche, a synthetic
-landslide, and a tsunami simulation; raw data is fetched from Zenodo and Figshare
-at setup time and standardised to HDF5 by a shared preprocessing unit. The lab
-is implemented in both Nextflow and Snakemake, demonstrating that the
-Orchestration pillar is not tied to any particular SWMS; both versions support
-local and SLURM execution profiles (Orch2), and the Snakemake version uses
-file-based incremental execution to skip completed emulator runs on rerun
-(Orch3). GPU-accelerated execution is supported for PyTorch-based emulators in
-the SLURM profile.
-
-CI is fully automated: conda lock files are regenerated whenever an environment
+Each emulator unit runs in its own conda environment with a pinned lock file
+(Iso1), so adding a new emulator introduces no dependency conflict with any
+existing unit.
+Data at all unit boundaries is in HDF5, exchanged through the filesystem
+(Int1, Int2), so any emulator reads and writes through the same format
+regardless of language.
+The lab is automated in both Nextflow and Snakemake (Orch1); both support
+local and SLURM execution profiles (Orch2), and the Snakemake version skips
+completed emulator runs on rerun (Orch3).
+CI automatically regenerates conda lock files whenever an environment
 specification changes (Iso4), and a benchmark run is triggered on every push to
-the main branch, with results uploaded as a GitHub artifact for inspection. The
-lab is available in two versions: Nextflow at
+the main branch with results uploaded as a GitHub artifact.
+
+The master's student developed a new emulator, kPCA-PPGaSP, within the lab and
+compared it against the existing implementations; adding the new emulator unit
+required no changes to any existing unit.
+The lab is implemented in both Nextflow and Snakemake to demonstrate that the
+SHOWME.how approach is not tied to any particular workflow manager; both
+versions follow the same unit contracts and produce identical results.
+GPU-accelerated execution is supported for PyTorch-based emulators in the SLURM
+profile.
+The lab has been run on macOS and on a local Linux cluster.
+The lab is available in two versions: Nextflow at
 \url{https://github.com/gary8564/gpe_bench_nxf} and Snakemake at
 \url{https://github.com/gary8564/gpe_bench_smk}.
 
