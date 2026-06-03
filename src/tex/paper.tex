@@ -25,8 +25,8 @@
 \newcommand{\authorOrcid}[1]{\texorpdfstring{\thinspace\orcidlink{#1}\thinspace}{}}
 
 % Article frontmatter
-\title{SHOWME.how: An Approach to Build Robust Computational Labs for Science and Engineering}
-\short{SHOWME.how: Robust Computational Labs}
+\title{SHOWME.how: An Approach to Build Robust Computational Studies for Science and Engineering}
+\short{SHOWME.how: Robust Computational Studies}
 \author{%
   Alan Correa\authorOrcid{0009-0000-7947-7810}\authorRef{1},
   V Mithlesh Kumar\authorOrcid{0009-0000-9790-664X}\authorRef{1},
@@ -34,30 +34,32 @@
   Julia Kowalski\authorOrcid{0000-0003-4123-5896}\authorRef{1}%
 }
 \institute{%
-  \autlabel{1} \email{correa@mbd.rwth-aachen.de}\\
+  \autlabel{1} \email{correa@mbd.rwth-aachen.de}, \email{yildiz@mbd.rwth-aachen.de}\\
   Chair of Methods for Model-based Development in Computational Engineering\\
   RWTH Aachen University, Aachen, Germany%
 }
 \abstract{%
-  Scientific discovery and engineering problem solving rely on computational
-  methods implemented in diverse software ecosystems and executed on heterogeneous
-  hardware platforms by collaborators with complementary skills and toolsets.
-  We introduce the \emph{computational lab}, a goal-oriented sociotechnical system
-  of \emph{computational units}, \emph{data}, and \emph{human collaborators}.
-  Heterogeneity must be managed across all three at once, or the lab
-  grows fragile as its components evolve independently.
+  Computational research in science and engineering requires integrating diverse
+  methods, data formats, hardware platforms, and teams of collaborators with
+  complementary expertise. The FAIR principles establish findability,
+  accessibility, interoperability, and reusability as central goals for research
+  outputs, and are widely adopted as criteria for good research practice.
+  Yet the principles define goals without specifying how to achieve them given
+  heterogeneity in the components required by a computational study.
+  In practice, teams assemble ad-hoc approaches that grow fragile as components
+  evolve, making reproducibility and reuse difficult to sustain.
   We present SHOWME.how, an approach built on three complementary pillars,
   \emph{Isolation}, \emph{Interoperation}, and \emph{Orchestration}.
-  Computational units are isolated with their dependencies in a self-contained
-  environment; they interoperate through language-agnostic data formats and
-  transfer protocols; and data movement, scheduling, and resource management
-  are orchestrated using a scientific workflow management system~(SWMS).
-  Together, the pillars allow a lab to tolerate updates to individual units,
-  handle variability across languages and platforms, and accommodate new units
-  without modifying existing ones, so it can grow and scale as the research evolves.
-  We demonstrate the approach across three use cases, spanning Bayesian parameter
-  calibration in blood hemolysis and geophysical mass flow simulation, and
-  benchmarking of high-dimensional Gaussian process emulators.%
+  Each software component is isolated with its dependencies in a self-contained
+  environment; software components interoperate through language-agnostic data
+  formats and standard transfer protocols; and we coordinate data
+  movement, scheduling, and resource management through a scientific workflow
+  management system. Together, the pillars allow computational studies to remain
+  reproducible, portable, reusable, and extensible to new collaborators,
+  methods, data, and infrastructure as they grow and evolve. We demonstrate the approach across three use cases
+  spanning Bayesian calibration of a hemolysis and a geophysical mass flow
+  model, and benchmarking of Gaussian process emulators for high-dimensional
+  problems.%
 }
 \keywords{scientific workflows, heterogeneity, reproducibility, FAIR,
           high-throughput computing, inverse problems, benchmarking}
@@ -70,7 +72,7 @@
 \label{sec:intro}
 % =============================================================================
 
-Modern science and engineering are highly computational, and increasingly
+Modern science and engineering has become highly computational, and increasingly
 collaborative. To answer a scientific question, solve an engineering problem,
 or develop a novel method or design, we routinely rely on data from experiments,
 field observations, and simulations, on computational models and algorithms
@@ -88,7 +90,7 @@ productive science and engineering. Yet the systems these teams build are not on
 also tend to grow fragile over time, resulting in work that is hard to reproduce
 and hard to reuse.
 
-Modern computational work has often been approached as a problem of assembling
+Computational research has often been approached as a problem of assembling
 appropriate software components and data pipelines. Scientific workflow systems,
 for instance, coordinate software and data flows~\cite{leser2026workflowsystems,suter2025terminology}
 but treat human collaborators as external operators rather than integral parts
@@ -112,18 +114,18 @@ these heterogeneous systems. However,
 these tools only automate execution and scheduling, offering no strategy for
 isolating components and making them interoperable.
 
-We present SHOWME.how (Section~\ref{sec:approach}), an approach built on three
+We characterise the practical challenges that motivate the approach
+(Section~\ref{sec:challenges}) and survey related work (Section~\ref{sec:related}).
+We then present SHOWME.how (Section~\ref{sec:approach}), an approach built on three
 complementary pillars, \emph{Isolation}, \emph{Interoperation}, and
 \emph{Orchestration}, that together allow a computational study to remain
-functional as it evolves. We characterise the practical challenges that motivate
-the approach (Section~\ref{sec:challenges}), apply it to three use cases spanning Bayesian calibration of a hemolysis and a
-geophysical mass flow model, and benchmarking of Gaussian process emulators for
-high-dimensional problems (Section~\ref{sec:usecases}). We then show how the
-pillars operationalize robustness as the study evolves
-(Section~\ref{sec:robustness}). A gallery of
+functional as it evolves. We apply the approach to three use cases spanning
+Bayesian calibration of a hemolysis and a geophysical mass flow model, and
+benchmarking of Gaussian process emulators for high-dimensional problems
+(Section~\ref{sec:usecases}). We then show how the pillars operationalize
+robustness as the study evolves (Section~\ref{sec:robustness}). A gallery of
 use case implementations and living documentation is available at
-\url{http://mbd-rwth.github.io/showmehow}. Related work is discussed in
-Section~\ref{sec:related}.
+\url{http://mbd-rwth.github.io/showmehow}.
 
 
 % =============================================================================
@@ -269,7 +271,7 @@ infrastructure becomes available, and problem sizes grow. Each such event is a
 potential point of failure. In practice, the approaches that teams use to manage
 heterogeneity fall short as the ecosystem evolves.
 
-\subsection{Current Approaches and Their Limitations}
+\subsection{Current Practices and Their Limitations}
 \label{sec:challenges:approaches}
 
 \paragraph{Data feedforward.}
@@ -359,9 +361,93 @@ Such a process is both fragile and time-consuming.
 
 \medskip
 What we need is not more tools, but a principled approach that addresses these
-challenges at their root as the study grows and evolves.
-SHOWME.how is such an approach.
+challenges at their root.
 % AC===========================================================================
+
+
+% =============================================================================
+\section{Related Work}
+\label{sec:related}
+% =============================================================================
+
+A range of tools and standards address parts of the challenges described in
+Section~\ref{sec:challenges}. Each covers one or more dimensions of the problem
+but leaves others open.
+
+\paragraph{Normative frameworks.}
+The FAIR principles establish normative criteria for making research outputs
+Findable, Accessible, Interoperable, and
+Reusable~\cite{wilkinson2016fair,barker2022fair4rs,goble2020fairworkflows,wilkinson2025fairworkflows}
+across scientific data, software, and workflows, but specify what outputs should
+exhibit rather than how to achieve these properties when the components of a
+computational study are heterogeneous.
+
+\paragraph{Software dependency management.}
+Conda~\cite{conda} and Mamba~\cite{mamba} manage software dependencies by
+creating isolated, reproducible environments. Container tools such as
+Docker~\cite{merkel2014docker} and Podman~\cite{heon2018podman} extend this
+isolation to the operating system level, packaging a unit and its dependencies
+into a self-contained image. Together, these tools can make an individual unit
+reproducible. When a study involves multiple units with conflicting dependencies,
+however, sharing a single environment across the whole study is not viable; each
+unit requires its own isolated environment. None of these tools individually
+addresses how units with isolated environments should exchange data or be
+orchestrated together.
+
+\paragraph{Scientific workflow management systems.}
+Scientific workflow management systems coordinate execution and data flows
+across computational units. Suter et al.~\cite{suter2025terminology} provide a
+unified terminology, distinguishing scheduling models, environment integration,
+and data handling as key axes of variation; Nextflow~\cite{ditommaso2017nextflow}
+and Snakemake~\cite{molder2021snakemake} are representative systems. For
+environment specification, SWMSs typically rely on conda or containers;
+Spack~\cite{gamblin2015spack} is natively supported by Nextflow as an
+HPC-focused alternative, while Nix and Guix~\cite{courtes2013guix} offer
+stronger reproducibility guarantees through cryptographic hashing of the full
+dependency graph but require custom tooling outside standard SWMS environment
+directives.
+Dierckx et al.~\cite{dierckx2022evaluation} evaluate six SWMSs against
+reproducibility and reuse criteria, finding per-process environment
+specification the most portable approach, but identifying an unresolved
+tradeoff between strongly-typed process interfaces and wrapper overhead that
+forces unit-code modification. Cohen-Boulakia et al.~\cite{cohenboulakia2017workflows}
+evaluate SWMSs against four reproducibility levels and find that most fail to
+meet system-wide packaging criteria, cannot update broken environments without
+manual intervention, and require high technical skill to connect workflows
+across different systems; their analysis covers life-science pipelines where
+units share a common runtime and does not address settings where units differ
+in language, operating system, and infrastructure. In all cases, SWMSs leave
+it to the team to decide how units should be packaged and how data should be
+serialised at their boundaries.
+
+\paragraph{Workflow platforms.}
+Pegasus~\cite{deelman2015pegasus} focuses on executing large-scale workflows
+across heterogeneous distributed infrastructure, handling job scheduling, data
+movement, and fault tolerance at scale. It treats each unit as a black box,
+making no prescription about how units should be packaged or what format data
+should take at their boundaries. The Galaxy Project~\cite{galaxycommunity2024galaxy}
+enforces reproducibility through a managed tool ecosystem, primarily for
+bioinformatics; each tool must be registered in Galaxy's ToolShed with a
+descriptor specifying its dependencies and parameters, coupling reproducibility
+to Galaxy's own ecosystem. AiiDA~\cite{huber2020aiida} provides graph-database
+provenance tracking and automated workflow execution across multiple research
+domains; its provenance records capture all computational steps and data dependencies
+in a queryable graph, richer than the execution logs SWMSs natively produce, but
+it requires a dedicated message broker, a running database instance, and Python
+plugin wrappers for each code. ColonyOS~\cite{kristiansson2025colonyos} provides
+language-agnostic orchestration across geographically dispersed compute nodes
+through a centralised server that executors poll over HTTP, at the cost of a
+persistent broker and database that all participants must connect to. All four require either dedicated infrastructure or adoption of an existing
+tool ecosystem, limiting their accessibility for general-purpose computational
+studies.
+
+\paragraph{Complementary standards.}
+CWL~\cite{amstutz2016cwl} provides a vendor-neutral standard for portable
+workflow definitions, specifying \emph{what} to run and how steps connect, but
+does not prescribe how units should be isolated from one another, how data
+should be serialised at unit boundaries, or how Pattern~C
+(Section~\ref{sec:patterns}) should be handled when a unit runs as a long-lived
+service process.
 
 
 % =============================================================================
@@ -388,13 +474,13 @@ adding the others as it grows and its requirements evolve.
 \label{sec:isolation}
 % -----------------------------------------------------------------------------
 
-The goal of Isolation is that any computational unit can participate in the lab
+The goal of Isolation is that any computational unit can participate in the study
 regardless of its programming language, operating system, and dependencies,
 without interfering with any other unit. We can achieve this by encapsulating the
 compute environment of each unit through package management and containerisation,
 so that units remain self-contained and portable.
 
-The right isolation strategy depends on the specific requirements of the lab.
+The right isolation strategy depends on the specific requirements of the study.
 The following questions help identify it:
 
 \begin{enumerate}
@@ -405,7 +491,7 @@ The following questions help identify it:
   \item What level of reproducibility is required? Is numerical equivalence
         across platforms sufficient, or is a fully controlled environment that
         also pins system libraries and floating-point behaviour needed?
-  \item How heterogeneous is the lab in terms of collaborators, operating
+  \item How heterogeneous is the study in terms of collaborators, operating
         systems, CPU architectures, and infrastructure, and how much is it
         expected to change?
 \end{enumerate}
@@ -435,7 +521,7 @@ not available on conda. A container packages not just the software dependencies 
 operating system layer, so that the unit is fully independent of the host
 operating system. Each unit requires a \texttt{Dockerfile} as its build definition, which can then be built into a container image using Docker~\cite{merkel2014docker},
 Podman~\cite{heon2018podman}, or any compatible container runtime. We recommend one container image per unit, so that a dependency change in one
-unit cannot affect any other. Container images are architecture-specific; when the lab spans multiple CPU
+unit cannot affect any other. Container images are architecture-specific; when the study spans multiple CPU
 architectures, we need to build multi-architecture manifests that bundle
 architecture-specific images under a single tag, allowing the correct variant
 to be pulled automatically.\footnote{\texttt{docker buildx} is a Docker CLI
@@ -490,16 +576,16 @@ language for knowledge representation, here realised through concrete format
 and protocol choices at unit boundaries.
 
 The right interoperation strategy depends on the specific requirements of the
-lab. The following questions help identify it:
+study. The following questions help identify it:
 
 \begin{enumerate}
   \item What is the nature of the data being exchanged? Is it tabular,
         hierarchical, or multi-dimensional arrays?
-  \item Do all units run locally, or does the lab span multiple compute
+  \item Do all units run locally, or does the study span multiple compute
         locations such as a laptop, an HPC cluster, or cloud infrastructure?
-  \item What is the pattern of data exchange? Does the lab transfer data once
+  \item What is the pattern of data exchange? Does the study transfer data once
         per unit, or does it involve repeated exchanges during execution?
-  \item How might the interoperation needs of the lab grow? Will the volume
+  \item How might the interoperation needs of the study grow? Will the volume
         of data increase, or will the heterogeneity of units exchanging it?
 \end{enumerate}
 
@@ -534,7 +620,7 @@ the host's inter-process communication mechanisms; filesystem exchange remains
 the only reliable option for same-machine exchange between a containerised unit
 and a non-containerised one. We recommend starting with filesystem exchange and
 switching to remote storage
-only when the lab spans separate infrastructures with no shared
+only when the study spans separate infrastructures with no shared
 filesystem between them, such as a laptop and a cloud instance or two separate
 HPC systems. S3-compatible object storage suits this case well, as
 it is accessible from any infrastructure via HTTP and requires no shared mount.
@@ -567,7 +653,7 @@ when units need to exchange data that is not array-based.
 As a rule of thumb, start with CSV or JSON and filesystem exchange; move to
 binary formats such as HDF5, Zarr, or Arrow/Parquet as the data becomes
 primarily floating-point. For the exchange mechanism, switch to remote storage
-when the lab spans separate infrastructures; adopt an HTTP-based client--server
+when the study spans separate infrastructures; adopt an HTTP-based client--server
 approach only when units need to exchange data at high frequency during
 execution.
 
@@ -577,32 +663,32 @@ execution.
 \label{sec:orchestration}
 % -----------------------------------------------------------------------------
 
-The goal of Orchestration is that the lab runs reliably end-to-end, even as
+The goal of Orchestration is that the study runs reliably end-to-end, even as
 units are added, collaborators change, or the infrastructure it runs on evolves.
 We can achieve this by using a SWMS to automate
-scheduling, data movement, and checkpointing, so the lab can operate
+scheduling, data movement, and checkpointing, so the study can operate
 seamlessly as its needs grow.
 
 The right orchestration strategy depends on the specific requirements of the
-lab. The following questions help identify it:
+study. The following questions help identify it:
 
 \begin{enumerate}
-  \item Is the lab complex enough to warrant a SWMS? How many units
+  \item Is the study complex enough to warrant a SWMS? How many units
         are there, and how complex are their dependencies?
-  \item Does the lab need to execute across different infrastructure, such as
+  \item Does the study need to execute across different infrastructure, such as
         running some units locally and others on an HPC cluster or cloud, and
         what schedulers or executors does that require?
-  \item Would restarting the lab from scratch on failure be costly, either
-        because individual units are long-running or because the lab involves
+  \item Would restarting the study from scratch on failure be costly, either
+        because individual units are long-running or because the study involves
         a large number of unit executions?
-  \item Does the lab require any unit to run as a long-lived service process,
+  \item Does the study require any unit to run as a long-lived service process,
         as in Pattern~C, rather than completing after a single execution?
 \end{enumerate}
 
 \paragraph{Orch1 --- Automation.}
-A lab that runs once, with few units and no need for cross-infrastructure
+A study that runs once, with few units and no need for cross-infrastructure
 execution, can be coordinated with a script. A SWMS becomes
-necessary when the lab needs to run repeatedly, when units span different
+necessary when the study needs to run repeatedly, when units span different
 environments or infrastructure, or when manual data movement and environment
 activation becomes a bottleneck.
 
@@ -630,7 +716,7 @@ expressed; Nextflow uses a dataflow paradigm where units are connected by
 explicit data channels, and Snakemake uses a file-based paradigm where
 dependencies are inferred from input and output file paths. A SWMS
 submits each unit to the appropriate executor automatically, whether a local
-process on a laptop, a SLURM job on an HPC cluster, or a cloud executor. In most cases, moving the lab to a different
+process on a laptop, a SLURM job on an HPC cluster, or a cloud executor. In most cases, moving the study to a different
 infrastructure requires no changes
 to unit code; only the configuration specifying where and how units execute
 changes.
@@ -638,7 +724,7 @@ changes.
 \paragraph{Orch3 --- Incremental execution.}
 Incremental execution means the SWMS tracks which units have
 completed successfully and skips them on rerun, so a failure mid-run restarts
-from the last completed unit rather than from scratch. This becomes essential when individual units are long-running or the lab must
+from the last completed unit rather than from scratch. This becomes essential when individual units are long-running or the study must
 execute a large number of them.  Snakemake tracks completion via output
 file timestamps; a unit is considered done if its output exists and is newer
 than its inputs, though this can be fooled by manually copying or touching
@@ -670,8 +756,9 @@ ready and the client unit declares that file as an input dependency. The
 workaround has two failure modes. If the server crashes before writing the
 sentinel, the client unit never starts and the workflow stalls; if the server
 crashes after the client has started, the client cannot reach the server's URL
-and port and crashes with a connection error. Labs using Snakemake can use
-native service rules; labs using Nextflow can use the sentinel workaround.
+and port and crashes with a connection error. Studies using Snakemake can use
+native service rules; studies using Nextflow can rely on the file-based sentinel
+workaround.
 
 
 
@@ -680,10 +767,10 @@ native service rules; labs using Nextflow can use the sentinel workaround.
 \label{sec:usecases}
 % =============================================================================
 
-We applied the SHOWME.how approach to three labs spanning biomedical
+We applied the SHOWME.how approach to three studies spanning biomedical
 engineering, geophysical mass flow simulation, and high-dimensional surrogate
 modelling, collectively covering all three patterns from
-Section~\ref{sec:patterns}. The three labs are illustrative rather than
+Section~\ref{sec:patterns}. The three studies are illustrative rather than
 exhaustive, but representative of the approach in practice.
 
 % -----------------------------------------------------------------------------
@@ -691,22 +778,22 @@ exhaustive, but representative of the approach in practice.
 \label{sec:usecase:hemolysis}
 % -----------------------------------------------------------------------------
 
-The goal of this lab is to infer the parameters of a computational hemolysis
+The goal of this study is to infer the parameters of a computational hemolysis
 model that predicts red blood cell damage under mechanical stress, using
 Bayesian calibration against experimental measurements.
-Three collaborators with complementary expertise contribute to the lab: a
+Three collaborators with complementary expertise contribute to the study: a
 domain expert using macOS and familiar with Python, who has access to
 experimental data and can assess whether results are physically plausible; a
 UQ-methods expert on Windows in Python, who designs the calibration study and
 assesses whether the results are meaningful; and an RSE on Linux working across
-multiple languages, who builds and maintains the lab and supports experiments.
-The lab consists of a forward model, an MCMC unit, and a report unit.
+multiple languages, who builds and maintains the study and supports experiments.
+The study consists of a forward model, an MCMC unit, and a report unit.
 The forward model
 takes control variables and design parameters as inputs and returns a predicted
 hemolysis index; it is available in both Python and Julia, selectable at
 runtime. The MCMC unit queries the forward model in an online loop to infer
 model parameters (Pattern~C). The report unit compiles results and diagnostics from the
-MCMC outputs. The lab can run a single calibration or fan out across a sweep of
+MCMC outputs. The study can run a single calibration or fan out across a sweep of
 experimental datasets (Pattern~A) or across competing hemolysis model
 implementations (Pattern~B), applying the same calibration setup to each
 variant.
@@ -731,12 +818,12 @@ model server writes a sentinel file containing its network port to a shared
 directory; the MCMC client starts and waits until the file is present before
 connecting (Orch4).
 
-The lab was ported to HPC by updating the Nextflow executor profile and
+The study was ported to HPC by updating the Nextflow executor profile and
 building Apptainer images from the container definition files; no unit code was
 modified. The Julia forward model was ported later by the RSE, yielding a
 10--100$\times$ speedup over the Python baseline. Diagnostic units were added
-after the lab was first assembled without modifying any existing unit. Conda lock files and CI automation (Iso1, Iso4) remain to be added before
-wider distribution. The lab is available at
+after the study was first assembled without modifying any existing unit. Conda lock files and CI automation (Iso1, Iso4) remain to be added before
+wider distribution. The study is available at
 \url{https://github.com/nicodirkes/bpc_hemolysis}.
 
 % -----------------------------------------------------------------------------
@@ -744,18 +831,18 @@ wider distribution. The lab is available at
 \label{sec:usecase:massflow}
 % -----------------------------------------------------------------------------
 
-The goal of this lab is to calibrate the parameters of a geophysical mass flow
+The goal of this study is to calibrate the parameters of a geophysical mass flow
 simulator that models natural hazards such as landslides and avalanches, using
 Bayesian inference with MCMC against field observations.
 Because the forward simulator is computationally expensive, calibration proceeds
 in two stages: first a surrogate is trained on simulator runs, then MCMC inference proceeds
 using the surrogate.
-Two collaborators with complementary expertise developed the lab: a UQ-methods
+Two collaborators with complementary expertise developed the study: a UQ-methods
 researcher on Windows, proficient in Python and R, who wanted to apply
 surrogate-based calibration to a real-world use case that requires an expensive
 simulator; and a computational scientist with experience in high-fidelity mass
-flow simulators, who is also an RSE on Linux, and builds and maintains the lab.
-The lab spans four units across three language ecosystems: a Latin Hypercube
+flow simulators, who is also an RSE on Linux, and builds and maintains the study.
+The study spans four units across three language ecosystems: a Latin Hypercube
 Sampling unit in Julia generates a parameter design; the forward simulator in
 Python evaluates each input configuration from the design space and returns
 model responses; a surrogate training unit in R fits a Gaussian process emulator
@@ -784,28 +871,28 @@ interrupted run need not repeat the expensive simulation stage (Orch3).
 The surrogate server signals readiness by writing its network port to a sentinel
 file; the MCMC client connects once the file appears (Orch4).
 
-This was the first lab developed using the SHOWME.how approach; building it is
+This was the first study developed using the SHOWME.how approach; building it is
 where the sentinel file pattern (Orch4) was first identified as a reusable
 solution for service-process coordination.
 An R server implementation of the UMBridge interface was not yet available when
-the lab was developed; it was implemented locally here, and an upstream
+the study was developed; it was implemented locally here, and an upstream
 contribution is underway.
-The lab has been executed end-to-end on Windows and Linux laptops and on a
+The study has been executed end-to-end on Windows and Linux laptops and on a
 local Linux cluster.
-The lab is available at \url{https://github.com/thealanjason/bpc_massflow}.
+The study is available at \url{https://github.com/thealanjason/bpc_massflow}.
 
 % -----------------------------------------------------------------------------
 \subsection{Benchmarking Gaussian Process Emulators for High-Dimensional Problems}
 \label{sec:usecase:gpe}
 % -----------------------------------------------------------------------------
 
-The goal of this lab is to benchmark Gaussian process emulator implementations
+The goal of this study is to benchmark Gaussian process emulator implementations
 against five benchmark datasets, with a focus on high-dimensional inputs and
 outputs.
-The lab was developed by a master's student on macOS, proficient in Python, who
+The study was developed by a master's student on macOS, proficient in Python, who
 was developing a new GPE method and needed a reproducible setup to compare it
 against existing implementations.
-The lab fans out these datasets to multiple emulator implementations in
+The study fans out these datasets to multiple emulator implementations in
 parallel, then aggregates and scores the results (Pattern~B).
 The datasets span synthetic and real-world scenarios, generated locally or
 fetched from Figshare and Zenodo; all are preprocessed by a shared
@@ -824,23 +911,23 @@ existing unit.
 Data at all unit boundaries is in HDF5, exchanged through the filesystem
 (Int1, Int2), so any emulator reads and writes through the same format
 regardless of language.
-The lab is automated in both Nextflow and Snakemake (Orch1); both support
+The study is automated in both Nextflow and Snakemake (Orch1); both support
 local and SLURM execution profiles (Orch2), and the Snakemake version skips
 completed emulator runs on rerun (Orch3).
 CI automatically regenerates conda lock files whenever an environment
 specification changes (Iso4), and a benchmark run is triggered on every push to
 the main branch with results uploaded as a GitHub artifact.
 
-The master's student developed a new emulator, kPCA-PPGaSP, within the lab and
+The master's student developed a new emulator, kPCA-PPGaSP, within the study and
 compared it against the existing implementations; adding the new emulator unit
 required no changes to any existing unit.
-The lab is implemented in both Nextflow and Snakemake to demonstrate that the
+The study is implemented in both Nextflow and Snakemake to demonstrate that the
 SHOWME.how approach is not tied to any particular workflow manager; both
 versions follow the same unit contracts and produce identical results.
 GPU-accelerated execution is supported for PyTorch-based emulators in the SLURM
 profile.
-The lab has been run on macOS and on a local Linux cluster.
-The lab is available in two versions: Nextflow at
+The study has been run on macOS and on a local Linux cluster.
+The study is available in two versions: Nextflow at
 \url{https://github.com/gary8564/gpe_bench_nxf} and Snakemake at
 \url{https://github.com/gary8564/gpe_bench_smk}.
 
@@ -958,146 +1045,6 @@ being fully implemented. That verification remains open.
 
 
 % =============================================================================
-\section{Related Work}
-\label{sec:related}
-% =============================================================================
-
-\paragraph{Motivating frameworks.}
-The FAIR principles~\cite{wilkinson2016fair,barker2022fair4rs,goble2020fairworkflows,wilkinson2025fairworkflows}
-define normative criteria for making research outputs Findable, Accessible,
-Interoperable, and Reusable. SHOWME.how is a concrete implementation strategy for the Interoperability and
-Reusability dimensions of FAIR. The Interoperation pillar addresses the FAIR
-Interoperability dimension by requiring data at unit boundaries to use broadly
-applicable knowledge representation formats
-(Section~\ref{sec:interoperation}). Isolation supports the FAIR4RS Reusability
-dimension~\cite{barker2022fair4rs} by ensuring that the software environment of
-each unit is fully specified and reconstructible
-(Section~\ref{sec:isolation}). Taken together, all three pillars enable
-reusability of the computational study as a whole: a collaborator can take over,
-extend, or reproduce the study without manual environment reconstruction, format
-negotiation, or infrastructure rework.
-Cohen-Boulakia et al.~\cite{cohenboulakia2017workflows} define four levels of
-reproducibility for scientific workflows (repeat, replicate, reproduce, reuse)
-and evaluate representative SWMSs against reproducibility-friendly criteria.
-Their system-wide packaging criterion, which most evaluated systems failed to
-meet, directly motivated SHOWME.how's Isolation pillar; SHOWME.how applies
-environment packaging per unit rather than system-wide, so that dependency
-conflicts between units are structurally prevented. They further identify
-automatic dependency maintenance as an open challenge: no evaluated system
-could update a broken environment without manual intervention. SHOWME.how's
-Iso4 addresses this by automating lock file regeneration in CI whenever a
-unit's environment specification changes. Their analysis also notes that
-connecting workflows across different systems generally requires high technical
-skill; SHOWME.how sidesteps this by working at unit boundaries through
-language-agnostic formats, rather than requiring SWMS-level interoperability.
-Their analysis addresses life-science pipelines in which units share a common
-runtime; SHOWME.how extends to the setting where units are heterogeneous in
-language, operating system, and infrastructure simultaneously.
-
-\paragraph{Scientific workflow management systems.}
-Nextflow~\cite{ditommaso2017nextflow} and Snakemake~\cite{molder2021snakemake}
-are the SWMSs used throughout this paper as representative examples; SHOWME.how
-is not tied to either. Suter et al.~\cite{suter2025terminology} provide a
-unified terminology for SWMSs, distinguishing scheduling models, environment
-integration, and data handling as key axes of variation across systems.
-Leser et al.~\cite{leser2026workflowsystems} decompose modern SWMS into three
-component classes: containers or virtual machines for portability, distributed
-file systems for data exchange, and workflow engines paired with resource managers
-for execution.
-SHOWME.how's three pillars map directly onto these component classes: Isolation
-addresses environment portability, Interoperation addresses data exchange at unit
-boundaries, and Orchestration addresses workflow execution and scheduling. Dierckx et al.~\cite{dierckx2022evaluation} evaluate six SWMSs against
-reproducibility and reuse criteria, finding Nextflow and Snakemake best suited
-for portable workflows through per-process environment specification, the
-model SHOWME.how's Isolation and Orchestration pillars build on. They also
-identify a tradeoff between strongly-typed process interfaces and wrapper
-overhead; SHOWME.how resolves this by requiring language-agnostic data formats
-at unit boundaries rather than typed wrappers, so unit code requires no
-modification.
-
-\paragraph{Alternative environment management.}
-Spack~\cite{gamblin2015spack} is an HPC-focused package manager providing
-source-based builds with fine-grained control over compiler flags and
-dependencies; it is natively supported by Nextflow as an alternative to conda.
-Nix and Guix~\cite{courtes2013guix} provide bit-identical reproducible builds
-through cryptographic hashing of the full dependency graph, offering stronger
-guarantees than conda-lock. The tradeoff is adoption friction: neither is
-natively integrated into Nextflow or Snakemake, so using either requires
-additional tooling or custom wrapper scripts outside the standard SWMS
-environment directives. SHOWME.how recommends conda-lock because it provides
-numerically-equivalent reproducibility within the toolchain the SWMSs already
-support, lowering the barrier to adoption. Computational labs with stricter
-requirements, such as bit-identical builds or environments where upstream
-package registries cannot be trusted, can consider Nix or Guix, though neither
-integrates natively with SWMS environment directives and requires custom setup
-beyond what is described here.
-
-\paragraph{Complementary standards.}
-CWL~\cite{amstutz2016cwl} provides a vendor-neutral standard for portable
-workflow definitions. It specifies \emph{what} to run and how steps connect,
-but does not prescribe how units should be isolated from one another, how data
-should be serialised at unit boundaries, or how Pattern~C
-(Section~\ref{sec:patterns}) should be handled when a unit must run as a
-long-lived service process. SHOWME.how's three pillars address these gaps. Because a SHOWME.how lab already makes explicit the unit contracts, namely
-inputs, outputs, environment, and script,\footnote{The mapping onto CWL is
-direct rather than identical. A unit's inputs and outputs correspond to a
-\texttt{CommandLineTool}'s \texttt{inputs} and \texttt{outputs}, its script to
-\texttt{baseCommand} and \texttt{arguments}, and its environment to a
-\texttt{DockerRequirement} (or the lighter-weight \texttt{SoftwareRequirement}
-where containerisation is not used); CWL further
-distinguishes \texttt{CommandLineTool} documents from \texttt{Workflow}
-documents that wire steps together.} that CWL requires to describe a
-workflow, CWL description is a natural path toward cross-system portability
-and sharing via WorkflowHub~\cite{gustafsson2025workflowhub}. The W3C PROV
-ontology~\cite{lebo2013provo} defines the standard provenance data model;
-SHOWME.how relies on SWMS-native provenance records rather than requiring a
-dedicated provenance store.
-
-\paragraph{Similar problems, different approaches.}
-Pegasus~\cite{deelman2015pegasus} focuses on executing large-scale workflows
-across heterogeneous distributed infrastructure, handling job scheduling, data
-movement, and fault tolerance at scale. It treats each computational unit as a black box and makes no prescription about
-how units should be packaged or what format data should take at their boundaries,
-assuming these have already been decided. SHOWME.how addresses precisely those
-questions through the Isolation and Interoperation pillars, and relies on existing
-SWMSs for the scheduling and fault-tolerance concerns that are Pegasus's primary focus.
-The Galaxy Project~\cite{galaxycommunity2024galaxy} enforces reproducibility through a
-managed tool ecosystem, primarily for bioinformatics. Reproducibility is
-achieved by requiring each tool to be registered in Galaxy's ToolShed with a
-descriptor specifying its software dependencies and input/output parameters in
-Galaxy's format, coupling reproducibility to Galaxy's own ecosystem.
-SHOWME.how requires no tool registration or descriptor; isolation and
-interoperation are applied at unit boundaries without modifying unit code.
-AiiDA~\cite{huber2020aiida} provides graph-database provenance tracking and
-automated workflow execution, originally designed for materials science and now
-spanning multiple research domains. Its provenance guarantees are stronger than
-SWMS-native reporting: all computational steps and data dependencies are
-captured in a queryable graph database. The tradeoff is infrastructure
-overhead: AiiDA requires a dedicated message broker (RabbitMQ), a running
-database instance, and Python plugin wrappers for each code in the workflow.
-SHOWME.how accepts weaker provenance in exchange: its records are SWMS-native
-and require no additional infrastructure, but lack the queryable graph
-structure and fine-grained dependency capture that AiiDA provides.
-
-ColonyOS~\cite{kristiansson2025colonyos} is an open-source meta-OS targeting
-IoT-to-HPC computing continuums for AI and machine-learning workflows. Its
-central design constraint is that compute nodes may be geographically
-dispersed, behind firewalls, or intermittently available; all coordination
-therefore flows through a centralised Colonies server that executors poll over
-HTTP rather than through direct connections. Executors are language-agnostic
-microservices (SDKs exist for Python, Julia, Rust, Go, and others) that
-exchange data via a meta-filesystem layer backed by S3 or IPFS. The three
-concerns that result (per-executor isolation, language-agnostic exchange, and
-broker-based orchestration) converge with the three pillars of SHOWME.how,
-arrived at independently and for a different user community. The practical
-difference is in the orchestration layer. ColonyOS requires a dedicated
-Colonies server and database as a persistent broker; SHOWME.how relies on
-SWMSs already established in scientific practice, with file or HTTP exchange
-at unit boundaries and no additional broker infrastructure.
-
-\FloatBarrier
-
-% =============================================================================
 \section{Conclusion and Outlook}
 \label{sec:conclusion}
 % =============================================================================
@@ -1133,11 +1080,19 @@ receives continuous live input and updates online, a setting that sits outside t
 batch directed-acyclic-graph paradigm of the workflow managers used here and would
 draw on the reactive and streaming managers catalogued by the Workflows Community
 Initiative~\cite{suter2025terminology}. Finally, a study following the SHOWME.how approach already makes
-explicit the unit contracts
+explicit the unit contracts\footnote{The mapping onto CWL is
+direct rather than identical. A unit's inputs and outputs correspond to a
+\texttt{CommandLineTool}'s \texttt{inputs} and \texttt{outputs}, its script to
+\texttt{baseCommand} and \texttt{arguments}, and its environment to a
+\texttt{DockerRequirement} (or the lighter-weight \texttt{SoftwareRequirement}
+where containerisation is not used); CWL further distinguishes
+\texttt{CommandLineTool} documents from \texttt{Workflow} documents that wire
+steps together.}
 that portable workflow descriptions require, so describing studies in CWL and
 packaging them as RO-Crates~\cite{soilandreyes2022rocrate} for sharing through
 WorkflowHub~\cite{gustafsson2025workflowhub} is a natural next step.
 
+\FloatBarrier
 
 \begin{acknowledge}
   Financial support from the Deutsche Forschungsgemeinschaft (DFG) through grant
