@@ -59,7 +59,7 @@
   calibration in blood hemolysis and geophysical mass flow simulation, and
   benchmarking of high-dimensional Gaussian process emulators.%
 }
-\keywords{scientific workflows, heterogeneity, reproducibility, FAIR, computational labs,
+\keywords{scientific workflows, heterogeneity, reproducibility, FAIR,
           high-throughput computing, inverse problems, benchmarking}
 
 \begin{document}
@@ -88,6 +88,16 @@ productive science and engineering. Yet the systems these teams build are not on
 also tend to grow fragile over time, resulting in work that is hard to reproduce
 and hard to reuse.
 
+Modern computational work has often been approached as a problem of assembling
+appropriate software components and data pipelines. Scientific workflow systems,
+for instance, coordinate software and data flows~\cite{leser2026workflowsystems,suter2025terminology}
+but treat human collaborators as external operators rather than integral parts
+of the system. Adopting the broader view of the computational research ecosystem
+as a goal-oriented, tightly integrated sociotechnical system that binds together
+computational units, data, and human collaborators reveals that heterogeneity
+originates in the collaborators themselves, each bringing preferred tools and
+expertise that orchestrating execution and data flows alone cannot reconcile.
+
 The FAIR principles~\cite{wilkinson2016fair,barker2022fair4rs,wilkinson2025fairworkflows,goble2020fairworkflows}
 define the attributes that scientific data, software, and workflows should
 exhibit, making findability, accessibility, interoperability, and reusability
@@ -102,46 +112,32 @@ these heterogeneous systems. However,
 these tools only automate execution and scheduling, offering no strategy for
 isolating components and making them interoperable.
 
-We make two contributions. First, we introduce the concept of the \emph{computational
-lab} (Section~\ref{sec:complab}), a goal-oriented sociotechnical system of
-computational units, data, and human collaborators. This framing treats
-heterogeneity as a dimension to be embraced and managed rather than eliminated.
-Second, we present SHOWME.how (Section~\ref{sec:approach}), an approach built
-on three complementary pillars, \emph{Isolation}, \emph{Interoperation}, and \emph{Orchestration}.
-We characterise the practical challenges that motivate the approach
-(Section~\ref{sec:challenges}), demonstrate it through three use cases spanning
-biomedical engineering, geophysical hazard simulation, and high-dimensional
-uncertainty quantification (Section~\ref{sec:usecases}), and assess how the
-pillars together allow a computational lab to tolerate perturbations, handle variability,
-withstand adverse conditions, and adapt to changes in data, units, and collaborators (Section~\ref{sec:robustness}).
-A gallery of use case implementations and living documentation is made
-available at \url{http://mbd-rwth.github.io/showmehow}.
-Finally, related work is discussed in Section~\ref{sec:related}.
+We present SHOWME.how (Section~\ref{sec:approach}), an approach built on three
+complementary pillars, \emph{Isolation}, \emph{Interoperation}, and
+\emph{Orchestration}, that together allow a computational study to remain
+functional as it evolves. We characterise the practical challenges that motivate
+the approach (Section~\ref{sec:challenges}), apply it to three use cases spanning Bayesian calibration of a hemolysis and a
+geophysical mass flow model, and benchmarking of Gaussian process emulators for
+high-dimensional problems (Section~\ref{sec:usecases}). We then show how the
+pillars operationalize robustness as the study evolves
+(Section~\ref{sec:robustness}). A gallery of
+use case implementations and living documentation is available at
+\url{http://mbd-rwth.github.io/showmehow}. Related work is discussed in
+Section~\ref{sec:related}.
 
 
 % =============================================================================
-\section{The Computational Lab}
+\section{The Computational Research Ecosystem}
 \label{sec:complab}
 % =============================================================================
 
 % AC===========================================================================
-We define a \emph{computational lab} as a goal-oriented sociotechnical system
-whose purpose is to enable scientific discovery and to address complex
-engineering challenges through computational means. Typical goals include 
-answering research questions, developing new models and algorithms, understanding 
-complex natural phenomena, solving inverse problems, performing optimisation, 
-and benchmarking competing methods.
-
-The computational lab is to computation-driven research what the wet lab is to
-experimental science. In both settings, work proceeds through a continuous
-cycle of hypothesis, experiment, observation, analysis, and conclusion, applied
-by scientists pursuing discovery and by engineers solving problems.
-In practice, wet labs and computational labs are not disjoint. Contemporary
-wet labs increasingly rely on computational labs for data acquisition,
-processing, analysis, and modelling~\cite{wetlab_comp}.
-
-A computational lab is composed of three classes of components: computational
-units, data, and human collaborators. A \emph{computational unit} couples a
+Scientists and engineers conduct \emph{computational studies} to answer
+research questions, develop models, and address engineering challenges.
+The \emph{computational research ecosystem} supporting these studies is
+characterised by bidirectional interactions between three classes of
+components: computational units, data, and human collaborators.
+A \emph{computational unit} couples a
 \emph{model} or \emph{algorithm}, in its concrete implementation, with the
 \emph{compute environment} in which it runs. The compute environment has two
 layers. The software ecosystem covers the programming language and operating
@@ -149,11 +145,11 @@ system required by the implementation. The hardware platform covers the
 physical or virtual resources, local or remote, on which the computational unit executes. 
 \emph{Data} comprises the inputs consumed by computational units, the outputs they 
 produce, and the intermediate artefacts exchanged between them. \emph{Human collaborators} 
-are the researchers, engineers, and domain experts who design and operate the lab, and
+are the researchers, engineers, and domain experts who design and operate the study, and
 interpret its results. In principle this role could also be filled by AI agents, but we
 restrict our attention solely to human collaborators in this work.
 
-The components of a computational lab are heterogeneous by nature.
+The components of the computational research ecosystem are heterogeneous by nature.
 Data appears in many formats and structures, from geometries, boundary
 conditions, and observations as inputs, to quantities of interest, metrics,
 visualisations, and reports as outputs. These data may reside on local disks,
@@ -161,26 +157,18 @@ in cloud object storage, or in data repositories.
 Models and algorithms span physics-based simulators and their surrogates,
 data-driven models, and frameworks for optimisation, inference, and analysis,
 each typically tied to a particular language. Compute environments vary in both software ecosystem and hardware platform.
-  The software ecosystem ranges across programming languages such as Python,
+The software ecosystem ranges across programming languages such as Python,
 Julia, R, C++, Fortran, and MATLAB, among others, and operating systems such as Linux,
 macOS, and Windows. The hardware platform ranges across local workstations,
 HPC clusters, and cloud, with accelerators such as GPUs alongside CPUs. This diversity is not incidental but a
 direct consequence of the human collaborators themselves: domain specialists,
 methods experts, data scientists, and research software engineers each bring
-different skills, training, and preferred toolsets to the lab. A computational lab should ideally accommodate the tools and environments its
+different skills, training, and preferred toolsets to the study. A computational study should ideally accommodate the tools and environments its
 collaborators bring rather than imposing a single solution.
 
-The notion of a computational lab is distinct from several related terms. A
-\emph{scientific workflow} captures the pipeline of computational steps but
-treats neither heterogeneity nor human collaborators as first-class concerns.
-A \emph{digital laboratory} (or \emph{e-lab}) usually denotes a domain-specific
-platform built around laboratory information management systems (LIMS) or
-electronic lab notebook (ELN) systems for experimental data management.
-The term \emph{computational laboratory} appears occasionally in the literature
-but is used colloquially, without a formal definition.
 
 Figure~\ref{fig:heterogeneous} illustrates these components in a representative
-computational lab: the Bayesian parameter calibration of a shallow mass flow
+computational study: the Bayesian parameter calibration of a shallow mass flow
 model used in geophysical hazard simulation.
 This inverse problem is solved by chaining three computational units: a
 forward simulator, a surrogate model, and a calibration process, each
@@ -191,10 +179,12 @@ to work together is the subject of Section~\ref{sec:approach}.
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.95\linewidth]{figures/computational_lab_heterogeneity.pdf}
-  \caption{A computational lab and the dimensions of its heterogeneity in
+  \includegraphics[width=0.95\linewidth]{figures/computational_study
+  
+  _heterogeneity.pdf}
+  \caption{A computational study and the dimensions of its heterogeneity in
            data, models and algorithms, and compute environment. \textbf{Top:}
-           a representative lab in action: human collaborators with different
+           a representative study in action: human collaborators with different
            expertise coordinate computational units that consume and produce
            data to carry out a research task. \textbf{Bottom:} the anatomy of
            a computational unit, which transforms input data into output data
@@ -211,7 +201,7 @@ to work together is the subject of Section~\ref{sec:approach}.
 % -----------------------------------------------------------------------------
 
 % AC===========================================================================
-Three patterns recur across computational labs in science and engineering
+Three patterns recur across computational studies in science and engineering
 (Figure~\ref{fig:lab_patterns}); we introduce them here as they are
 referenced throughout the paper.
 
@@ -259,58 +249,27 @@ co-simulation.
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=0.85\linewidth]{figures/lab_patterns.pdf}
-  \caption{Three recurring patterns in computational labs: Pattern A
+  \caption{Three recurring patterns in computational studies: Pattern A
            (queue-based data pipeline), Pattern B (fan-out/fan-in), and
            Pattern C (model-based $X$ in an online loop). Visual encoding
            as in Figure~\ref{fig:heterogeneous}.}
   \label{fig:lab_patterns}
 \end{figure}
 
-% -----------------------------------------------------------------------------
-\subsection{Robustness}
-\label{sec:robustness_def}
-% -----------------------------------------------------------------------------
-
-% AC===========================================================================
-Productive science and engineering requires that methods be reusable and
-that new work can build on existing ones; to satisfy this, a computational
-lab must keep running correctly as its data, methods, dependencies,
-collaborators, and infrastructure change. Drawing on the general engineering
-sense of the word~\cite{robustness_eng}, we say that a computational lab is \emph{robust} if it
-satisfies four properties:
-
-\begin{enumerate}
-  \item \textbf{Tolerate perturbations}: remain functional when individual
-        computational units are updated or replaced.
-  \item \textbf{Handle variability}: remain effective across diverse operating
-        systems, programming languages, hardware platforms, and data formats.
-  \item \textbf{Withstand adverse conditions}: remain operational under
-        infrastructure migration and collaborator changes, and recoverable on
-        interruption of a long-running computation.
-  \item \textbf{Support modular extensibility}: accommodate new computational
-        units and new collaborators added after the lab is first assembled,
-        without breaking existing ones.
-\end{enumerate}
-
-
-The fourth is added because computational labs are by design constantly
-evolving: they grow as new scientific questions are asked and new methods
-become available. A robustness framing that does not account for this growth
-is insufficient for the research setting.
 % WIP=========================================================================
 
 
 % =============================================================================
-\section{Challenges in Building Computational Labs}
+\section{Challenges in the Computational Research Ecosystem}
 \label{sec:challenges}
 % =============================================================================
 
 % AC===========================================================================
-A computational lab is constantly evolving: computational units are updated or
+The computational research ecosystem is constantly evolving: computational units are updated or
 replaced, new data formats emerge, collaborators join or leave, new computing
 infrastructure becomes available, and problem sizes grow. Each such event is a
 potential point of failure. In practice, the approaches that teams use to manage
-heterogeneity fall short when the lab evolves.
+heterogeneity fall short as the ecosystem evolves.
 
 \subsection{Current Approaches and Their Limitations}
 \label{sec:challenges:approaches}
@@ -319,7 +278,7 @@ heterogeneity fall short when the lab evolves.
 Collaborators complete their part of the computation and manually transfer results
 to the next collaborator via shared drives or messaging. This preserves each
 collaborator's environment, at the cost of data versioning, traceability, and provenance.
-For labs following Pattern~C (Section~\ref{sec:patterns}), such as Bayesian
+For studies following Pattern~C (Section~\ref{sec:patterns}), such as Bayesian
 parameter calibration, where a UQ method must query a forward model iteratively
 throughout the inference process, the approach is not merely inefficient but
 physically infeasible.
@@ -330,7 +289,7 @@ algorithms implemented in different programming languages through a unified
 interface, allowing all computational units to run in a single shared environment.
 While this enables in-memory data passing, it ties the computational unit to
 the wrapper's implementation: when the underlying library updates, the wrapper
-must follow. Such wrappers frequently go stale, either breaking the lab or
+must follow. Such wrappers frequently go stale, either breaking the study or
 locking it to an older, suboptimal version of the model or algorithm.
 Moreover, adopting a newly published model or algorithm in a different
 programming language requires a new wrapper or forgoing it entirely.
@@ -344,7 +303,7 @@ that persist regardless of which is adopted.
 \subsubsection*{Computational Units}
 
 \paragraph{Unit-level reproducibility.}
-A reproducible computational lab requires that each computational unit be
+A reproducible computational study requires that each computational unit be
 individually reproducible. In practice, missing or incomplete environment
 specifications often make it impossible to rebuild the software environment
 in which a unit was intended to run~\cite{repro_study}. Workflow-level reproducibility additionally
@@ -380,21 +339,21 @@ produced a given result becomes non-trivial. Without explicit provenance,
 debugging unexpected results requires reconstructing the chain of computation
 by hand, which is expensive when units involve
 long-running HPC jobs. More broadly, without provenance, scientific claims
-produced by the lab cannot be verified by reviewers or collaborators.
+produced by the study cannot be verified by reviewers or collaborators.
 
 \subsubsection*{Compute Environment}
 
 \paragraph{Infrastructure portability.}
-Moving a computational lab from a local workstation to an HPC cluster or cloud
+Moving a computational study from a local workstation to an HPC cluster or cloud
 environment surfaces assumptions baked into computational units about the host
 environment: container runtimes differ, schedulers vary, and what runs on a laptop
 may not run on HPC without unit-code changes. A further complication arises when
 different units must run on different infrastructure simultaneously, such as a
 computationally expensive model on HPC alongside a lighter unit running locally,
-requiring the lab to coordinate across infrastructure boundaries at runtime.
+requiring the study to coordinate across infrastructure boundaries at runtime.
 
 \paragraph{Coordination overhead.}
-As a computational lab grows in the number of units and the complexity of their
+As a computational study grows in the number of units and the complexity of their
 dependencies, manually tracking which units to run, in what order, and where their
 outputs go becomes error-prone and unsustainable. Interrupted runs compound the problem, 
 requiring manual identification of completed steps and selective re-execution. 
@@ -402,7 +361,7 @@ Such a process is both fragile and time-consuming.
 
 \medskip
 What we need is not more tools, but a principled approach that addresses these
-challenges at their root and makes computational labs robust as they grow.
+challenges at their root as the study grows and evolves.
 SHOWME.how is such an approach.
 % AC===========================================================================
 
@@ -415,9 +374,8 @@ SHOWME.how is such an approach.
 The SHOWME.how approach is built on three complementary pillars: Isolation,
 Interoperation, and Orchestration (Figure~\ref{fig:three_pillars}). Each pillar
 addresses a distinct class of challenges identified in
-Section~\ref{sec:challenges}. A lab can adopt any one of the pillars independently and already gain
-robustness along that dimension, adding the others as the lab grows and its
-requirements evolve.
+Section~\ref{sec:challenges}. A study can adopt any one of the pillars independently,
+adding the others as it grows and its requirements evolve.
 
 \begin{figure}[!ht]
   \centering
@@ -890,32 +848,52 @@ The lab is available in two versions: Nextflow at
 
 
 % =============================================================================
-\section{Achieving Robustness}
+\section{Assessing Robustness}
 \label{sec:robustness}
 % =============================================================================
 
 
 % AC===========================================================================
+Sustaining productive science and engineering requires that a computational
+study absorb change as its units, data, collaborators, and infrastructure
+evolve. Drawing on the general engineering sense of the word~\cite{robustness_eng},
+a computational study is \emph{robust} if it continues to function correctly
+under such change. We operationalize this through four capabilities:
+
+\begin{enumerate}
+  \item \textbf{Tolerate perturbations}: remain functional when individual
+        computational units are updated or replaced.
+  \item \textbf{Handle variability}: remain effective across diverse operating
+        systems, programming languages, hardware platforms, and data formats.
+  \item \textbf{Withstand adverse conditions}: remain operational under
+        infrastructure migration and collaborator changes, and recoverable on
+        interruption of a long-running computation.
+  \item \textbf{Support modular extensibility}: accommodate new computational
+        units and new collaborators added after the study is first assembled,
+        without breaking existing ones. Studies grow as new scientific questions
+        are asked, new methods and data sources become available, and new compute
+        infrastructure is adopted; a robustness framing must account for this.
+\end{enumerate}
+
 The three pillars of SHOWME.how were designed to address the failure modes of
-Section~\ref{sec:challenges} directly. By doing so, each pillar primarily
-contributes to one or more robustness properties from
-Section~\ref{sec:robustness_def}, though no property is secured by a single
-pillar alone. Isolation mainly underpins the ability to tolerate
+Section~\ref{sec:challenges}. By doing so, each pillar primarily
+contributes to one or more of these capabilities, though no capability is secured
+by a single pillar alone. Isolation mainly underpins the ability to tolerate
 perturbations, Interoperation the ability to handle variability across
 languages and platforms, and Orchestration the ability to withstand adverse
 conditions and to support modular extensibility. The criteria in Table~\ref{tab:robustness} make that
-coverage explicit and checkable against a concrete lab.
+coverage explicit and checkable against a concrete study.
 
 \begin{table}[htb]
   \centering
   \small
-  \caption{Robustness checklist for a computational lab. A lab satisfying all
+  \caption{Robustness checklist for a computational study. A study satisfying all
            criteria can absorb change at every level without requiring
            coordinated updates across its units.}
   \label{tab:robustness}
   \begin{tabular}{p{2.4cm}p{7.2cm}p{1.8cm}}
     \toprule
-    \textbf{Property} & \textbf{Criterion} & \textbf{Approach} \\
+    \textbf{Capability} & \textbf{Criterion} & \textbf{Approach} \\
     \midrule
     \textbf{Tolerate perturbations}
       & Per-OS, per-architecture lock file or container image per unit.
@@ -952,7 +930,7 @@ coverage explicit and checkable against a concrete lab.
       & Iso1--Iso2, Int1 \\
       & Adding a unit requires no edits to and no revalidation of existing units.
       & Orch1, Iso1--Iso2, Int1 \\
-      & A new collaborator can reproduce the lab from a clone, a single
+      & A new collaborator can reproduce the study from a clone, a single
         environment for the workflow manager, and one run command.
       & Iso1--Iso2, Orch1 \\
     \bottomrule
@@ -966,15 +944,15 @@ coverage explicit and checkable against a concrete lab.
   each manage independent state).}
 \end{table}
 
-This rubric is prescriptive: it states what a robust lab must satisfy, not
-what any particular lab has been shown to satisfy. The hemolysis use case
+This rubric is prescriptive: it states what a robust study must satisfy, not
+what any particular study has been shown to satisfy. The hemolysis use case
 (Section~\ref{sec:usecases}) satisfies several criteria by direct observation:
-the lab runs end-to-end without unit-code changes on Linux, macOS, and
+the study runs end-to-end without unit-code changes on Linux, macOS, and
 Windows, and diagnostic units were added post-hoc without modifying existing
 ones. All boundary files use HDF5 or CSV, and a new collaborator reproduced
-the lab with a \texttt{git clone}, a single conda environment for the workflow
+the study with a \texttt{git clone}, a single conda environment for the workflow
 manager, and one run command. Numerical equivalence of outputs across operating systems has
-not been verified systematically; the lab involves stochastic units, and
+not been verified systematically; the study involves stochastic units, and
 cross-OS equivalence is contingent on the random-state seeding criterion
 being fully implemented. That verification remains open.
 % AC===========================================================================
@@ -997,8 +975,8 @@ applicable knowledge representation formats
 dimension~\cite{barker2022fair4rs} by ensuring that the software environment of
 each unit is fully specified and reconstructible
 (Section~\ref{sec:isolation}). Taken together, all three pillars enable
-reusability of the computational lab as a whole: a collaborator can take over,
-extend, or reproduce the lab without manual environment reconstruction, format
+reusability of the computational study as a whole: a collaborator can take over,
+extend, or reproduce the study without manual environment reconstruction, format
 negotiation, or infrastructure rework.
 Cohen-Boulakia et al.~\cite{cohenboulakia2017workflows} define four levels of
 reproducibility for scientific workflows (repeat, replicate, reproduce, reuse)
