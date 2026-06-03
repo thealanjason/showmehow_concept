@@ -25,8 +25,8 @@
 \newcommand{\authorOrcid}[1]{\texorpdfstring{\thinspace\orcidlink{#1}\thinspace}{}}
 
 % Article frontmatter
-\title{SHOWME.how: An Approach to Build Robust Computational Studies for Science and Engineering}
-\short{SHOWME.how: Robust Computational Studies}
+\title{SHOWME.how: Isolation, Interoperation, and Orchestration for FAIR Computational Research}
+\short{SHOWME.how: FAIR Computational Research}
 \author{%
   Alan Correa\authorOrcid{0009-0000-7947-7810}\authorRef{1},
   V Mithlesh Kumar\authorOrcid{0009-0000-9790-664X}\authorRef{1},
@@ -91,7 +91,7 @@ also tend to grow fragile over time, resulting in work that is hard to reproduce
 and hard to reuse.
 
 Computational research has often been approached as a problem of assembling
-appropriate software components and data pipelines. Scientific workflow systems,
+appropriate software components and data pipelines. Scientific workflow management systems (SWMSs),
 for instance, coordinate software and data flows~\cite{leser2026workflowsystems,suter2025terminology}
 but treat human collaborators as external operators rather than integral parts
 of the system. Adopting the broader view of the computational research ecosystem
@@ -109,10 +109,10 @@ and collaborators is far from straightforward. Having individually reproducible
 and reusable components does not guarantee a reproducible and reusable system.
 For example, two components that each run reliably in isolation may still fail
 when connected if their compute environments conflict.
-Some teams even resort to scientific workflow managers to build and operate
+Some teams even turn to SWMSs to build and operate
 these heterogeneous systems. However,
-these tools only automate execution and scheduling, offering no strategy for
-isolating components and making them interoperable.
+these tools automate execution and scheduling but leave isolation and
+interoperation strategies to the team.
 
 We characterise the practical challenges that motivate the approach
 (Section~\ref{sec:challenges}) and survey related work (Section~\ref{sec:related}).
@@ -455,8 +455,8 @@ service process.
 \label{sec:approach}
 % =============================================================================
 
-The SHOWME.how approach is built on three complementary pillars: Isolation,
-Interoperation, and Orchestration (Figure~\ref{fig:three_pillars}). Each pillar
+The SHOWME.how approach is built on three complementary pillars: \emph{Isolation},
+\emph{Interoperation}, and \emph{Orchestration} (Figure~\ref{fig:three_pillars}). Each pillar
 addresses a distinct class of challenges identified in
 Section~\ref{sec:challenges}. A study can adopt any one of the pillars independently,
 adding the others as it grows and its requirements evolve.
@@ -499,7 +499,7 @@ The following questions help identify it:
 \paragraph{Iso1 --- Package management.}
 Isolation at this level is achieved using a cross-platform, language-agnostic
 package manager. We recommend conda, mamba, or micromamba~\cite{conda,mamba},
-as they are natively supported by the scientific workflow management systems (SWMSs) we discuss in
+as they are natively supported by the SWMSs we discuss in
 Section~\ref{sec:orchestration}. A unit's software dependencies are specified
 in an \texttt{environment.yml} file, but this alone does not guarantee
 reproducibility: package versions and all their indirect dependencies are not
@@ -643,8 +643,7 @@ approach requires choosing a transport protocol and a serialization format. HTTP
 provides a simple, cross-language point-to-point interface with broad support.
 For the serialization format, JSON is acceptable when payloads are small, but
 its overhead grows with array size and can become a bottleneck for large
-numerical payloads; binary formats such as MessagePack~\cite{messagepack} or Protocol Buffers~\cite{protobuf} are
-significantly faster. UMBridge~\cite{seelinger2023umbridge} provides a
+numerical payloads; binary formats such as MessagePack~\cite{messagepack} or Protocol Buffers~\cite{protobuf} impose substantially lower serialisation overhead. UMBridge~\cite{seelinger2023umbridge} provides a
 ready-made implementation of this approach for model-based uncertainty
 quantification; it uses HTTP and JSON and requires no manual data transfer, but
 its interface accepts only array-based inputs and outputs, making it unsuitable
@@ -699,7 +698,7 @@ survey of the landscape is available in Suter et al.~\cite{suter2025terminology}
 and Dierckx et al.~\cite{dierckx2022evaluation}. Nextflow runs on Linux and
 macOS (with WSL on Windows); Snakemake is cross-platform. Workflow extensions
 in Nextflow require Groovy and the JVM; Snakemake extensions are written in
-Python. Both managers share the same unit contract,
+Python. Both managers share a similar unit contract,
 where each unit declares its inputs, outputs, script, and compute
 environment.\footnote{Snakemake's native container runtime is Apptainer; Docker
 images declared in the environment are converted automatically.} This contract
@@ -923,7 +922,7 @@ compared it against the existing implementations; adding the new emulator unit
 required no changes to any existing unit.
 The study is implemented in both Nextflow and Snakemake to demonstrate that the
 SHOWME.how approach is not tied to any particular workflow manager; both
-versions follow the same unit contracts and produce identical results.
+versions follow the same unit contracts and produce consistent results.
 GPU-accelerated execution is supported for PyTorch-based emulators in the SLURM
 profile.
 The study has been run on macOS and on a local Linux cluster.
@@ -1034,7 +1033,7 @@ what any particular study has been shown to satisfy. The hemolysis use case
 (Section~\ref{sec:usecases}) satisfies several criteria by direct observation:
 the study runs end-to-end without unit-code changes on Linux, macOS, and
 Windows, and diagnostic units were added post-hoc without modifying existing
-ones. All boundary files use HDF5 or CSV, and a new collaborator reproduced
+ones. All boundary files use language-agnostic formats (HDF5, NetCDF, CSV, or JSON), and a new collaborator reproduced
 the study with a \texttt{git clone}, a single conda environment for the workflow
 manager, and one run command. Numerical equivalence of outputs across operating systems has
 not been verified systematically; the study involves stochastic units, and
@@ -1053,7 +1052,7 @@ We presented SHOWME.how, an approach resting on three complementary pillars,
 Isolation, Interoperation, and Orchestration, that together let the heterogeneous components of a computational study be
 combined without forcing any collaborator to abandon
 their own language, operating system, or preferred tools. It treats
-heterogeneity across data, methods, compute, and people as the dimension to be
+heterogeneity across data, methods, compute environment, and people as the dimension to be
 managed, with reproducibility and reusability following as consequences rather
 than standing as the sole goals.
 
