@@ -116,7 +116,7 @@ pillars together allow a computational lab to tolerate perturbations, handle var
 withstand adverse conditions, and adapt to changes in data, units, and collaborators (Section~\ref{sec:robustness}).
 A gallery of use case implementations and living documentation is made
 available at \url{http://mbd-rwth.github.io/showmehow}.
-Finally, related work is discussed in Section~\ref{sec:relwork}.
+Finally, related work is discussed in Section~\ref{sec:related}.
 
 
 % =============================================================================
@@ -127,10 +127,10 @@ Finally, related work is discussed in Section~\ref{sec:relwork}.
 % AC===========================================================================
 We define a \emph{computational lab} as a goal-oriented sociotechnical system
 whose purpose is to enable scientific discovery and to address complex
-engineering challenges through computational means. Typical goals range from answering
-research questions, developing new models and algorithms, and understanding
-complex natural phenomena, to solving inverse problems, performing
-optimisation, and benchmarking competing methods for application-driven tasks.
+engineering challenges through computational means. Typical goals include 
+answering research questions, developing new models and algorithms, understanding 
+complex natural phenomena, solving inverse problems, performing optimisation, 
+and benchmarking competing methods.
 
 The computational lab is to computation-driven research what the wet lab is to
 experimental science. In both settings, work proceeds through a continuous
@@ -146,29 +146,29 @@ units, data, and human collaborators. A \emph{computational unit} couples a
 \emph{compute environment} in which it runs. The compute environment has two
 layers. The software ecosystem covers the programming language and operating
 system required by the implementation. The hardware platform covers the
-physical resources on which the computational unit executes. \emph{Data} comprises the inputs
-consumed by computational units, the outputs they produce, and the intermediate
-artefacts exchanged between them. \emph{Human collaborators} are the
-researchers, engineers, and domain experts who design and operate the lab, and
+physical or virtual resources, local or remote, on which the computational unit executes. 
+\emph{Data} comprises the inputs consumed by computational units, the outputs they 
+produce, and the intermediate artefacts exchanged between them. \emph{Human collaborators} 
+are the researchers, engineers, and domain experts who design and operate the lab, and
 interpret its results. In principle this role could also be filled by AI agents, but we
-restrict our attention to human collaborators in this work.
+restrict our attention solely to human collaborators in this work.
 
 The components of a computational lab are heterogeneous by nature.
 Data appears in many formats and structures, from geometries, boundary
-conditions, and observations as inputs, to quantities of interest,
+conditions, and observations as inputs, to quantities of interest, metrics,
 visualisations, and reports as outputs. These data may reside on local disks,
-in cloud object storage, or in community data repositories.
-Models and algorithms span physics-based simulators, data-driven surrogates,
-and frameworks for optimisation, inference, and analysis, each typically tied
-to a particular language. Compute environments vary in both software ecosystem and hardware platform.
-The software ecosystem ranges across programming languages such as Python,
+in cloud object storage, or in data repositories.
+Models and algorithms span physics-based simulators and their surrogates,
+data-driven models, and frameworks for optimisation, inference, and analysis,
+each typically tied to a particular language. Compute environments vary in both software ecosystem and hardware platform.
+  The software ecosystem ranges across programming languages such as Python,
 Julia, R, C++, Fortran, and MATLAB, among others, and operating systems such as Linux,
 macOS, and Windows. The hardware platform ranges across local workstations,
 HPC clusters, and cloud, with accelerators such as GPUs alongside CPUs. This diversity is not incidental but a
 direct consequence of the human collaborators themselves: domain specialists,
 methods experts, data scientists, and research software engineers each bring
-different skills, training, and preferred toolsets to the lab. A computational lab must therefore accommodate the tools and environments its
-collaborators bring, rather than impose a single one.
+different skills, training, and preferred toolsets to the lab. A computational lab should ideally accommodate the tools and environments its
+collaborators bring rather than imposing a single solution.
 
 The notion of a computational lab is distinct from several related terms. A
 \emph{scientific workflow} captures the pipeline of computational steps but
@@ -183,7 +183,7 @@ Figure~\ref{fig:heterogeneous} illustrates these components in a representative
 computational lab: the Bayesian parameter calibration of a shallow mass flow
 model used in geophysical hazard simulation.
 This inverse problem is solved by chaining three computational units: a
-forward simulator, a surrogate emulator, and a calibration process, each
+forward simulator, a surrogate model, and a calibration process, each
 developed and operated by collaborators with complementary expertise. How these components are made
 to work together is the subject of Section~\ref{sec:approach}.
 % AC===========================================================================
@@ -222,7 +222,7 @@ input is independently dispatched to a \texttt{Method} (a model or algorithm).
 The \texttt{Method} processes each input and produces an output; the
 outputs are collected by a \texttt{Collector} and aggregated into a
 dataset for downstream use.
-Common instances include training a surrogate emulator from a physics-based
+Common instances include training a surrogate model from a physics-based
 simulator using a space-filling sampling scheme (see Figure~\ref{fig:heterogeneous}),
 forward uncertainty propagation via Monte Carlo sampling where output statistics
 are derived from the ensemble, and Sobol sensitivity analysis where the full
