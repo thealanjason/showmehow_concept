@@ -734,18 +734,17 @@ changes.
 Incremental execution means the SWMS tracks which units have
 completed successfully and skips them on rerun, so a failure mid-run restarts
 from the last completed unit rather than from scratch. This becomes essential when individual units are long-running or the study must
-execute a large number of them.  Snakemake tracks completion via output
-file timestamps; a unit is considered done if its output exists and is newer
-than its inputs, though this can be fooled by manually copying or touching
-output files. It additionally tracks code, parameter, input, and
-software-environment changes by default through its rerun-triggers, so editing
-unit code triggers a rerun automatically. Nextflow achieves the same through a
-work directory with per-task hashes derived from inputs and script content; the
-work directory accumulates heavily over time and requires periodic cleanup with
-\texttt{nextflow clean}, and the \texttt{--resume} flag requires the work
-directory to still exist. Neither manager tracks changes to
-external dependencies outside the declared environment, and incremental
-execution assumes deterministic outputs. Both managers also capture basic
+execute a large number of them. Snakemake tracks completion through five default rerun-triggers: modification
+time, code, parameters, input files, and software environment; a unit is rerun
+whenever any of these change, and re-running the same command resumes
+automatically. Nextflow achieves the same through a work directory with
+per-task hashes that incorporate task inputs, script content, software
+environment, container, and a session identifier; re-running the same command
+starts fresh because the session identifier changes, so the \texttt{--resume}
+flag is required to resume from cached results. The work directory accumulates
+over time and requires periodic cleanup with \texttt{nextflow clean}.
+Beyond that, neither manager tracks changes to resources not declared as
+workflow inputs, and incremental execution assumes deterministic outputs. Both managers also capture basic
 execution provenance. Snakemake generates
 an HTML report with DAG visualisation, runtime statistics, and input/output
 records; Nextflow supports provenance through the \texttt{nf-prov} plugin~\cite{nfprov},
