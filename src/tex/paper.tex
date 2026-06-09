@@ -63,7 +63,7 @@
   model, and benchmarking of Gaussian process emulators for high-dimensional
   problems.%
 }
-\keywords{scientific workflows, heterogeneity, reproducibility, FAIR,
+\keywords{computational workflows, heterogeneity, reproducibility, FAIR,
           high-throughput computing, inverse problems, benchmarking}
 
 \begin{document}
@@ -75,7 +75,7 @@
 % =============================================================================
 
 Modern science and engineering has become highly computational, and increasingly
-collaborative. To answer a scientific question, solve an engineering problem,
+interdisciplinary, hence collaborative by design. To answer a scientific question, solve an engineering problem,
 or develop a novel method or design, we routinely rely on data from experiments,
 field observations, and simulations, on computational models and algorithms
 implemented in several programming languages, on computational infrastructure
@@ -85,17 +85,17 @@ In practice, a computational scientist who can develop and implement
 computational models may work alongside a domain expert who has access to field
 data and application-specific knowledge, a specialist in uncertainty
 quantification who has knowledge of probabilistic and statistical methods, and a
-research software engineer who has expertise in building reliable and
-maintainable research software. This diversity is intrinsic to real-world research and development teams and necessary for
+research software engineer (RSE) who has expertise in building reliable and
+maintainable research software. This diversity of competences is intrinsic to real-world research and development teams and necessary for
 productive science and engineering. Yet the systems these teams build are not only difficult to assemble, but
 also tend to grow fragile over time, resulting in work that is hard to reproduce
 and hard to reuse.
 
-Computational research has often been approached as a problem of assembling
+In contrast to this observation, computational research has often been approached as a problem of assembling
 appropriate software components and data pipelines. Scientific workflow management systems (SWMSs),
 for instance, coordinate software and data flows~\cite{leser2026workflowsystems,suter2025terminology},
 but we observe that they treat human collaborators as external operators rather than integral parts
-of the system. The computational research ecosystem (Figure~\ref{fig:ecosystem}) is a tightly
+of the system. The computational research ecosystem (Figure~\ref{fig:ecosystem}), however, is a tightly
 integrated system that binds together computational units, data, and human
 collaborators. This broader view reveals that heterogeneity is amplified by the
 collaborators themselves, each bringing preferred tools, languages, and
@@ -106,7 +106,11 @@ environments to the study.
   \includegraphics[width=0.95\linewidth]{figures/computational_research_ecosystem.pdf}
   \caption{The computational research ecosystem. A scientific workflow (dashed box)
            orchestrates data and computational units but treats human collaborators
-           as external.}
+           as external. Optimal utilization of a computational research ecosystem,
+           however, also requires factoring in the human collaborators: domain
+           specialists, methods experts, and RSEs. Visual encoding: computational
+           units are drawn as black-bordered boxes, data as blue clouds, and human
+           collaborators as green rectangles.}
   \label{fig:ecosystem}
 \end{figure}
 
@@ -116,7 +120,8 @@ exhibit, making findability, accessibility, interoperability, and reusability
 central goals in scientific research. Yet while these goals are well established, a concrete path to achieve them
 in the face of heterogeneity across data, methods, computational infrastructure,
 and collaborators is far from straightforward. Having individually reproducible
-and reusable components does not guarantee a reproducible and reusable system.
+and reusable components does not guarantee a reproducible and reusable system;
+none of the FAIR properties is inherited once components are pieced together.
 For example, two components that each run reliably in isolation may still fail
 when connected if their compute environments conflict.
 Some teams even turn to SWMSs to build and operate
@@ -148,7 +153,7 @@ Scientists and engineers conduct \emph{computational studies} to answer
 research questions, develop models, and address engineering challenges.
 The \emph{computational research ecosystem} supporting these studies is
 characterised by bidirectional interactions between three classes of
-components: computational units, data, and human collaborators.
+components: computational units, data, and human collaborators (Figure~\ref{fig:ecosystem}). 
 A \emph{computational unit} couples a
 \emph{model} or \emph{algorithm}, in its concrete implementation, with the
 \emph{compute environment} in which it runs. The compute environment has two
@@ -167,16 +172,15 @@ conditions, and observations as inputs, to quantities of interest, metrics,
 visualisations, and reports as outputs. These data may reside on local disks,
 in cloud object storage, or in data repositories.
 Models and algorithms span physics-based simulators and their surrogates,
-data-driven models, and frameworks for optimisation, inference, and analysis,
-each typically tied to a particular language. Compute environments vary in both software ecosystem and hardware platform.
+data-driven models, and frameworks for design, optimisation, inference, and analysis.
+Compute environments vary in both software ecosystem and hardware platform.
 The software ecosystem ranges across programming languages such as Python,
-Julia, R, C++, Fortran, and MATLAB, among others, and operating systems such as Linux,
+Julia, R, C++, Fortran, and MATLAB, each typically dictated by the models and algorithms in use, and operating systems such as Linux,
 macOS, and Windows. The hardware platform ranges across local workstations,
 HPC clusters, and cloud, with accelerators such as GPUs alongside CPUs. This diversity is not incidental but a
 direct consequence of the human collaborators themselves: domain specialists,
-methods experts, data scientists, and research software engineers each bring
-different skills, training, and preferred toolsets to the study. A computational study should ideally accommodate the tools and environments its
-collaborators bring rather than imposing a single solution.
+methods experts, data scientists, and RSEs each bring
+different skills, training, and preferred toolsets to the study.
 
 
 Figure~\ref{fig:heterogeneous} illustrates these components in a representative
@@ -184,38 +188,51 @@ computational study: the Bayesian parameter calibration of a shallow mass flow
 model used in geophysical hazard simulation.
 This inverse problem is solved by chaining three computational units: a
 forward simulator, a surrogate model, and a calibration process, each
-developed and operated by collaborators with complementary expertise. How these components are made
-to work together is the subject of Section~\ref{sec:approach}.
+developed and operated by collaborators with complementary expertise.
 % AC===========================================================================
 
 
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/computational_study_heterogeneity.pdf}
-  \caption{A computational study and the dimensions of its heterogeneity in
-           data, models and algorithms, and compute environment. \textbf{Top:}
-           a representative study in action: human collaborators with different
-           expertise coordinate computational units that consume and produce
-           data to carry out a research task. \textbf{Bottom:} the anatomy of
-           a computational unit, which transforms input data into output data
-           through a model or algorithm executed in a compute environment.
-           Visual encoding: computational units are drawn as black-bordered
-           boxes, data as blue clouds, and human collaborators as green
-           rectangles.}
+  \caption{A computational study and the dimensions of its heterogeneity in data,
+           computational units, and human collaborators. \textbf{Top:}
+           a representative study in action: human collaborators (green rectangles)
+           with different expertise coordinate computational units (black-bordered boxes)
+           that consume and produce data (blue clouds) to carry out a research task.
+           \textbf{Bottom:} the anatomy of a scientific workflow: a computational unit
+           transforms input data into output data through a model or algorithm executed
+           in a compute environment.}
   \label{fig:heterogeneous}
 \end{figure}
 
 % -----------------------------------------------------------------------------
-\subsection{Recurring Patterns}
+\subsection{Recurring Workflow Patterns}
 \label{sec:patterns}
 % -----------------------------------------------------------------------------
 
 % AC===========================================================================
-Three patterns recur across computational studies in science and engineering
-(Figure~\ref{fig:lab_patterns}); we introduce them here as they are
-referenced throughout the paper.
+Within the computational research ecosystem, human collaborators increasingly
+organise their computational studies using scientific workflows, in which we
+commonly encounter three recurring structural patterns
+(Figure~\ref{fig:workflow_patterns}). These patterns describe how computational
+units and data are coordinated; we introduce them here as they are referenced
+throughout the paper.
 
-\paragraph{Pattern A: Queue-Based Data Pipeline}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\linewidth]{figures/workflow_patterns.pdf}
+  \caption{Three recurring workflow patterns in computational studies: Pattern A
+           (parameter sweep pipeline), Pattern B (fan-out/fan-in pipeline), and
+           Pattern C (model-based $X$ in an online loop). Data is indicated
+           via blue clouds and computational units via black-bordered boxes.}
+  \label{fig:workflow_patterns}
+\end{figure}
+\FloatBarrier
+
+\paragraph{Pattern A: Parameter Sweep Pipeline}
+In a computational study using a parameter sweep pipeline, a single computational
+unit processes many distinct input data configurations.
 A \texttt{Generator} produces a large set of inputs (parameter sweeps,
 different initial conditions, or sampled configurations); each generated
 input is independently dispatched to a \texttt{Method} (a model or algorithm).
@@ -223,12 +240,15 @@ The \texttt{Method} processes each input and produces an output; the
 outputs are collected by a \texttt{Collector} and aggregated into a
 dataset for downstream use.
 Common instances include training a surrogate model from a physics-based
-simulator using a space-filling sampling scheme (see Figure~\ref{fig:heterogeneous}),
+simulator using a space-filling sampling scheme that samples uniformly from the
+relevant parameter ranges (see Figure~\ref{fig:heterogeneous}),
 forward uncertainty propagation via Monte Carlo sampling where output statistics
 are derived from the ensemble, and Sobol sensitivity analysis where the full
 (input, output) dataset is processed to compute variance-based sensitivity indices.
 
-\paragraph{Pattern B: Fan-Out/Fan-In}
+\paragraph{Pattern B: Fan-Out/Fan-In Pipeline}
+In a computational study using a fan-out/fan-in pipeline, many distinct
+computational units process the same input data.
 A \texttt{Generator} produces a shared input that is dispatched to multiple
 \texttt{Method} implementations; each produces an output, and the outputs
 are gathered by a \texttt{Collector} for comparison.
@@ -241,76 +261,65 @@ and inference diagnostics, where shared inference results are fanned out to
 complementary analyses and gathered into a report.
 
 \paragraph{Pattern C: Model-Based $X$ in an Online Loop}
+In a computational study using a model-based online loop, a model and an
+algorithm are coupled iteratively, exchanging data repeatedly until a desired
+objective is achieved.
 A \texttt{Model} and an \texttt{Algorithm} are coupled at run time as a
 client--server pair; the \texttt{Algorithm} drives the \texttt{Model}
 iteratively, requiring both to run simultaneously.
 Common instances include inverse uncertainty quantification, such as parameter
-calibration, model selection, and optimal experimental design, and optimisation, where
+calibration (see Figure~\ref{fig:heterogeneous}), model selection, and optimal
+experimental design, and optimisation, where
 the model is queried iteratively to infer properties or search for optimal
 inputs, and data assimilation, where the model state is updated sequentially
 as new observations arrive.
 
 \medskip
-In all three patterns, a computational unit may itself house tightly coupled
-internal components, such as an MPI-parallel multi-physics solver or a
-co-simulation.
+In any of these patterns, computational units can be instantiated in parallel
+when resources allow, reducing wall-clock time without changing the pattern
+structure. The patterns can also be composed. The \texttt{Method} in Pattern~A
+or Pattern~B may itself be a Pattern~C, where a model and an algorithm are
+coupled in an online loop. Furthermore, a computational unit may itself house
+tightly coupled internal components, such as an MPI-parallel multi-physics
+solver or a co-simulation.
 % AC===========================================================================
 
-\begin{figure}[!ht]
-  \centering
-  \includegraphics[width=0.85\linewidth]{figures/lab_patterns.pdf}
-  \caption{Three recurring patterns in computational studies: Pattern A
-           (queue-based data pipeline), Pattern B (fan-out/fan-in), and
-           Pattern C (model-based $X$ in an online loop). Visual encoding
-           as in Figure~\ref{fig:heterogeneous}.}
-  \label{fig:lab_patterns}
-\end{figure}
-
-% WIP=========================================================================
 
 
 % =============================================================================
-\section{Challenges in the Computational Research Ecosystem}
+\subsection{Challenges in the Computational Research Ecosystem}
 \label{sec:challenges}
 % =============================================================================
 
 % AC===========================================================================
-The computational research ecosystem is constantly evolving: computational units are updated or
-replaced, new data formats emerge, collaborators join or leave, new computing
-infrastructure becomes available, and problem sizes grow. Each such event is a
-potential point of failure. In practice, the approaches that teams use to manage
-heterogeneity fall short as the ecosystem evolves.
-
-\subsection{Current Practices and Their Limitations}
-\label{sec:challenges:approaches}
+The computational research ecosystem is constantly evolving: new data sources
+become available, computational units are updated, replaced, or added, and
+collaborators join or leave. Each such event is a potential point of failure.
+In practice, teams deal with the heterogeneity of the CRE in one of two ways,
+each of which falls short as the ecosystem evolves.
 
 \paragraph{Data feedforward.}
-Collaborators complete their part of the computation and manually transfer results
-to the next collaborator via shared drives or messaging. This preserves each
-collaborator's environment, at the cost of data versioning, traceability, and provenance.
+Human collaborators complete their part of the computation and manually transfer results
+to the next collaborator via shared drives or messaging. This allows each human collaborator to work with their preferred tools and
+workflows, at the cost of data versioning, traceability, and provenance.
 For studies following Pattern~C (Section~\ref{sec:patterns}), such as Bayesian
 parameter calibration, where a UQ method must query a forward model iteratively
 throughout the inference process, the approach is not merely inefficient but
 physically infeasible.
 
 \paragraph{Software wrappers.}
-An alternative is to target composability. Wrapper libraries expose models and
-algorithms implemented in different programming languages through a unified
-interface, allowing all computational units to run in a single shared environment.
-While this enables in-memory data passing, it ties the computational unit to
-the wrapper's implementation: when the underlying library updates, the wrapper
-must follow. Such wrappers frequently go stale, either breaking the study or
-locking it to an older, suboptimal version of the model or algorithm.
-Moreover, adopting a newly published model or algorithm in a different
-programming language requires a new wrapper or forgoing it entirely.
+Human collaborators target composability of computational units through wrapper
+libraries, which expose models and algorithms implemented in different
+programming languages through a unified interface. The responsibility of
+writing and maintaining these wrappers falls on human collaborators. When an
+underlying library updates, the wrapper must follow; if it does not, the study
+either breaks or is locked to an older version of the model or algorithm. As a
+result, such wrappers frequently go stale. Moreover, adopting a newly published
+model or algorithm in a different programming language requires writing a new
+wrapper or forgoing it entirely.
 
 The limitations of the above two approaches reveal deeper technical challenges
 that persist regardless of which is adopted.
-
-\subsection{Technical Challenges}
-\label{sec:challenges:challenges}
-
-\subsubsection*{Computational Units}
 
 \paragraph{Unit-level reproducibility.}
 A reproducible computational study requires that each computational unit be
@@ -332,14 +341,10 @@ may silently fail today, as upstream packages are updated, system libraries chan
 and package registries remove older versions. Without explicit environment pinning,
 the software ecosystem drifts over time and results become irreproducible.
 
-\subsubsection*{Data}
-
 \paragraph{Language-tied data formats.}
 Data is commonly serialised in formats tied to a specific language, for example
 \texttt{.pkl} or \texttt{.npy} in Python, or \texttt{.jld2} in Julia. These are
-convenient within one language ecosystem but become barriers when a new collaborator
-or method works in a different language, forcing data conversion or language
-adoption. Adopting a newly published model or algorithm in a different language compounds
+convenient within one programming language ecosystem but become barriers when a study needs to incorporate new human collaborators or computational units that require different programming languages, forcing data conversion or language adoption. Adopting a newly published model or algorithm compounds
 the problem, as it either cannot read existing data or requires a conversion
 step, adding friction precisely where rapid prototyping matters most.
 
@@ -350,8 +355,6 @@ debugging unexpected results requires reconstructing the chain of computation
 by hand, which is expensive when units involve
 long-running HPC jobs. More broadly, without provenance, scientific claims
 produced by the study cannot be verified by reviewers or collaborators.
-
-\subsubsection*{Compute Environment}
 
 \paragraph{Infrastructure portability.}
 Moving a computational study from a local workstation to an HPC cluster or cloud
@@ -376,7 +379,7 @@ challenges at their root.
 
 
 % =============================================================================
-\section{Related Work}
+\section{State of the Art}
 \label{sec:related}
 % =============================================================================
 
@@ -491,7 +494,7 @@ compute environment of each unit through package management and containerisation
 so that units remain self-contained and portable.
 
 The right isolation strategy depends on the specific requirements of the study.
-The following questions help identify it:
+The following questions help in identifying it:
 
 \begin{enumerate}
   \item What software ecosystem does each unit require, in terms of
@@ -501,14 +504,14 @@ The following questions help identify it:
   \item What level of reproducibility is required? Is numerical equivalence
         across platforms sufficient, or is a fully controlled environment that
         also pins system libraries and floating-point behaviour needed?
-  \item How heterogeneous is the study in terms of collaborators, operating
-        systems, CPU architectures, and infrastructure, and how much is it
-        expected to change?
+  \item How heterogeneous is the study in terms of human collaborators, operating
+        systems, CPU architectures, and infrastructure, and how much change is
+        expected?
 \end{enumerate}
 
 \paragraph{Iso1 --- Package management.}
 Isolation at this level is achieved using a cross-platform, language-agnostic
-package manager. We recommend conda, mamba, or micromamba~\cite{conda,mamba},
+package manager. We recommend conda or mamba~\cite{conda,mamba},
 as they are natively supported by the SWMSs we discuss in
 Section~\ref{sec:orchestration}. A unit's software dependencies are specified
 in an \texttt{environment.yml} file, but this alone does not guarantee
@@ -519,7 +522,7 @@ system and architecture, which pin every package to an exact version so that
 the software dependencies of a unit can be recreated identically on any
 matching platform. Per-OS, per-architecture locks are sufficient for numerically equivalent
 reproducibility, ensuring consistent results across the platforms each
-collaborator uses. Other package managers such as pixi~\cite{pixi} and the Julia
+human collaborator uses. Other package managers such as pixi~\cite{pixi} and the Julia
 package manager~\cite{juliapkg} have locking built in by default, but are not
 yet natively supported by the SWMSs we consider.
 
@@ -546,8 +549,7 @@ choice. Apptainer can build images directly from an
 Apptainer definition file, but when the build definition requires frequent
 iteration, the lack of layer-based caching makes development slow, as every change
 triggers a full rebuild. We therefore recommend
-the pipeline \texttt{Dockerfile} $\to$ Docker image $\to$ Apptainer
-\texttt{.sif}, converting the Docker image to an Apptainer image as a final
+the pipeline \texttt{Dockerfile} $\to$ Docker image $\to$ Apptainer \texttt{.sif} image, converting the Docker image to an Apptainer image as a final
 step. This keeps a single build definition that benefits from Docker's layer
 caching during development, while producing an Apptainer image ready for HPC
 deployment.
@@ -586,7 +588,7 @@ language for knowledge representation, here realised through concrete format
 and protocol choices at unit boundaries.
 
 The right interoperation strategy depends on the specific requirements of the
-study. The following questions help identify it:
+study. The following questions help in identifying it:
 
 \begin{enumerate}
   \item What is the nature of the data being exchanged? Is it tabular,
@@ -604,7 +606,7 @@ All data at unit boundaries must use language-agnostic interchange formats,
 so that adding a unit in a new programming language never requires changes to
 existing units. Language-specific binary formats such as \texttt{.pkl}
 (Python), \texttt{.npy} (NumPy/Python), and \texttt{.jld2} (Julia) should not
-appear at boundaries, as a collaborator using R or C++ would need to install
+appear at boundaries, as a human collaborator using R or C++ would need to install
 and maintain a Python or Julia runtime solely to read another unit's output.
 Text formats such as CSV and JSON are portable and an acceptable starting point
 when the data is not numerically heavy; they become a poor choice when the data
@@ -620,7 +622,7 @@ multi-dimensional arrays, and Apache Arrow/Parquet~\cite{apachearrow} for
 tabular data.
 
 \paragraph{Int2 --- Location.}
-The exchange mechanism depends on where the units execute. Filesystem exchange is the
+The exchange mechanism between computational units depends on where they execute. Filesystem exchange is the
 simplest starting point, with no network dependency; each
 unit writes its output to a file path and the next unit reads from it.
 This holds whether units execute on a single laptop or across nodes of an HPC
@@ -635,7 +637,7 @@ filesystem between them, such as a laptop and a cloud instance or two separate
 HPC systems. S3-compatible object storage suits this case well, as
 it is accessible from any infrastructure via HTTP and requires no shared mount.
 When the source or destination exposes a filesystem rather than an object store,
-such as a remote workstation or an existing dataset on a collaborator's server,
+such as a remote workstation or an existing dataset on a server,
 SFTP is more appropriate.
 
 \paragraph{Int3 --- Throughput.}
@@ -679,7 +681,7 @@ scheduling, data movement, and checkpointing, so the study can operate
 seamlessly as its needs grow.
 
 The right orchestration strategy depends on the specific requirements of the
-study. The following questions help identify it:
+study. The following questions help in identifying it:
 
 \begin{enumerate}
   \item Is the study complex enough to warrant a SWMS? How many units
@@ -786,9 +788,9 @@ exhaustive, but representative of the approach in practice.
 \label{sec:usecase:hemolysis}
 % -----------------------------------------------------------------------------
 
-The goal of this study is to infer the parameters of a computational hemolysis
-model that predicts red blood cell damage under mechanical stress, using
-Bayesian calibration against experimental measurements.
+In this study, we infer the parameters of a computational hemolysis model that
+predicts red blood cell damage under mechanical stress, using Bayesian
+calibration against experimental measurements.
 Three collaborators with complementary expertise contribute to the study: a
 domain expert using macOS and familiar with Python, who has access to
 experimental data and can assess whether results are physically plausible; a
@@ -826,9 +828,8 @@ model server writes a sentinel file containing its network port to a shared
 directory; the MCMC client starts and waits until the file is present before
 connecting (Orch4).
 
-The study was ported to HPC by updating the Nextflow executor profile and
-building Apptainer images from the container definition files; no unit code was
-modified. The Julia forward model was ported later by the RSE, yielding a
+We ported the study to HPC by updating the Nextflow executor profile and
+building Apptainer images from the container definition files, with no modifications to unit code. The Julia forward model was ported later by the RSE, yielding a
 10--100$\times$ speedup over the Python baseline. Diagnostic units were added
 after the study was first assembled without modifying any existing unit. Conda lock files and CI automation (Iso1, Iso4) remain to be added before
 wider distribution. The study is available at
@@ -839,9 +840,9 @@ wider distribution. The study is available at
 \label{sec:usecase:massflow}
 % -----------------------------------------------------------------------------
 
-The goal of this study is to calibrate the parameters of a geophysical mass flow
-simulator that models natural hazards such as landslides and avalanches, using
-Bayesian inference with MCMC against field observations.
+In this study, we calibrate the parameters of a geophysical mass flow simulator
+that models natural hazards such as landslides and avalanches, using Bayesian
+inference with MCMC against field observations.
 Because the forward simulator is computationally expensive, calibration proceeds
 in two stages: first a surrogate is trained on simulator runs, then MCMC inference proceeds
 using the surrogate.
@@ -879,13 +880,9 @@ interrupted run need not repeat the expensive simulation stage (Orch3).
 The surrogate server signals readiness by writing its network port to a sentinel
 file; the MCMC client connects once the file appears (Orch4).
 
-This was the first study developed using the SHOWME.how approach; building it is
-where the sentinel file pattern (Orch4) was first identified as a reusable
-solution for service-process coordination.
-An R server implementation of the UMBridge interface was not yet available when
-the study was developed; it was implemented locally here, and an upstream
-contribution is underway.
-The study has been executed end-to-end on Windows and Linux laptops and on a
+Building this study is where we first identified the sentinel file pattern (Orch4).
+An R server implementation of the UMBridge interface was not yet available; we implemented it locally, and an upstream contribution is underway.
+We have executed the study end-to-end on Windows and Linux laptops and on a
 local Linux cluster.
 The study is available at \url{https://github.com/thealanjason/bpc_massflow}.
 
@@ -894,7 +891,7 @@ The study is available at \url{https://github.com/thealanjason/bpc_massflow}.
 \label{sec:usecase:gpe}
 % -----------------------------------------------------------------------------
 
-The goal of this study is to benchmark Gaussian process emulator implementations
+In this study, we benchmark Gaussian process emulator (GPE) implementations
 against five benchmark datasets, with a focus on high-dimensional inputs and
 outputs.
 The study was developed by a master's student on macOS, proficient in Python, who
@@ -929,19 +926,19 @@ the main branch with results uploaded as a GitHub artifact.
 The master's student developed a new emulator, kPCA-PPGaSP, within the study and
 compared it against the existing implementations; adding the new emulator unit
 required no changes to any existing unit.
-The study is implemented in both Nextflow and Snakemake to demonstrate that the
-SHOWME.how approach is not tied to any particular workflow manager; both
-versions follow the same unit contracts and produce consistent results.
+We implement the study in both Nextflow and Snakemake to demonstrate that our
+approach is not tied to any particular workflow manager; both versions follow
+the same unit contracts and produce consistent results.
 GPU-accelerated execution is supported for PyTorch-based emulators in the SLURM
 profile.
-The study has been run on macOS and on a local Linux cluster.
+We have run the study on macOS and on a local Linux cluster.
 The study is available in two versions: Nextflow at
 \url{https://github.com/gary8564/gpe_bench_nxf} and Snakemake at
 \url{https://github.com/gary8564/gpe_bench_smk}.
 
 
 % =============================================================================
-\section{Assessing Robustness}
+\section{Robustness in the Computational Research Ecosystem}
 \label{sec:robustness}
 % =============================================================================
 
@@ -959,16 +956,16 @@ under such change. We operationalize this through four capabilities:
   \item \textbf{Handle variability}: remain effective across diverse operating
         systems, programming languages, hardware platforms, and data formats.
   \item \textbf{Withstand adverse conditions}: remain operational under
-        infrastructure migration and collaborator changes, and recoverable on
+        infrastructure migration and human collaborator changes, and recoverable on
         interruption of a long-running computation.
   \item \textbf{Support modular extensibility}: accommodate new computational
-        units and new collaborators added after the study is first assembled,
+        units and new human collaborators added after the study is first assembled,
         without breaking existing ones. Studies grow as new scientific questions
         are asked, new methods and data sources become available, and new compute
         infrastructure is adopted; a robustness framing must account for this.
 \end{enumerate}
 
-The three pillars of SHOWME.how were designed to address the failure modes of
+The three pillars of SHOWME.how were designed to address the failure modes presented in
 Section~\ref{sec:challenges}. By doing so, each pillar primarily
 contributes to one or more of these capabilities, though no capability is secured
 by a single pillar alone. Isolation mainly underpins the ability to tolerate
@@ -1024,7 +1021,7 @@ coverage explicit and checkable against a concrete study.
       & Iso1--Iso2, Int1 \\
       & Adding a unit requires no edits to and no revalidation of existing units.
       & Orch1, Iso1--Iso2, Int1 \\
-      & A new collaborator can reproduce the study from a clone, a single
+      & A new human collaborator can reproduce the study from a repository clone, a single
         environment for the workflow manager, and one run command.
       & Iso1--Iso2, Orch1 \\
     \bottomrule
@@ -1043,7 +1040,7 @@ what any particular study has been shown to satisfy. The hemolysis use case
 (Section~\ref{sec:usecases}) satisfies several criteria by direct observation:
 the study runs end-to-end without unit-code changes on Linux, macOS, and
 Windows, and diagnostic units were added post-hoc without modifying existing
-ones. All boundary files use language-agnostic formats (HDF5, NetCDF, CSV, or JSON), and a new collaborator reproduced
+ones. All boundary files use language-agnostic formats (HDF5, NetCDF, CSV, or JSON), and a new human collaborator reproduced
 the study with a \texttt{git clone}, a single conda environment for the workflow
 manager, and one run command. Numerical equivalence of outputs across operating systems has
 not been verified systematically; the study involves stochastic units, and
@@ -1060,7 +1057,7 @@ being fully implemented. That verification remains open.
 
 We presented SHOWME.how, an approach resting on three complementary pillars,
 Isolation, Interoperation, and Orchestration, that together let the heterogeneous components of a computational study be
-combined without forcing any collaborator to abandon
+combined without forcing any human collaborator to abandon
 their own language, operating system, or preferred tools. It treats
 heterogeneity across data, methods, compute environment, and people as the dimension to be
 managed, with reproducibility and reusability following as consequences rather
