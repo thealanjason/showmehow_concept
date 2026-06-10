@@ -193,7 +193,7 @@ developed and operated by collaborators with complementary expertise.
 % AC===========================================================================
 
 
-\begin{figure}[!ht]
+\begin{figure}[!hbp]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/computational_study_heterogeneity.pdf}
   \caption{A computational study and the dimensions of its heterogeneity in data,
@@ -344,6 +344,9 @@ may silently fail today, as upstream packages are updated, system libraries chan
 and package registries remove older versions. Without explicit environment pinning,
 the software ecosystem drifts over time and results become irreproducible.
 
+\medskip
+When human collaborators assemble computational units into a scientific workflow, further challenges emerge that become visible only from a systems perspective.
+
 \paragraph{Language-tied data formats.}
 Data is commonly serialised in formats tied to a specific language, for example
 \texttt{.pkl} or \texttt{.npy} in Python, or \texttt{.jld2} in Julia. These are
@@ -358,9 +361,6 @@ debugging unexpected results requires reconstructing the chain of computation
 by hand, which is expensive when units involve
 long-running HPC jobs. More broadly, without provenance, scientific claims
 produced by the study cannot be verified by reviewers or collaborators.
-
-\medskip
-When human collaborators assemble computational units into a scientific workflow, further challenges emerge that become visible only from a systems perspective.
 
 \paragraph{Infrastructure portability.}
 Moving a computational study from a local workstation to an HPC cluster or cloud
@@ -546,9 +546,7 @@ yet natively supported by the SWMSs we consider.
 
 \paragraph{Iso2 --- Containerisation.}
 When package managers with pinned lock files are not sufficient,
-containerisation is the next step. This applies to units that rely on legacy
-software, C++ or Fortran codebases with complex build systems, or dependencies
-not available on conda. A container packages not just the software dependencies but the entire
+containerisation is the next step. This applies to computational units whose dependencies are specified through complex build systems, are not available on conda, or require legacy software and operating systems. A container packages not just the software dependencies but the entire
 operating system layer, so that the unit is fully independent of the host
 operating system. Each unit requires a \texttt{Dockerfile} as its build definition, which can then be built into a container image using Docker~\cite{merkel2014docker},
 Podman~\cite{heon2018podman}, or any compatible container runtime. We recommend one container image per unit, so that a dependency change in one
@@ -578,7 +576,7 @@ Maintaining lock files across operating systems and architectures, and building
 container images across CPU architectures, is combinatorial work that does not
 scale when done manually. We recommend automating this process using continuous
 integration (CI). A matrix build can regenerate per-OS, per-architecture conda-lock
-files whenever the \texttt{environment.yml} changes, and build and publish
+files on every change to \texttt{environment.yml}, and build and publish
 multi-architecture container images whenever the \texttt{Dockerfile} changes.
 This shifts the maintenance burden from individual collaborators to a single
 automated pipeline.
@@ -657,8 +655,8 @@ When the source or destination exposes a filesystem rather than an object store,
 such as a remote workstation or an existing dataset on a server,
 SFTP is more appropriate.
 
-\paragraph{Int3 --- Throughput.}
-Throughput governs how much data can flow between units per unit time. It
+\paragraph{Int3 --- Bandwidth.}
+Bandwidth governs how much data can flow across computational units per unit time. It
 becomes the limiting factor in two situations: when units exchange large volumes
 of data in bulk over a network; and when units exchange data at high frequency,
 as in Pattern~C (Section~\ref{sec:patterns}), where one unit queries another
@@ -753,7 +751,8 @@ Incremental execution means the SWMS tracks which units have
 completed successfully and skips them on rerun, so a failure mid-run restarts
 from the last completed unit rather than from scratch. This becomes essential when individual units are long-running or the study must
 execute a large number of them. Snakemake tracks completion through five default rerun-triggers: modification
-time, code, parameters, input files, and software environment; a unit is rerun
+time and input files are tracked by file modification time, while code,
+parameters, and software environment are tracked by a hash; a unit is rerun
 whenever any of these change, and re-running the same command resumes
 automatically. Nextflow achieves the same through a work directory with
 per-task hashes that incorporate task inputs, script content, software
@@ -963,11 +962,12 @@ The study is available in two versions: Nextflow at
 
 
 % AC===========================================================================
-Sustaining productive science and engineering requires that a computational
-study absorb change as its units, data, collaborators, and infrastructure
-evolve. Drawing on the general engineering sense of the word~\cite{robustness_eng},
-a computational study is \emph{robust} if it continues to function correctly
-under such change. We operationalize this through four capabilities:
+Productive research in science and engineering depends on building and
+maintaining robust computational studies as the study grows and changes. Drawing on the general engineering sense of the word~\cite{robustness_eng},
+a computational study is \emph{robust} if it continues to produce reliable and accurate
+results under a wide range of practical conditions and perturbations. Just as FAIR
+properties are not inherited when components are assembled, neither is robustness ---
+it must be deliberately engineered into the study. We operationalize robustness through four capabilities:
 
 \begin{enumerate}
   \item \textbf{Tolerate perturbations}: remain functional when individual
@@ -975,18 +975,16 @@ under such change. We operationalize this through four capabilities:
   \item \textbf{Handle variability}: remain effective across diverse operating
         systems, programming languages, hardware platforms, and data formats.
   \item \textbf{Withstand adverse conditions}: remain operational under
-        infrastructure migration and human collaborator changes, and recoverable on
+        infrastructure migration and human collaborators joining or leaving, and recoverable on
         interruption of a long-running computation.
   \item \textbf{Support modular extensibility}: accommodate new computational
         units and new human collaborators added after the study is first assembled,
         without breaking existing ones. Studies grow as new scientific questions
-        are asked, new methods and data sources become available, and new compute
-        infrastructure is adopted; a robustness framing must account for this.
+        are asked and new methods and data sources become available; a robustness framing must account for it.
 \end{enumerate}
 
 The three pillars of SHOWME.how were designed to address the failure modes presented in
-Section~\ref{sec:challenges}. By doing so, each pillar primarily
-contributes to one or more of these capabilities, though no capability is secured
+Section~\ref{sec:challenges} --- component-level reproducibility, system-level coordination, and human collaborator harmonization. Each pillar addresses one or more of these capabilities, though none is secured
 by a single pillar alone. Isolation mainly underpins the ability to tolerate
 perturbations, Interoperation the ability to handle variability across
 languages and platforms, and Orchestration the ability to withstand adverse
@@ -998,8 +996,8 @@ coverage explicit and checkable against a concrete study.
   \small
   \renewcommand{\arraystretch}{1.3}
   \caption{Robustness checklist for a computational study. A study satisfying all
-           criteria can absorb change at every level without requiring
-           coordinated updates across its units.}
+           criteria continues to produce reliable and accurate results under a wide
+           range of practical conditions and perturbations.}
   \label{tab:robustness}
   \begin{tabularx}{\linewidth}{p{2.6cm}Xp{2.0cm}}
     \toprule
@@ -1014,10 +1012,9 @@ coverage explicit and checkable against a concrete study.
     \multirow{3}{2.6cm}{\textbf{Handle variability}}
       & No language-tied serialisation format at any unit boundary.
       & Int1 \\
-      & Workflow runs without unit-code changes on more than one operating system.
+      & Workflow runs without unit-code changes across all target operating systems.
       & Iso1--Iso3 \\
-      & Live-loop coupling (Pattern~C, Section~\ref{sec:patterns}) uses a
-        language-agnostic protocol.
+      & If needed, live-loop coupling (Pattern~C) uses a language-agnostic protocol.
       & Int3 \\
     \midrule
     \multirow{4}{2.6cm}{\textbf{Withstand adverse conditions}}
@@ -1026,23 +1023,24 @@ coverage explicit and checkable against a concrete study.
       & Iso3 \\
       & Executor configuration handles scheduler and runtime differences.
       & Orch2 \\
-      & Multi-architecture manifests and CI-automated builds kept current.
+      & CI is implemented to keep multi-architecture environment lock files and container builds current.
       & Iso2, Iso4 \\
-      & Checkpointing in the workflow manager makes long-running computations
-        recoverable on interruption.
+      & The study resumes from the last completed step on interruption.
       & Orch3 \\
     \midrule
-    \multirow{4}{2.6cm}{\textbf{Support modular extensibility}}
+    \multirow{5}{2.6cm}{\textbf{Support modular extensibility}}
       & Each unit declares inputs, outputs, script, and environment as a
         self-contained contract.
       & Orch1 \\
       & No unit bridges programming languages through wrapper code.
       & Iso1--Iso2, Int1 \\
-      & Adding a unit requires no edits to and no revalidation of existing units.
+      & Adding a new computational unit requires no changes to any existing one.
       & Orch1, Iso1--Iso2, Int1 \\
       & A new human collaborator can reproduce the study from a repository clone, a single
         environment for the workflow manager, and one run command.
       & Iso1--Iso2, Orch1 \\
+      & Any human collaborator can understand the purpose and interfaces of each computational unit from the unit contract alone.
+      & Orch1, Iso1--Iso2, Int1 \\
     \bottomrule
   \end{tabularx}
 
@@ -1056,9 +1054,9 @@ coverage explicit and checkable against a concrete study.
 
 This rubric is prescriptive: it states what a robust study must satisfy, not
 what any particular study has been shown to satisfy. The hemolysis use case
-(Section~\ref{sec:usecases}) satisfies several criteria by direct observation:
+(Section~\ref{sec:usecases}) satisfies several criteria:
 the study runs end-to-end without unit-code changes on Linux, macOS, and
-Windows, and diagnostic units were added post-hoc without modifying existing
+Windows, and diagnostic units were added after the study was first assembled without modifying existing
 ones. All boundary files use language-agnostic formats (HDF5, NetCDF, CSV, or JSON), and a new human collaborator reproduced
 the study with a \texttt{git clone}, a single conda environment for the workflow
 manager, and one run command. Numerical equivalence of outputs across operating systems has
