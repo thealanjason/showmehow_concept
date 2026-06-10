@@ -242,7 +242,7 @@ throughout the paper.
 
 \paragraph{Pattern A: Parameter Sweep Pipeline}
 In a computational study using a parameter sweep pipeline, a single computational
-unit processes many distinct input data configurations.
+unit processes many distinct input configurations.
 A \texttt{Generator} produces a large set of inputs (parameter sweeps,
 different initial conditions, or sampled configurations); each generated
 input is independently dispatched to a \texttt{Method} (a model or algorithm).
@@ -411,7 +411,7 @@ Section~\ref{sec:challenges}. Each covers one or more dimensions of the problem
 but leaves others open.
 
 \paragraph{Normative frameworks.}
-The FAIR principles establish normative criteria for making research outputs
+The FAIR principles establish normative criteria for research outputs to be
 Findable, Accessible, Interoperable, and
 Reusable~\cite{wilkinson2016fair,barker2022fair4rs,goble2020fairworkflows,wilkinson2025fairworkflows}
 across scientific data, software, and workflows, but do not prescribe how to achieve these properties when the components of a
@@ -542,7 +542,7 @@ The following questions help in identifying it:
 \end{enumerate}
 
 \paragraph{Iso1 --- Package management.}
-Isolation at this level is achieved using a cross-platform, language-agnostic
+Isolation at this level is achieved using a language-agnostic, cross-platform
 package manager. We recommend conda or mamba~\cite{conda,mamba},
 as they are natively supported by the SWMSs we discuss in
 Section~\ref{sec:orchestration}. A unit's software dependencies are specified
@@ -725,8 +725,8 @@ study. The following questions help in identifying it:
 \end{enumerate}
 
 \paragraph{Orch1 --- Automation.}
-A study that runs once, with few units and no need for cross-infrastructure
-execution, can be coordinated with a script. A SWMS becomes
+In a computational study with few computational units and human collaborators
+that runs once, execution can be coordinated with a script. A SWMS becomes
 necessary when the study needs to run repeatedly, when units span different
 environments or infrastructure, or when manual data movement and environment
 activation becomes a bottleneck.
@@ -872,9 +872,9 @@ The study is available at
 \label{sec:usecase:massflow}
 % -----------------------------------------------------------------------------
 
-In this study, we calibrate the parameters of a geophysical mass flow simulator~\cite{zhao2023psimpy,mergili2025ravaflow,oesterle2026avaframe}
-that models natural hazards such as landslides and avalanches, using Bayesian
-inference with MCMC against field observations.
+In this study, we use Bayesian inference with MCMC against field observations
+to calibrate the parameters of a geophysical mass flow simulator~\cite{zhao2023psimpy,mergili2025ravaflow,oesterle2026avaframe}
+that models natural hazards such as landslides and avalanches.
 Because the forward simulator is computationally expensive, calibration proceeds
 in two stages: first a surrogate is trained on simulator runs, then MCMC inference proceeds
 using the surrogate.
