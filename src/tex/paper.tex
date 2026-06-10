@@ -79,7 +79,7 @@ interdisciplinary, hence collaborative by design. To answer a scientific questio
 or develop a novel method or design, we routinely rely on data from experiments,
 field observations, and simulations, on computational models and algorithms
 implemented in several programming languages, on computational infrastructure
-ranging from laptops to HPC clusters and cloud, and on a diverse team of
+ranging from laptops to high-performance computing (HPC) clusters and cloud, and on a diverse team of
 collaborators having experience in different domains, methods, and tools.
 In practice, a computational scientist who can develop and implement
 computational models may work alongside a domain expert who has access to field
@@ -177,10 +177,11 @@ Compute environments vary in both software ecosystem and hardware platform.
 The software ecosystem ranges across programming languages such as Python,
 Julia, R, C++, Fortran, and MATLAB, each typically dictated by the models and algorithms in use, and operating systems such as Linux,
 macOS, and Windows. The hardware platform ranges across local workstations,
-HPC clusters, and cloud, with accelerators such as GPUs alongside CPUs. This diversity is not incidental but a
-direct consequence of the human collaborators themselves: domain specialists,
-methods experts, data scientists, and RSEs each bring
-different skills, training, and preferred toolsets to the study.
+HPC clusters, and cloud, with accelerators such as GPUs alongside CPUs. This diversity stems from the dynamic nature of the computational research
+ecosystem and from the decisions made by human collaborators when designing
+computational studies. Domain specialists, methods experts, data scientists,
+and RSEs each bring different skills, training, and preferred toolsets to the
+study.
 
 
 Figure~\ref{fig:heterogeneous} illustrates these components in a representative
@@ -267,12 +268,11 @@ objective is achieved.
 A \texttt{Model} and an \texttt{Algorithm} are coupled at run time as a
 client--server pair; the \texttt{Algorithm} drives the \texttt{Model}
 iteratively, requiring both to run simultaneously.
-Common instances include inverse uncertainty quantification, such as parameter
-calibration (see Figure~\ref{fig:heterogeneous}), model selection, and optimal
-experimental design, and optimisation, where
-the model is queried iteratively to infer properties or search for optimal
-inputs, and data assimilation, where the model state is updated sequentially
-as new observations arrive.
+Common instances include optimisation, where the model is queried iteratively
+to optimise an objective, inverse uncertainty quantification (UQ), such as
+parameter calibration (see Figure~\ref{fig:heterogeneous}), model selection,
+and optimal experimental design, and data assimilation, where observations are
+used to update posterior estimates.
 
 \medskip
 In any of these patterns, computational units can be instantiated in parallel
@@ -294,8 +294,9 @@ solver or a co-simulation.
 % AC===========================================================================
 The computational research ecosystem is constantly evolving: new data sources
 become available, computational units are updated, replaced, or added, and
-collaborators join or leave. Each such event is a potential point of failure.
-In practice, teams deal with the heterogeneity of the CRE in one of two ways,
+human collaborators join or leave. Each such event is a potential point of failure.
+In practice, teams of human collaborators performing computational studies deal with
+the heterogeneity of the computational research ecosystem in one of two ways,
 each of which falls short as the ecosystem evolves.
 
 \paragraph{Data feedforward.}
@@ -319,15 +320,14 @@ model or algorithm in a different programming language requires writing a new
 wrapper or forgoing it entirely.
 
 The limitations of the above two approaches reveal deeper technical challenges
-that persist regardless of which is adopted.
+that persist regardless of which is adopted, rooted in how computational units 
+and data are managed within the computational research ecosystem.
 
 \paragraph{Unit-level reproducibility.}
 A reproducible computational study requires that each computational unit be
 individually reproducible. In practice, missing or incomplete environment
-specifications often make it impossible to rebuild the software environment
-in which a unit was intended to run~\cite{repro_study}. Workflow-level reproducibility additionally
-requires explicit pinning of RNG seeds, operating system behaviour, and parallel
-execution ordering.
+specifications often make it impossible to rebuild the compute environment
+in which a unit was intended to run~\cite{repro_study}.
 
 \paragraph{Dependency conflicts.}
 Computational units developed independently sometimes require incompatible versions of
@@ -356,6 +356,9 @@ by hand, which is expensive when units involve
 long-running HPC jobs. More broadly, without provenance, scientific claims
 produced by the study cannot be verified by reviewers or collaborators.
 
+\medskip
+When human collaborators assemble computational units into a scientific workflow, further challenges emerge that become visible only from a systems perspective.
+
 \paragraph{Infrastructure portability.}
 Moving a computational study from a local workstation to an HPC cluster or cloud
 environment surfaces assumptions baked into computational units about the host
@@ -372,9 +375,13 @@ outputs go becomes error-prone and unsustainable. Interrupted runs compound the 
 requiring manual identification of completed steps and selective re-execution. 
 Such a process is both fragile and time-consuming.
 
+\paragraph{Human collaborator harmonization.}
+Human collaborators occupy distinct roles: a domain specialist brings the problem and domain expertise, a methods expert brings the algorithmic solution, a data scientist manages, curates, and analyses the data flowing through the study, and an RSE builds and maintains the necessary infrastructure for the study. They also span different stages of experience, from master's students contributing individual units to principal investigators guiding the overall computational study. A shared vocabulary and clear input/output interfaces for each computational unit must be negotiated across all these roles and stages.
+
 \medskip
-What we need is not more tools, but a principled approach that addresses these
-challenges at their root.
+Together, these challenges make it difficult to build and sustain computational
+studies involving heterogeneous data, computational units, and human collaborators
+in a way that supports productive and efficient research.
 % AC===========================================================================
 
 
@@ -462,17 +469,26 @@ should be serialised at unit boundaries, or how Pattern~C
 (Section~\ref{sec:patterns}) should be handled when a unit runs as a long-lived
 service process.
 
+\medskip
+Pursuing interdisciplinary computational research in a FAIR manner requires the
+ability to build and sustain computational studies that accommodate the
+heterogeneity of computational units, data, and human collaborators as the
+computational research ecosystem evolves. Existing approaches address either the reproducibility of individual units or
+the coordination across units and data, but none treats the computational
+research ecosystem as a whole. What we need is not more tools, but an approach
+that addresses all the identified challenges simultaneously.
 
 % =============================================================================
 \section{SHOWME.how}
 \label{sec:approach}
 % =============================================================================
 
-The SHOWME.how approach is built on three complementary pillars: \emph{Isolation},
-\emph{Interoperation}, and \emph{Orchestration} (Figure~\ref{fig:three_pillars}). Each pillar
-addresses a distinct class of challenges identified in
-Section~\ref{sec:challenges}. A study can adopt any one of the pillars independently,
-adding the others as it grows and its requirements evolve.
+We present SHOWME.how, an approach built on three complementary pillars:
+\emph{Isolation}, \emph{Interoperation}, and \emph{Orchestration}
+(Figure~\ref{fig:three_pillars}), to address the challenges identified in
+Section~\ref{sec:challenges}. Each pillar addresses a distinct class of these
+challenges. A study can adopt any one of the pillars independently, adding the
+others as it grows and its requirements evolve.
 
 \begin{figure}[!ht]
   \centering
@@ -487,12 +503,11 @@ adding the others as it grows and its requirements evolve.
 \label{sec:isolation}
 % -----------------------------------------------------------------------------
 
-The goal of Isolation is that any computational unit can participate in the study
+The goal of \emph{Isolation} is that any computational unit can be integrated into a computational study
 regardless of its programming language, operating system, and dependencies,
 without interfering with any other unit. We can achieve this by encapsulating the
 compute environment of each unit through package management and containerisation,
 so that units remain self-contained and portable.
-
 The right isolation strategy depends on the specific requirements of the study.
 The following questions help in identifying it:
 
@@ -579,14 +594,13 @@ artefact that can be built and automated in the same CI pipeline.
 \label{sec:interoperation}
 % -----------------------------------------------------------------------------
 
-The goal of Interoperation is that data can flow between computational units
+The goal of \emph{Interoperation} is that data can flow between computational units
 regardless of the programming language each unit uses or the infrastructure on
 which it runs. We can achieve this by adopting language-agnostic data interchange
 formats and platform-agnostic data exchange protocols at unit boundaries. This directly addresses the Interoperability dimension of
 FAIR~\cite{wilkinson2016fair}, which calls for data to use a broadly applicable
 language for knowledge representation, here realised through concrete format
 and protocol choices at unit boundaries.
-
 The right interoperation strategy depends on the specific requirements of the
 study. The following questions help in identifying it:
 
@@ -674,12 +688,11 @@ execution.
 \label{sec:orchestration}
 % -----------------------------------------------------------------------------
 
-The goal of Orchestration is that the study runs reliably end-to-end, even as
+The goal of \emph{Orchestration} is that the study runs reliably end-to-end, even as
 units are added, collaborators change, or the infrastructure it runs on evolves.
 We can achieve this by using a SWMS to automate
 scheduling, data movement, and checkpointing, so the study can operate
 seamlessly as its needs grow.
-
 The right orchestration strategy depends on the specific requirements of the
 study. The following questions help in identifying it:
 
@@ -832,7 +845,9 @@ We ported the study to HPC by updating the Nextflow executor profile and
 building Apptainer images from the container definition files, with no modifications to unit code. The Julia forward model was ported later by the RSE, yielding a
 10--100$\times$ speedup over the Python baseline. Diagnostic units were added
 after the study was first assembled without modifying any existing unit. Conda lock files and CI automation (Iso1, Iso4) remain to be added before
-wider distribution. The study is available at
+wider distribution.
+In this study, human collaborator harmonization, infrastructure portability, and coordination overhead, among others, were addressed through Iso1--3, Int1--3, and Orch1--4.
+The study is available at
 \url{https://github.com/nicodirkes/bpc_hemolysis}.
 
 % -----------------------------------------------------------------------------
@@ -884,6 +899,7 @@ Building this study is where we first identified the sentinel file pattern (Orch
 An R server implementation of the UMBridge interface was not yet available; we implemented it locally, and an upstream contribution is underway.
 We have executed the study end-to-end on Windows and Linux laptops and on a
 local Linux cluster.
+In this study, dependency conflicts, coordination overhead, and human collaborator harmonization, among others, were addressed through Iso1--3, Int1--3, and Orch1--4.
 The study is available at \url{https://github.com/thealanjason/bpc_massflow}.
 
 % -----------------------------------------------------------------------------
@@ -891,12 +907,11 @@ The study is available at \url{https://github.com/thealanjason/bpc_massflow}.
 \label{sec:usecase:gpe}
 % -----------------------------------------------------------------------------
 
-In this study, we benchmark Gaussian process emulator (GPE) implementations
-against five benchmark datasets, with a focus on high-dimensional inputs and
-outputs.
+In this study, we benchmark Gaussian process emulator (GPE) implementations against five benchmark datasets,
+with a focus on high-dimensional inputs and outputs.
 The study was developed by a master's student on macOS, proficient in Python, who
-was developing a new GPE method and needed a reproducible setup to compare it
-against existing implementations.
+needed to apply a GPE method from other domains to the geohazard domain and
+benchmark it against existing implementations in a reproducible way.
 The study fans out these datasets to multiple emulator implementations in
 parallel, then aggregates and scores the results (Pattern~B).
 The datasets span synthetic and real-world scenarios, generated locally or
@@ -923,8 +938,8 @@ CI automatically regenerates conda lock files whenever an environment
 specification changes (Iso4), and a benchmark run is triggered on every push to
 the main branch with results uploaded as a GitHub artifact.
 
-The master's student developed a new emulator, kPCA-PPGaSP, within the study and
-compared it against the existing implementations; adding the new emulator unit
+The master's student applied kPCA-PPGaSP, a GPE method from the literature, as a
+new unit and compared it against other implementations; adding the new unit
 required no changes to any existing unit.
 We implement the study in both Nextflow and Snakemake to demonstrate that our
 approach is not tied to any particular workflow manager; both versions follow
@@ -932,6 +947,7 @@ the same unit contracts and produce consistent results.
 GPU-accelerated execution is supported for PyTorch-based emulators in the SLURM
 profile.
 We have run the study on macOS and on a local Linux cluster.
+In this study, dependency conflicts, environment drift, and unit-level reproducibility, among others, were addressed through Iso1, Iso4, Int1--2, and Orch1--3.
 The study is available in two versions: Nextflow at
 \url{https://github.com/gary8564/gpe_bench_nxf} and Snakemake at
 \url{https://github.com/gary8564/gpe_bench_smk}.
@@ -974,7 +990,7 @@ languages and platforms, and Orchestration the ability to withstand adverse
 conditions and to support modular extensibility. The criteria in Table~\ref{tab:robustness} make that
 coverage explicit and checkable against a concrete study.
 
-\begin{table}[htb]
+\begin{table}[htpb]
   \centering
   \small
   \renewcommand{\arraystretch}{1.3}
@@ -984,7 +1000,7 @@ coverage explicit and checkable against a concrete study.
   \label{tab:robustness}
   \begin{tabularx}{\linewidth}{p{2.6cm}Xp{2.0cm}}
     \toprule
-    \textbf{Capability} & \textbf{Criterion} & \textbf{Approach} \\
+    \textbf{Capability} & \textbf{Criterion} & \textbf{Strategy} \\
     \midrule
     \multirow{2}{2.6cm}{\textbf{Tolerate perturbations}}
       & Per-OS, per-architecture lock file or container image per unit.
@@ -1045,7 +1061,10 @@ the study with a \texttt{git clone}, a single conda environment for the workflow
 manager, and one run command. Numerical equivalence of outputs across operating systems has
 not been verified systematically; the study involves stochastic units, and
 cross-OS equivalence is contingent on the random-state seeding criterion
-being fully implemented. That verification remains open.
+being fully implemented, which remains open. Nevertheless, the rubric remains
+useful independently of any particular use case: it provides a concrete set of
+criteria for assessing and improving robustness in any computational study
+operating within a heterogeneous and evolving computational research ecosystem.
 % AC===========================================================================
 
 
