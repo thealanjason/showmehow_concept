@@ -83,10 +83,11 @@ ranging from laptops to high-performance computing (HPC) clusters and cloud, and
 collaborators having experience in different domains, methods, and tools.
 In practice, a computational scientist who can develop and implement
 computational models may work alongside a domain expert who has access to field
-data and application-specific knowledge, a specialist in uncertainty
-quantification who has knowledge of probabilistic and statistical methods, and a
-research software engineer (RSE) who has expertise in building reliable and
-maintainable research software. This diversity of competences is intrinsic to real-world research and development teams and necessary for
+data and application-specific knowledge, and a specialist in uncertainty
+quantification who has knowledge of probabilistic and statistical methods.
+In addition, a data scientist who manages and curates the data flowing through
+the study, and a research software engineer (RSE) with expertise in building
+reliable and maintainable research software, often completes the research team. This diversity of competences is intrinsic to real-world research and development teams and necessary for
 productive science and engineering. Yet the systems these teams build are not only difficult to assemble, but
 also tend to grow fragile over time, resulting in work that is hard to reproduce
 and hard to reuse.
@@ -95,9 +96,7 @@ In contrast to this observation, computational research has often been approache
 appropriate software components and data pipelines. Scientific workflow management systems (SWMSs),
 for instance, coordinate software and data flows~\cite{leser2026workflowsystems,suter2025terminology},
 but we observe that they treat human collaborators as external operators rather than integral parts
-of the system. The computational research ecosystem (Figure~\ref{fig:ecosystem}), however, is a tightly
-integrated system that binds together computational units, data, and human
-collaborators. This broader view reveals that heterogeneity is amplified by the
+of the system. The computational research ecosystem (Figure~\ref{fig:ecosystem}), however, is where data, computational units, and human collaborators interact as integral parts of the same system. This broader view reveals that heterogeneity is amplified by the
 collaborators themselves, each bringing preferred tools, languages, and
 environments to the study.
 
@@ -129,13 +128,25 @@ these heterogeneous systems. However,
 these tools automate execution and scheduling but leave isolation and
 interoperation strategies to the team.
 
+Taken together, these observations point to a deeper issue: modern
+computational research can no longer be reduced to ensuring the FAIRness of
+individual components or assembling software components and data pipelines.
+The system that emerges is more than the sum of its parts and tends to grow
+fragile as it evolves. Hence, we view \emph{a computational study as a goal-oriented, strongly coupled
+sociotechnical system in which data, computational units, and human
+collaborators interact bidirectionally to generate value.} This perspective
+reveals challenges that existing approaches do not address: FAIR properties
+are not inherited when individual components are pieced together, and existing
+tools leave the practical challenges of building and maintaining such
+computational studies to human collaborators.
+
 We characterise the practical challenges that motivate the approach
-(Section~\ref{sec:challenges}) and survey related work (Section~\ref{sec:related}).
+(Section~\ref{sec:challenges}) and survey the state of the art (Section~\ref{sec:stateoftheart}).
 We then present SHOWME.how (Section~\ref{sec:approach}), an approach built on three
 complementary pillars, \emph{Isolation}, \emph{Interoperation}, and
 \emph{Orchestration}, that together allow a computational study to remain
 functional as it evolves. We apply the approach to three use cases spanning
-Bayesian calibration of a hemolysis and a geophysical mass flow model, and
+Bayesian calibration of a hemolysis model and a geophysical mass flow model, and
 benchmarking of Gaussian process emulators for high-dimensional problems
 (Section~\ref{sec:usecases}). We then show how the pillars operationalize
 robustness as the study evolves (Section~\ref{sec:robustness}). A gallery of
@@ -153,7 +164,7 @@ Scientists and engineers conduct \emph{computational studies} to answer
 research questions, develop models, and address engineering challenges.
 The \emph{computational research ecosystem} supporting these studies is
 characterised by bidirectional interactions between three classes of
-components: computational units, data, and human collaborators (Figure~\ref{fig:ecosystem}). 
+components: data, computational units, and human collaborators (Figure~\ref{fig:ecosystem}). 
 A \emph{computational unit} couples a
 \emph{model} or \emph{algorithm}, in its concrete implementation, with the
 \emph{compute environment} in which it runs. The compute environment has two
@@ -362,14 +373,18 @@ by hand, which is expensive when units involve
 long-running HPC jobs. More broadly, without provenance, scientific claims
 produced by the study cannot be verified by reviewers or collaborators.
 
-\paragraph{Infrastructure portability.}
-Moving a computational study from a local workstation to an HPC cluster or cloud
-environment surfaces assumptions baked into computational units about the host
-environment: container runtimes differ, schedulers vary, and what runs on a laptop
-may not run on HPC without unit-code changes. A further complication arises when
-different units must run on different infrastructure simultaneously, such as a
-computationally expensive model on HPC alongside a lighter unit running locally,
-requiring the study to coordinate across infrastructure boundaries at runtime.
+\paragraph{Platform portability.}
+Human collaborators work on different operating systems — Linux, macOS, and
+Windows — meaning that units must remain functional across host operating systems
+that may resolve package dependencies differently or behave differently at runtime.
+Additionally, moving a computational study from a local workstation to an HPC
+cluster or cloud environment reveals assumptions baked into computational units
+about the host environment: container runtimes differ, schedulers vary, and what
+runs on a laptop may not run on HPC without unit-code changes. A further
+complication arises when different units must run on different infrastructure
+simultaneously, such as a computationally expensive model on HPC alongside a
+lighter unit running locally, requiring the study to coordinate across
+infrastructure boundaries at runtime.
 
 \paragraph{Coordination overhead.}
 As a computational study grows in the number of units and the complexity of their
@@ -390,7 +405,7 @@ in a way that supports productive and efficient research.
 
 % =============================================================================
 \section{State of the Art}
-\label{sec:related}
+\label{sec:stateoftheart}
 % =============================================================================
 
 A range of tools and standards address parts of the challenges described in
@@ -475,7 +490,7 @@ service process.
 \medskip
 Pursuing interdisciplinary computational research in a FAIR manner requires the
 ability to build and sustain computational studies that accommodate the
-heterogeneity of computational units, data, and human collaborators as the
+heterogeneity of data, computational units, and human collaborators as the
 computational research ecosystem evolves. Existing approaches address either the reproducibility of individual units or
 the coordination across units and data, but none treats the computational
 research ecosystem as a whole. What we need is not more tools, but an approach
@@ -508,7 +523,9 @@ others as it grows and its requirements evolve.
 
 The goal of \emph{Isolation} is that any computational unit can be integrated into a computational study
 regardless of its programming language, operating system, and dependencies,
-without interfering with any other unit. We can achieve this by encapsulating the
+without interfering with any other unit, so that each human collaborator can
+contribute and develop computational units in isolation.
+We can achieve this by encapsulating the
 compute environment of each unit through package management and containerisation,
 so that units remain self-contained and portable.
 The right isolation strategy depends on the specific requirements of the study.
@@ -731,6 +748,9 @@ images declared in the environment are converted automatically.} This contract
 ties directly to both preceding pillars; the environment declaration activates
 the isolation strategy defined for each unit, and the input/output declarations
 specify where and how data crosses unit boundaries.
+The contract also serves as the shared interface through which human collaborators
+with different roles can understand and contribute to individual computational units
+without needing to understand the implementation of every other computational unit in the study.
 
 \paragraph{Orch2 --- Scheduling.}
 Scheduling determines where and how units execute. Both Nextflow and Snakemake
@@ -765,7 +785,7 @@ workflow inputs, and incremental execution assumes deterministic outputs. Both m
 execution provenance. Snakemake generates
 an HTML report with DAG visualisation, runtime statistics, and input/output
 records; Nextflow supports provenance through the \texttt{nf-prov} plugin~\cite{nfprov},
-which produces records in RO-Crate or PROV format but requires explicit
+which produces records in RO-Crate~\cite{soilandreyes2022rocrate} or PROV~\cite{lebo2013provo} format but requires explicit
 setup.
 
 \paragraph{Orch4 --- Service processes.}
@@ -848,7 +868,7 @@ building Apptainer images from the container definition files, with no modificat
 10--100$\times$ speedup over the Python baseline. Diagnostic units were added
 after the study was first assembled without modifying any existing unit. Conda lock files and CI automation (Iso1, Iso4) remain to be added before
 wider distribution.
-In this study, human collaborator harmonization, infrastructure portability, and coordination overhead, among others, were addressed through Iso1--3, Int1--3, and Orch1--4.
+In this study, human collaborator harmonization, platform portability, and coordination overhead, among others, were addressed through Iso1--3, Int1--3, and Orch1--4.
 The study is available at
 \url{https://github.com/nicodirkes/bpc_hemolysis}.
 
@@ -1075,48 +1095,50 @@ operating within a heterogeneous and evolving computational research ecosystem.
 \label{sec:conclusion}
 % =============================================================================
 
-We presented SHOWME.how, an approach resting on three complementary pillars,
-Isolation, Interoperation, and Orchestration, that together let the heterogeneous components of a computational study be
-combined without forcing any human collaborator to abandon
-their own language, operating system, or preferred tools. It treats
-heterogeneity across data, methods, compute environment, and people as the dimension to be
-managed, with reproducibility and reusability following as consequences rather
-than standing as the sole goals.
+We examined the computational research ecosystem and viewed a computational
+study as a goal-oriented, strongly coupled sociotechnical system in which data,
+computational units, and human collaborators interact bidirectionally to
+generate value. This new perspective revealed a set of practical challenges that
+stem from looking at the system as a whole: language-tied data formats,
+provenance, and portability across hardware platforms and operating systems;
+coordination overhead; and the
+harmonisation of human collaborators across distinct roles and experience
+levels. Existing approaches address either the reproducibility of individual
+units or the coordination across units and data, but none treats the
+computational research ecosystem as a whole and none ensures that FAIR
+properties are inherited when components are assembled into a study. What is
+needed is not more tools, but an approach that addresses all these challenges
+simultaneously. SHOWME.how addresses this gap through three complementary
+pillars: Isolation, Interoperation, and Orchestration, designed to manage
+heterogeneity in data, computational units, and human collaborators as
+computational studies evolve, with reproducibility and reusability following as
+consequences rather than standing as the sole goals.
 
-The resulting studies can be made agnostic to the language, data format, and
-hardware of each unit; individual units can be reused in new studies without
-modification; studies are portable from laptop to HPC and cloud with no code
-changes to the units themselves; and the approach reduces the wrapper-maintenance
-burden that has tied heterogeneous workflows to stale interfaces~\cite{leser2026workflowsystems}.
-We grounded the approach in three use cases spanning Bayesian
-calibration of a hemolysis and a geophysical mass flow model, and benchmarking
-of Gaussian process emulators for high-dimensional problems, between them
-exercising all three recurring workflow patterns.
-This is a concept paper, and the evidence we report is observational rather than a
-quantitative evaluation against the robustness rubric of
-Section~\ref{sec:robustness}, sufficient to demonstrate feasibility across
-diverse settings.
+Computational studies built following the SHOWME.how approach are reproducible,
+portable across hardware platforms and operating systems, reusable, and
+extensible to include new collaborators, methods, data, and infrastructure. Any
+computational unit can be integrated into the study regardless of the language
+it is written in or the operating system it runs on; data flows across unit
+boundaries in language-agnostic formats; and individual units can be carried
+into new studies without modification. We demonstrated the approach across three use cases spanning Bayesian
+calibration of a hemolysis model and a geophysical mass flow model, and
+benchmarking of Gaussian process emulators for high-dimensional problems, between them
+exercising all three recurring workflow patterns. We
+further showed that the three pillars operationalize robustness, allowing
+computational studies to tolerate perturbations, handle variability, withstand
+adverse conditions, and support modular extensibility
+(Section~\ref{sec:usecases}). The approach demonstrates that it works across
+diverse domains, team compositions, and workflow patterns.
 
-Several directions remain open. The robustness rubric invites quantitative
-criteria for scoring the robustness and heterogeneity coverage of a study, which we
-have not yet measured systematically. The tooling could be extended to better
-support emerging infrastructure such as heterogeneous accelerators and federated
-compute. It could also extend to streaming and digital-twin studies in which a model
-receives continuous live input and updates online, a setting that sits outside the
-batch directed-acyclic-graph paradigm of the workflow managers used here and would
-draw on the reactive and streaming managers catalogued by the Workflows Community
-Initiative~\cite{suter2025terminology}. Finally, a study following the SHOWME.how approach already makes
-explicit the unit contracts\footnote{The mapping onto CWL is
-direct rather than identical. A unit's inputs and outputs correspond to a
-\texttt{CommandLineTool}'s \texttt{inputs} and \texttt{outputs}, its script to
-\texttt{baseCommand} and \texttt{arguments}, and its environment to a
-\texttt{DockerRequirement} (or the lighter-weight \texttt{SoftwareRequirement}
-where containerisation is not used); CWL further distinguishes
-\texttt{CommandLineTool} documents from \texttt{Workflow} documents that wire
-steps together.}
-that portable workflow descriptions require, so describing studies in CWL and
-packaging them as RO-Crates~\cite{soilandreyes2022rocrate} for sharing through
-WorkflowHub~\cite{gustafsson2025workflowhub} is a natural next step.
+As future work, several directions are worth pursuing. The robustness rubric
+provides a prescriptive checklist; quantitative scoring and extension to new
+use cases call for further work. Streaming and digital-twin studies,
+where a model receives continuous live input, would require adopting SWMSs designed for streaming execution, such as those catalogued by the
+Workflows Community Initiative~\cite{suter2025terminology}. Finally, studies employing SHOWME.how already make explicit the unit contracts ---
+the input, output, script, and environment specifications of each unit --- that
+portable workflow descriptions require, making it straightforward to
+describe studies in CWL and package them as RO-Crates for sharing through
+WorkflowHub~\cite{soilandreyes2022rocrate,gustafsson2025workflowhub}.
 
 \FloatBarrier
 
