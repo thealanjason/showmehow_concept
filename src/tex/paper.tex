@@ -229,7 +229,7 @@ throughout the paper.
            via blue clouds and computational units via black-bordered boxes.}
   \label{fig:workflow_patterns}
 \end{figure}
-\FloatBarrier
+
 
 \paragraph{Pattern A: Parameter Sweep Pipeline}
 In a computational study using a parameter sweep pipeline, a single computational
@@ -273,6 +273,8 @@ to optimise an objective, inverse uncertainty quantification (UQ), such as
 parameter calibration (see Figure~\ref{fig:heterogeneous}), model selection,
 and optimal experimental design, and data assimilation, where observations are
 used to update posterior estimates.
+
+\FloatBarrier
 
 \medskip
 In any of these patterns, computational units can be instantiated in parallel
@@ -319,6 +321,7 @@ result, such wrappers frequently go stale. Moreover, adopting a newly published
 model or algorithm in a different programming language requires writing a new
 wrapper or forgoing it entirely.
 
+\medskip
 The limitations of the above two approaches reveal deeper technical challenges
 that persist regardless of which is adopted, rooted in how computational units 
 and data are managed within the computational research ecosystem.
