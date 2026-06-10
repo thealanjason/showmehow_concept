@@ -440,11 +440,11 @@ and data handling as key axes of variation; Nextflow~\cite{ditommaso2017nextflow
 and Snakemake~\cite{molder2021snakemake} are representative systems. For
 environment specification, SWMSs typically rely on conda or containers;
 Spack~\cite{gamblin2015spack} is natively supported by Nextflow as an
-HPC-focused alternative, while Nix and Guix~\cite{courtes2013guix} offer
+HPC-focused alternative, while Nix and Guix~\cite{vallet2022guix} offer
 stronger reproducibility guarantees through cryptographic hashing of the full
 dependency graph but require custom tooling outside standard SWMS environment
 directives.
-Dierckx et al.~\cite{dierckx2022evaluation} evaluate six SWMSs against
+Six SWMSs are evaluated in~\cite{diercks2023evaluation} against
 reproducibility and reuse criteria, finding per-process environment
 specification the most portable approach, but identifying an unresolved
 tradeoff between strongly-typed process interfaces and wrapper overhead that
@@ -480,7 +480,7 @@ tool ecosystem, limiting their accessibility for general-purpose computational
 studies.
 
 \paragraph{Complementary standards.}
-CWL~\cite{amstutz2016cwl} provides a vendor-neutral standard for portable
+CWL~\cite{crusoe2022cwl} provides a vendor-neutral standard for portable
 workflow definitions, specifying \emph{what} to run and how steps connect, but
 does not prescribe how units should be isolated from one another, how data
 should be serialised at unit boundaries, or how Pattern~C
@@ -577,7 +577,7 @@ single command, producing a multi-architecture manifest.}
 \paragraph{Iso3 --- HPC.}
 A Docker image is sufficient for laptop and cloud environments. HPC clusters
 typically restrict Docker for security reasons, making
-Apptainer~\cite{apptainer,kurtzer2017singularity} the container runtime of
+Apptainer~\cite{kurtzer2017singularity} the container runtime of
 choice. Apptainer can build images directly from an
 Apptainer definition file, but when the build definition requires frequent
 iteration, the lack of layer-based caching makes development slow, as every change
@@ -650,7 +650,7 @@ representations of 20--24 ASCII characters (160--192 bits) versus 64 bits in
 binary (a bloat factor of approximately 2.5--3$\times$).} For data consisting
 primarily of floating-point values, we recommend binary formats: HDF5~\cite{hdf5}
 or netCDF~\cite{netcdf} for hierarchical and structured data, Zarr~\cite{moore2023zarr} for
-multi-dimensional arrays, and Apache Arrow/Parquet~\cite{apachearrow} for
+multi-dimensional arrays, and Apache Parquet~\cite{apacheparquet} for
 tabular data.
 
 \paragraph{Int2 --- Location.}
@@ -694,7 +694,7 @@ its interface accepts only array-based inputs and outputs, making it unsuitable
 when units need to exchange data that is not array-based.
 
 As a rule of thumb, start with CSV or JSON and filesystem exchange; move to
-binary formats such as HDF5, Zarr, or Arrow/Parquet as the data becomes
+binary formats such as HDF5, Zarr, or Parquet as the data becomes
 primarily floating-point. For the exchange mechanism, switch to remote storage
 when the study spans separate infrastructures; adopt an HTTP-based client--server
 approach only when units need to exchange data at high frequency during
@@ -738,7 +738,7 @@ We use Nextflow~\cite{ditommaso2017nextflow} and
 Snakemake~\cite{molder2021snakemake} as representative examples throughout
 this section; SHOWME.how is not tied to any particular manager, and a broader
 survey of the landscape is available in Suter et al.~\cite{suter2025terminology}
-and Dierckx et al.~\cite{dierckx2022evaluation}. Nextflow runs on Linux and
+and~\cite{diercks2023evaluation}. Nextflow runs on Linux and
 macOS (with WSL on Windows); Snakemake is cross-platform. Workflow extensions
 in Nextflow require Groovy and the JVM; Snakemake extensions are written in
 Python. Both managers share a similar unit contract,
@@ -823,7 +823,7 @@ exhaustive, but representative of the approach in practice.
 \label{sec:usecase:hemolysis}
 % -----------------------------------------------------------------------------
 
-In this study, we infer the parameters of a computational hemolysis model that
+In this study, we infer the parameters of a computational hemolysis model~\cite{dirkes2026hemolysis} that
 predicts red blood cell damage under mechanical stress, using Bayesian
 calibration against experimental measurements.
 Three collaborators with complementary expertise contribute to the study: a
@@ -877,7 +877,7 @@ The study is available at
 \label{sec:usecase:massflow}
 % -----------------------------------------------------------------------------
 
-In this study, we calibrate the parameters of a geophysical mass flow simulator
+In this study, we calibrate the parameters of a geophysical mass flow simulator~\cite{zhao2023psimpy,mergili2025ravaflow,oesterle2026avaframe}
 that models natural hazards such as landslides and avalanches, using Bayesian
 inference with MCMC against field observations.
 Because the forward simulator is computationally expensive, calibration proceeds
@@ -940,7 +940,7 @@ The datasets span synthetic and real-world scenarios, generated locally or
 fetched from Figshare and Zenodo; all are preprocessed by a shared
 preprocessing unit.
 The emulator implementations span two language ecosystems, with twelve
-implementations built on GPyTorch~\cite{pytorch,gpytorch} in Python and
+implementations built on GPyTorch~\cite{gpytorch} in Python and
 RobustGaSP~\cite{robustgasp} in R, covering exact inference, deep kernel
 learning, dimensionality reduction, and multi-output methods.
 Each emulator unit reads the preprocessed data, runs independently, and writes
@@ -983,9 +983,9 @@ The study is available in two versions: Nextflow at
 
 % AC===========================================================================
 Productive research in science and engineering depends on building and
-maintaining robust computational studies as the study grows and changes. Drawing on the general engineering sense of the word~\cite{robustness_eng},
+maintaining robust computational studies as the study grows and changes. Drawing on the notion of robustness in sociotechnical systems~\cite{dlr79571},
 a computational study is \emph{robust} if it continues to produce reliable and accurate
-results under a wide range of practical conditions and perturbations. Just as FAIR
+results in the face of disturbances. Just as FAIR
 properties are not inherited when components are assembled, neither is robustness ---
 it must be deliberately engineered into the study. We operationalize robustness through four capabilities:
 

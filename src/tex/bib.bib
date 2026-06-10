@@ -49,8 +49,7 @@
   publisher    = {Zenodo},
   month        = jan,
   year         = {2018},
-  doi          = {10.5281/zenodo.4735634},
-  url          = {https://doi.org/10.5281/zenodo.4735634},
+  doi          = {10.5281/zenodo.4735633},
 }
 
 @article{kurtzer2017singularity,
@@ -64,34 +63,26 @@
   doi     = {10.1371/journal.pone.0177459},
 }
 
-@misc{apptainer,
-  author       = {{Apptainer Project}},
-  title        = {Apptainer: Application containers for {Linux}},
-  howpublished = {\url{https://apptainer.org}},
-  note         = {Hosted by the Linux Foundation; forked from Singularity in 2021},
-  year         = {2021},
-}
-
 @software{conda,
-  author  = {{Anaconda, Inc.}},
-  title   = {Conda: Package, dependency and environment management},
-  url     = {https://conda.io},
-  year    = {2017},
+  author  = {{conda contributors}},
+  license = {BSD-3-clause},
+  title   = {{conda: A system-level, binary package and environment manager running on all major operating systems and platforms.}},
+  url     = {https://github.com/conda/conda},
 }
 
 @software{mamba,
   author  = {{QuantStack} and {Mamba Contributors}},
-  title   = {Mamba: The Fast Cross-Platform Package Manager},
+  license = {BSD-3-Clause},
+  title   = {{mamba}},
   url     = {https://github.com/mamba-org/mamba},
-  year    = {2021},
 }
 
 @software{pixi,
   author  = {Arts, Ruben and Zalmstra, Bas and Vollprecht, Wolf and
              de Jager, Tim and Morcotilo, Nichita and Hofer, Julian},
-  title   = {pixi},
-  url     = {https://github.com/prefix-dev/pixi/releases/tag/v0.69.0},
-  note    = {BSD-3-Clause},
+  license = {BSD-3-Clause},
+  title   = {{pixi}},
+  url     = {https://github.com/prefix-dev/pixi/releases/tag/v0.70.2},
 }
 
 @article{juliapkg,
@@ -107,26 +98,23 @@
 
 % ── Interoperation ───────────────────────────────────────────────────────────
 
-@article{netcdf,
-  author  = {Rew, Russ and Davis, Glenn},
-  title   = {{NetCDF}: An Interface for Scientific Data Access},
-  journal = {{IEEE} Computer Graphics and Applications},
-  volume  = {10},
-  number  = {4},
-  pages   = {76--82},
-  year    = {1990},
-  doi     = {10.1109/38.56302},
+@software{netcdf,
+  author  = {{NSF Unidata} and Davis, Glenn and Rew, Russ and Heimbigner, Dennis and
+             Hartnett, Edward and Fisher, Ward and {Others}},
+  license = {BSD-3-Clause},
+  title   = {{NetCDF-C}},
+  url     = {https://github.com/Unidata/netcdf-c},
+  doi     = {10.5065/D6H70CW6},
 }
 
 @misc{messagepack,
-  author       = {Furuhashi, Sadayuki},
-  title        = {{MessagePack}: An Efficient Binary Serialization Format},
-  howpublished = {\url{https://msgpack.org}},
-  year         = {2008},
+  title        = {MessagePack: It's like JSON. but fast and small},
+  howpublished = {\url{https://msgpack.org/}},
+  note         = {Accessed: 2026-06-10},
 }
 
 @misc{protobuf,
-  author       = {{Google}},
+  author       = {{Protocol Buffers Contributors}},
   title        = {Protocol {Buffers}},
   howpublished = {\url{https://protobuf.dev}},
   year         = {2008},
@@ -140,18 +128,17 @@
 }
 
 @software{nfprov,
-  author = {{Seiler, Edmund} and {nextflow-io contributors}},
+  author = {{nextflow-io contributors}},
   title  = {nf-prov: Provenance plugin for {Nextflow}},
   url    = {https://github.com/nextflow-io/nf-prov},
-  year   = {2023},
+  year   = {2024},
+  note   = {Accessed: 2026-06-10},
 }
 
 @software{hdf5,
   author  = {{The HDF Group}},
   title   = {{Hierarchical Data Format, version 5}},
-  url     = {https://www.hdfgroup.org/HDF5/},
-  doi     = {10.5281/zenodo.17808614},
-  year    = {1997},
+  doi     = {10.5281/zenodo.17808558},
 }
 
 @inproceedings{moore2023zarr,
@@ -202,10 +189,10 @@
 }
 
 @article{barker2022fair4rs,
-  author  = {Michelle Barker and Neil P. Chue Hong and Daniel S. Katz and
-             Anna-Lena Lamprecht and Carlos Martinez-Ortiz and Fotis Psomopoulos and
-             Jennifer Harrow and Leyla Jael Castro and Morane Gruenpeter and
-             Paula Andrea Martinez and Tom Honeyman},
+  author  = {Barker, M. and Chue Hong, N.P. and Katz, D.S. and
+             Lamprecht, A.-L. and Martinez-Ortiz, C. and Psomopoulos, F. and
+             Harrow, J. and Castro, L.J. and Gruenpeter, M. and
+             Martinez, P.A. and Honeyman, T.},
   title   = {Introducing the {FAIR} Principles for research software},
   journal = {Scientific Data},
   volume  = {9},
@@ -285,27 +272,33 @@
 
 % ── Related Work ─────────────────────────────────────────────────────────────
 
-@article{dierckx2022evaluation,
-  author  = {Philipp Dierckx and Dennis Gl{\"a}ser and Ontje L{\"u}nsdorf and
+@article{diercks2023evaluation,
+  author  = {Philipp Diercks and Dennis Gl{\"a}ser and Ontje L{\"u}nsdorf and
              Michael Selzer and Bernd Flemisch and J{\"o}rg F. Unger},
   title   = {Evaluation of tools for describing, reproducing and reusing scientific workflows},
   journal = {{ING.GRID}},
-  year    = {2022},
+  volume  = {1},
+  number  = {1},
+  year    = {2023},
   doi     = {10.48694/inggrid.3726},
 }
 
 % ── Related Work: new entries ─────────────────────────────────────────────────
 
-@misc{amstutz2016cwl,
-  author       = {Peter Amstutz and Michael R. Crusoe and Neboj{\v{s}}a Tijani{\'c} and
-                  Brad Chapman and John Chilton and Michael Heuer and Andrey Kartashov and
-                  Dan Leehr and Herv{\'e} M{\'e}nager and Maya Nedeljkovich and
-                  Matt Scales and Stian Soiland-Reyes and Luka Stojanovic},
-  title        = {Common Workflow Language, v1.0},
-  year         = {2016},
-  howpublished = {Specification, Software Freedom Conservancy},
-  url          = {https://w3id.org/cwl/v1.0/},
-  doi          = {10.6084/m9.figshare.3115156.v2},
+@article{crusoe2022cwl,
+  author   = {Crusoe, Michael R. and Abeln, Sanne and Iosup, Alexandru and
+              Amstutz, Peter and Chilton, John and Tijani{\'c}, Neboj{\v{s}}a and
+              M{\'e}nager, Herv{\'e} and Soiland-Reyes, Stian and
+              Gavrilovi{\'c}, Bogdan and Goble, Carole and {The CWL Community}},
+  title    = {Methods Included: Standardizing Computational Reuse and Portability
+              with the Common Workflow Language},
+  journal  = {Communications of the {ACM}},
+  year     = {2022},
+  volume   = {65},
+  number   = {6},
+  pages    = {54--63},
+  doi      = {10.1145/3486897},
+  url      = {https://doi.org/10.1145/3486897},
 }
 
 @article{gustafsson2025workflowhub,
@@ -338,32 +331,35 @@
 }
 
 @inproceedings{gamblin2015spack,
-  author    = {Todd Gamblin and Matthew LeGendre and Michael R. Collette and
-               Gregory L. Lee and Adam Moody and Bronis R. {de Supinski} and
-               Scott Futral},
-  title     = {The {Spack} Package Manager: Bringing Order to {HPC} Software Chaos},
-  booktitle = {Proceedings of the International Conference for High Performance
-               Computing, Networking, Storage and Analysis ({SC}'15)},
+  author    = {Gamblin, Todd and LeGendre, Matthew and Collette, Michael R. and
+               Lee, Gregory L. and Moody, Adam and {de Supinski}, Bronis R. and
+               Futral, Scott},
+  title     = {{The Spack Package Manager: Bringing Order to HPC Software Chaos}},
+  booktitle = {{SC15}: International Conference for High-Performance Computing,
+               Networking, Storage and Analysis},
+  pages     = {1--12},
   year      = {2015},
-  publisher = {ACM},
+  month     = nov,
+  publisher = {{IEEE} Computer Society},
   doi       = {10.1145/2807591.2807623},
 }
 
-@inproceedings{courtes2013guix,
-  author    = {Ludovic Court{\`e}s},
-  title     = {Functional Package Management with {Guix}},
-  booktitle = {Proceedings of the 1st ACM SIGPLAN International Workshop on
-               Programming on Language Models},
-  pages     = {63--68},
-  year      = {2013},
+@article{vallet2022guix,
+  author  = {Vallet, Nicolas and Michonneau, David and Tournier, Simon},
+  title   = {Toward practical transparent verifiable and long-term reproducible research using {Guix}},
+  journal = {Scientific Data},
+  volume  = {9},
+  pages   = {597},
+  year    = {2022},
+  doi     = {10.1038/s41597-022-01720-9},
 }
 
-@misc{apachearrow,
+
+@misc{apacheparquet,
+  title        = {Apache Parquet},
   author       = {{Apache Software Foundation}},
-  title        = {Apache Arrow: A Cross-Language Development Platform for In-Memory Data},
-  howpublished = {Open-source project},
-  url          = {https://arrow.apache.org},
-  year         = {2016},
+  howpublished = {\url{https://parquet.apache.org/}},
+  year         = {n.d.},
 }
 
 @article{huber2020aiida,
@@ -442,29 +438,58 @@
 
 % ── Use Cases ────────────────────────────────────────────────────────────────
 
-@incollection{pytorch,
-  author    = {Paszke, Adam and Gross, Sam and Massa, Francisco and Lerer, Adam and
-               Bradbury, James and Chanan, Gregory and Killeen, Trevor and Lin, Zeming and
-               Gimelshein, Natalia and Antiga, Luca and Desmaison, Alban and
-               K{\"o}pf, Andreas and Yang, Edward and DeVito, Zachary and Raison, Martin and
-               Tejani, Alykhan and Chilamkurthy, Sasank and Steiner, Benoit and
-               Fang, Lu and Bai, Junjie and Chintala, Soumith},
-  title     = {{PyTorch}: An Imperative Style, High-Performance Deep Learning Library},
-  booktitle = {Advances in Neural Information Processing Systems 32},
-  pages     = {8024--8035},
-  year      = {2019},
-  publisher = {Curran Associates, Inc.},
+@software{oesterle2026avaframe,
+  author = {Oesterle, Felix and Wirbel, Anna and Fischer, Jan-Thomas and
+            Huber, Andreas and Spannring, Paula},
+  title  = {{AvaFrame}},
+  doi    = {10.5281/zenodo.4721446},
+  year   = {2026},
+}
+
+@article{mergili2025ravaflow,
+  author  = {Mergili, M. and Pfeffer, H. and Kellerer-Pirklbauer, A. and
+             Zangerl, C. and Pudasaini, S. P.},
+  title   = {r.avaflow v4, a multi-purpose landslide simulation framework},
+  journal = {Geoscientific Model Development},
+  volume  = {18},
+  number  = {23},
+  pages   = {9879--9896},
+  year    = {2025},
+  doi     = {10.5194/gmd-18-9879-2025},
+}
+
+@inproceedings{zhao2023psimpy,
+  author    = {Zhao, Hu and Yildiz, Anil and Bagherinejad, Nazanin and Kowalski, Julia},
+  title     = {{PSimPy}: {GP} emulation-based sensitivity analysis, uncertainty
+               quantification and calibration of landslide simulators},
+  booktitle = {14th International Conference on Applications of Statistics and
+               Probability in Civil Engineering ({ICASP14})},
+  year      = {2023},
+  address   = {Dublin, Ireland},
+  note      = {Available at \url{http://hdl.handle.net/2262/103542}},
+}
+
+@misc{dirkes2026hemolysis,
+  author        = {Dirkes, Nico and Behr, Marek},
+  title         = {A Practical Computational Hemolysis Model Incorporating
+                   Biophysical Properties of the Red Blood Cell Membrane},
+  year          = {2026},
+  eprint        = {2601.19994},
+  archivePrefix = {arXiv},
+  primaryClass  = {physics.flu-dyn},
+  url           = {https://arxiv.org/abs/2601.19994},
 }
 
 @inproceedings{gpytorch,
-  author    = {Gardner, Jacob and Pleiss, Geoff and Weinberger, Kilian Q. and
-               Bindel, David and Wilson, Andrew Gordon},
-  title     = {{GP}y{T}orch: Blackbox Matrix-Matrix {G}aussian Process Inference
+  author    = {Gardner, Jacob R. and Pleiss, Geoff and Bindel, David and
+               Weinberger, Kilian Q. and Wilson, Andrew Gordon},
+  title     = {{GPyTorch}: Blackbox Matrix-Matrix {Gaussian} Process Inference
                with {GPU} Acceleration},
-  booktitle = {Advances in Neural Information Processing Systems 31},
-  pages     = {7576--7586},
+  booktitle = {Proceedings of the 32nd International Conference on Neural
+               Information Processing Systems},
+  pages     = {7587--7597},
   year      = {2018},
-  publisher = {Curran Associates, Inc.},
+  publisher = {Curran Associates Inc.},
 }
 
 @techreport{lebo2013provo,
@@ -477,4 +502,12 @@
   type        = {{W3C} Recommendation},
   year        = {2013},
   url         = {https://www.w3.org/TR/prov-o/},
+}
+
+@techreport{dlr79571,
+  title    = {Definitions of Disturbance, Resilience and Robustness in {ATM} Context},
+  author   = {Gluchshenko, Olga},
+  month    = {December},
+  year     = {2012},
+  url      = {https://elib.dlr.de/79571/},
 }
