@@ -49,7 +49,7 @@
   Yet the principles define goals without specifying how to achieve them given
   heterogeneity in the components required by a computational study.
   In practice, teams assemble ad-hoc approaches that grow fragile as components
-  evolve, making reproducibility and reuse difficult to sustain.
+  evolve, making reproducibility and reusability difficult to sustain.
   We present SHOWME.how, an approach built on three complementary pillars,
   \emph{Isolation}, \emph{Interoperation}, and \emph{Orchestration}.
   Each software component is isolated with its dependencies in a self-contained
@@ -105,11 +105,9 @@ environments to the study.
   \includegraphics[width=0.95\linewidth]{figures/computational_research_ecosystem.pdf}
   \caption{The computational research ecosystem. A scientific workflow (dashed box)
            orchestrates data and computational units but treats human collaborators
-           as external. Optimal utilization of a computational research ecosystem,
-           however, also requires factoring in the human collaborators: domain
-           specialists, methods experts, and RSEs. Visual encoding: computational
-           units are drawn as black-bordered boxes, data as blue clouds, and human
-           collaborators as green rectangles.}
+           as external. Optimal utilization, however, requires treating all three
+           as integral parts. Visual encoding: computational units (black-bordered
+           boxes), data (blue clouds), human collaborators (green rectangles).}
   \label{fig:ecosystem}
 \end{figure}
 
@@ -132,7 +130,7 @@ Taken together, these observations point to a deeper issue: modern
 computational research can no longer be reduced to ensuring the FAIRness of
 individual components or assembling software components and data pipelines.
 The system that emerges is more than the sum of its parts and tends to grow
-fragile as it evolves. Hence, we view \emph{a computational study as a goal-oriented, strongly coupled
+fragile as it evolves. Hence, we frame \emph{a computational study as a goal-oriented, strongly coupled
 sociotechnical system in which data, computational units, and human
 collaborators interact bidirectionally to generate value.} This perspective
 reveals challenges that existing approaches do not address: FAIR properties
@@ -252,7 +250,7 @@ The \texttt{Method} processes each input and produces an output; the
 outputs are collected by a \texttt{Collector} and aggregated into a
 dataset for downstream use.
 Common instances include training a surrogate model from a physics-based
-simulator using a space-filling sampling scheme that samples uniformly from the
+simulator using a space-filling sampling scheme that spreads samples across the
 relevant parameter ranges (see Figure~\ref{fig:heterogeneous}),
 forward uncertainty propagation via Monte Carlo sampling where output statistics
 are derived from the ensemble, and Sobol sensitivity analysis where the full
@@ -416,8 +414,7 @@ but leaves others open.
 The FAIR principles establish normative criteria for making research outputs
 Findable, Accessible, Interoperable, and
 Reusable~\cite{wilkinson2016fair,barker2022fair4rs,goble2020fairworkflows,wilkinson2025fairworkflows}
-across scientific data, software, and workflows, but specify what outputs should
-exhibit rather than how to achieve these properties when the components of a
+across scientific data, software, and workflows, but do not prescribe how to achieve these properties when the components of a
 computational study are heterogeneous.
 
 \paragraph{Software dependency management.}
@@ -660,9 +657,9 @@ unit writes its output to a file path and the next unit reads from it.
 This holds whether units execute on a single laptop or across nodes of an HPC
 cluster with a shared filesystem such as Lustre or GPFS. On Windows and macOS,
 Docker containers run inside a Linux virtual machine and cannot directly access
-the host's inter-process communication mechanisms; filesystem exchange remains
-the only reliable option for same-machine exchange between a containerised unit
-and a non-containerised one. We recommend starting with filesystem exchange and
+the host's inter-process communication mechanisms; filesystem exchange and
+network protocols are the only reliable options for same-machine exchange between
+a containerised unit and a non-containerised one. We recommend starting with filesystem exchange and
 switching to remote storage
 only when the study spans separate infrastructures with no shared
 filesystem between them, such as a laptop and a cloud instance or two separate
@@ -847,12 +844,10 @@ The computational units are isolated in dedicated conda environments (Iso1);
 the Julia forward model is instead containerised in Docker (Iso2), as it cannot
 be managed through conda. A container definition file that mimics the
 Dockerfile creates the Apptainer image for HPC deployment (Iso3), so porting
-requires no modifications to unit code. Field measurements are fetched from a remote repository at setup time and
+requires no modifications to unit code. Experimental data are fetched from a remote repository at setup time and
 preprocessed to CSV; MCMC outputs are written in NetCDF using the ArviZ
 interface. Both are language-agnostic formats exchanged through the filesystem,
-so any unit can consume results regardless of language (Int1, Int2); on macOS
-and Windows, filesystem exchange is the only reliable option between the
-containerised Julia model and the MCMC client. The MCMC client queries the
+so any unit can consume results regardless of language (Int1, Int2). The MCMC client queries the
 forward model via the UMBridge interface, so the two units exchange data
 without any language bridging (Int3).
 Each unit declares its inputs, outputs, script, and environment as a
@@ -917,7 +912,7 @@ interrupted run need not repeat the expensive simulation stage (Orch3).
 The surrogate server signals readiness by writing its network port to a sentinel
 file; the MCMC client connects once the file appears (Orch4).
 
-Building this study is where we first identified the sentinel file pattern (Orch4).
+Assembling this study is where we first identified the sentinel file pattern (Orch4).
 An R server implementation of the UMBridge interface was not yet available; we implemented it locally, and an upstream contribution is underway.
 We have executed the study end-to-end on Windows and Linux laptops and on a
 local Linux cluster.
@@ -1095,7 +1090,7 @@ operating within a heterogeneous and evolving computational research ecosystem.
 \label{sec:conclusion}
 % =============================================================================
 
-We examined the computational research ecosystem and viewed a computational
+We examined the computational research ecosystem and framed a computational
 study as a goal-oriented, strongly coupled sociotechnical system in which data,
 computational units, and human collaborators interact bidirectionally to
 generate value. This new perspective revealed a set of practical challenges that
