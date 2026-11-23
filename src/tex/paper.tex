@@ -541,6 +541,8 @@ The following questions help in identifying it:
         expected?
 \end{enumerate}
 
+The following strategies build on each other and can be adopted as needed.
+
 \paragraph{Iso1 --- Package management.}
 Isolation at this level is achieved using a language-agnostic, cross-platform
 package manager. We recommend conda or mamba~\cite{conda,mamba},
@@ -629,6 +631,8 @@ study. The following questions help in identifying it:
   \item How might the interoperation needs of the study grow? Will the volume
         of data increase, or will the heterogeneity of units exchanging it?
 \end{enumerate}
+
+Together, the following strategies address these questions.
 
 \paragraph{Int1 --- Data formats.}
 All data at unit boundaries must use language-agnostic interchange formats,
@@ -723,6 +727,8 @@ study. The following questions help in identifying it:
   \item Does the study require any unit to run as a long-lived service process,
         as in Pattern~C, rather than completing after a single execution?
 \end{enumerate}
+
+The following strategies address these questions in order.
 
 \paragraph{Orch1 --- Automation.}
 In a computational study with few computational units and human collaborators
