@@ -36,25 +36,30 @@ rule setup_tinytex:
         "env-tinytex.yml"
     shell:
         r"""
-        # Match the repository to the TeX Live release bundled with tinytex;
-        # CTAN's live repository may already have advanced to a newer release.
+        # Try CTAN's live repository first. If TinyTeX is behind the current
+        # release, fall back to the frozen repository for its TeX Live year.
         TEXLIVE_YEAR=$(tlmgr --version |
-            sed -nE 's/.*TeX Live .* version ([0-9]{4}).*/\1/p')
-        if [[ ! "$TEXLIVE_YEAR" =~ ^[0-9]{4}$ ]]; then
+            sed -nE 's/.*TeX Live .* version ([0-9]{{4}}).*/\1/p')
+        if [[ ! "$TEXLIVE_YEAR" =~ ^[0-9]{{4}}$ ]]; then
             echo "Could not determine the TeX Live version from tlmgr --version." >&2
             tlmgr --version >&2
             exit 1
         fi
 
-        REPOSITORY="https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/${TEXLIVE_YEAR}/tlnet-final"
-        echo "Using TeX Live ${TEXLIVE_YEAR} package repository: ${REPOSITORY}"
-        if ! tlmgr option repository "$REPOSITORY"; then
-            echo "Could not configure the TeX Live ${TEXLIVE_YEAR} package repository." >&2
-            exit 1
-        fi
-        if ! tlmgr install hypcap caption booktabs pgf orcidlink rsfs courier placeins multirow tools; then
-            echo "Could not install required packages from the TeX Live ${TEXLIVE_YEAR} repository (${REPOSITORY})." >&2
-            exit 1
+        REPOSITORY="https://mirror.ctan.org/systems/texlive/tlnet"
+        echo "Trying CTAN package repository: $REPOSITORY"
+        if ! tlmgr option repository "$REPOSITORY" ||
+            ! tlmgr install hypcap caption booktabs pgf orcidlink rsfs courier placeins multirow tools; then
+            REPOSITORY="https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/$TEXLIVE_YEAR/tlnet-final"
+            echo "Trying TeX Live $TEXLIVE_YEAR package repository: $REPOSITORY"
+            if ! tlmgr option repository "$REPOSITORY"; then
+                echo "Could not configure the TeX Live $TEXLIVE_YEAR package repository." >&2
+                exit 1
+            fi
+            if ! tlmgr install hypcap caption booktabs pgf orcidlink rsfs courier placeins multirow tools; then
+                echo "Could not install required packages from the TeX Live $TEXLIVE_YEAR repository ($REPOSITORY)." >&2
+                exit 1
+            fi
         fi
         """
 
