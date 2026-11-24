@@ -866,8 +866,7 @@ model server writes a sentinel file containing its network port to a shared
 directory; the MCMC client starts and waits until the file is present before
 connecting (Orch4).
 
-We ported the study to HPC by updating the Nextflow executor profile and
-building Apptainer images from the container definition files, with no modifications to unit code. The Julia forward model was ported later by the RSE, yielding a
+The Julia forward model was ported later by the RSE, yielding a
 10--100$\times$ speedup over the Python baseline. Diagnostic units were added
 after the study was first assembled without modifying any existing unit.
 For HPC, we added a cluster profile that selects Apptainer instead of Docker,
@@ -1079,7 +1078,7 @@ coverage explicit and checkable against a concrete study.
 
 This rubric is prescriptive: it states what a robust study must satisfy.
 In their current state, the three use cases (Section~\ref{sec:usecases}) each satisfy a substantial subset of the criteria.
-The hemolysis and GPE studies provide per-OS, per-architecture lock files.
+The hemolysis and GPE studies provide a per-OS, per-architecture lock file or container image for each unit.
 The hemolysis study also runs end-to-end without unit-code changes on Linux, macOS, and Windows, and a new human collaborator reproduced it from a repository clone.
 The mass flow study couples its units in a live loop through a language-agnostic protocol and, on interruption, resumes without rerunning completed simulations.
 Furthermore, the GPE benchmark, available in both Nextflow and Snakemake, shows that the unit contract criterion makes a study independent of the SWMS.
