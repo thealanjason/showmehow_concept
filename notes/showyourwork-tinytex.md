@@ -73,10 +73,11 @@ Bundle quirks:
 - `subcaption.sty` lives inside the `caption` bundle.
 - `pgf` covers tikz.
 
-Tinytex/TeX Live version mismatch: a fresh tinytex may be TL2025 while CTAN
-serves TL2026. Pin tlmgr to the frozen 2025 archive:
+Tinytex/TeX Live version mismatch: tlmgr may default to a historical
+repository that does not match the TeX Live release bundled with tinytex.
+Use CTAN's live repository so the package source tracks the installed release:
 ```
-tlmgr option repository https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2025/tlnet-final
+tlmgr option repository https://mirror.ctan.org/systems/texlive/tlnet
 ```
 
 ## Local pdflatex build (manual)

@@ -36,11 +36,10 @@ rule setup_tinytex:
         "env-tinytex.yml"
     shell:
         r"""
-        # Pin tlmgr to the frozen TL2025 archive (tinytex from conda is
-        # currently TL2025; CTAN now serves TL2026 which tlmgr refuses to mix).
+        # Use the live TeX Live repository to match the version bundled with
+        # tinytex; a fixed historical repository can be a different release.
         tlmgr option repository \
-            https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2025/tlnet-final \
-            || true
+            https://mirror.ctan.org/systems/texlive/tlnet
         tlmgr install hypcap caption booktabs pgf orcidlink rsfs courier placeins multirow tools
         """
 
