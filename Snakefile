@@ -39,8 +39,8 @@ rule setup_tinytex:
         # Match the repository to the TeX Live release bundled with tinytex;
         # CTAN's live repository may already have advanced to a newer release.
         TEXLIVE_YEAR=$(tlmgr --version |
-            sed -nE 's/.*TeX Live .* version ([0-9]{4}).*/\1/p')
-        if [[ ! "$TEXLIVE_YEAR" =~ ^[0-9]{4}$ ]]; then
+            sed -nE 's/.*TeX Live .* version ([0-9]{{4}}).*/\1/p')
+        if [[ ! "$TEXLIVE_YEAR" =~ ^[0-9]{{4}}$ ]]; then
             echo "Could not determine the TeX Live version from tlmgr --version." >&2
             tlmgr --version >&2
             exit 1
