@@ -36,11 +36,26 @@ rule setup_tinytex:
         "env-tinytex.yml"
     shell:
         r"""
-        # Use the live TeX Live repository to match the version bundled with
-        # tinytex; a fixed historical repository can be a different release.
-        tlmgr option repository \
-            https://mirror.ctan.org/systems/texlive/tlnet
-        tlmgr install hypcap caption booktabs pgf orcidlink rsfs courier placeins multirow tools
+        # Match the repository to the TeX Live release bundled with tinytex;
+        # CTAN's live repository may already have advanced to a newer release.
+        TEXLIVE_YEAR=$(tlmgr --version |
+            sed -nE 's/.*TeX Live .* version ([0-9]{4}).*/\1/p')
+        if [[ ! "$TEXLIVE_YEAR" =~ ^[0-9]{4}$ ]]; then
+            echo "Could not determine the TeX Live version from tlmgr --version." >&2
+            tlmgr --version >&2
+            exit 1
+        fi
+
+        REPOSITORY="https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/${TEXLIVE_YEAR}/tlnet-final"
+        echo "Using TeX Live ${TEXLIVE_YEAR} package repository: ${REPOSITORY}"
+        if ! tlmgr option repository "$REPOSITORY"; then
+            echo "Could not configure the TeX Live ${TEXLIVE_YEAR} package repository." >&2
+            exit 1
+        fi
+        if ! tlmgr install hypcap caption booktabs pgf orcidlink rsfs courier placeins multirow tools; then
+            echo "Could not install required packages from the TeX Live ${TEXLIVE_YEAR} repository (${REPOSITORY})." >&2
+            exit 1
+        fi
         """
 
 
