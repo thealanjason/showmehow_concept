@@ -1074,20 +1074,15 @@ coverage explicit and checkable against a concrete study.
   each manage independent state).}
 \end{table}
 
-This rubric is prescriptive: it states what a robust study must satisfy, not
-what any particular study has been shown to satisfy. The hemolysis use case
-(Section~\ref{sec:usecases}) satisfies several criteria:
-the study runs end-to-end without unit-code changes on Linux, macOS, and
-Windows, and diagnostic units were added after the study was first assembled without modifying existing
-ones. All boundary files use language-agnostic formats (HDF5, NetCDF, CSV, or JSON), and a new human collaborator reproduced
-the study with a \texttt{git clone}, a single conda environment for the workflow
-manager, and one run command. Numerical equivalence of outputs across operating systems has
-not been verified systematically; the study involves stochastic units, and
-cross-OS equivalence is contingent on the random-state seeding criterion
-being fully implemented, which remains open. Nevertheless, the rubric remains
-useful independently of any particular use case: it provides a concrete set of
-criteria for assessing and improving robustness in any computational study
-operating within a heterogeneous and evolving computational research ecosystem.
+This rubric is prescriptive: it states what a robust study must satisfy.
+In their current state, the three use cases (Section~\ref{sec:usecases}) each satisfy a substantial subset of the criteria.
+The hemolysis and GPE studies provide per-OS, per-architecture lock files.
+The hemolysis study also runs end-to-end without unit-code changes on Linux, macOS, and Windows, and a new human collaborator reproduced it from a repository clone.
+The mass flow study couples its units in a live loop through a language-agnostic protocol and, on interruption, resumes without rerunning completed simulations.
+Furthermore, the GPE benchmark, available in both Nextflow and Snakemake, shows that the unit contract criterion makes a study independent of the SWMS.
+Numerical equivalence of outputs across operating systems has not yet been verified systematically, as it is contingent on the random-state seeding criterion being fully implemented.
+Nevertheless, the rubric remains useful independently of any particular use case: it provides a concrete set of criteria for assessing and improving robustness in any computational study operating within a heterogeneous and evolving computational research ecosystem.
+
 % AC===========================================================================
 
 
