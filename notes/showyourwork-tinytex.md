@@ -73,16 +73,17 @@ Bundle quirks:
 - `subcaption.sty` lives inside the `caption` bundle.
 - `pgf` covers tikz.
 
-Tinytex/TeX Live version mismatch: CTAN's live repository can advance before
-the conda-forge TinyTeX package does. The setup rule reads the installed TeX
-Live release from `tlmgr --version` and selects that year's frozen historic
-repository, so package installs remain compatible even while conda lags:
+Tinytex/TeX Live version mismatch: the conda-forge TinyTeX package may lag
+behind CTAN's live repository. The setup rule reads the installed TeX Live
+release from `tlmgr --version`, tries CTAN's live repository first, then falls
+back to that year's frozen historic repository if package installation fails.
+This supports both the current release and a lagging TinyTeX environment:
 ```
+tlmgr option repository https://mirror.ctan.org/systems/texlive/tlnet
 tlmgr option repository https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/<year>/tlnet-final
 ```
-If the version cannot be determined or the matching repository is unavailable,
-the rule stops with an explicit error instead of continuing with a mismatched
-repository.
+If the version cannot be determined or neither repository can provide the
+packages, the rule stops with an explicit error.
 
 ## Local pdflatex build (manual)
 
