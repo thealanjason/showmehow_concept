@@ -849,9 +849,10 @@ variant.
 
 The computational units are isolated in dedicated conda environments (Iso1);
 the Julia forward model is instead containerised in Docker (Iso2), as it cannot
-be managed through conda. A container definition file that mimics the
-Dockerfile creates the Apptainer image for HPC deployment (Iso3), so porting
-requires no modifications to unit code. Experimental data are fetched from a remote repository at setup time and
+be managed through conda. When environments change, CI regenerates conda lock
+files and builds container images for all units (Iso4). On HPC, Apptainer runs
+these images directly (Iso3), so porting requires no modifications to unit code.
+Experimental data are fetched from a remote repository at setup time and
 preprocessed to CSV; MCMC outputs are written in NetCDF using the ArviZ
 interface. Both are language-agnostic formats exchanged through the filesystem,
 so any unit can consume results regardless of language (Int1, Int2). The MCMC client queries the
@@ -868,9 +869,11 @@ connecting (Orch4).
 We ported the study to HPC by updating the Nextflow executor profile and
 building Apptainer images from the container definition files, with no modifications to unit code. The Julia forward model was ported later by the RSE, yielding a
 10--100$\times$ speedup over the Python baseline. Diagnostic units were added
-after the study was first assembled without modifying any existing unit. Conda lock files and CI automation (Iso1, Iso4) remain to be added before
-wider distribution.
-In this study, human collaborator harmonization, platform portability, and coordination overhead, among others, were addressed through Iso1--3, Int1--3, and Orch1--4.
+after the study was first assembled without modifying any existing unit.
+For HPC, we added a cluster profile that selects Apptainer instead of Docker,
+and a \texttt{-{}-containerized} flag that runs every unit from its image
+instead of conda.
+In this study, human collaborator harmonization, platform portability, and coordination overhead, among others, were addressed through Iso1--4, Int1--3, and Orch1--4.
 The study is available at
 \url{https://github.com/nicodirkes/bpc_hemolysis}.
 
