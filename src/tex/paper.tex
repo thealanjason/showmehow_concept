@@ -838,8 +838,8 @@ multiple languages, who builds and maintains the study and supports experiments.
 The study consists of a forward model, an MCMC unit, and a report unit.
 The forward model
 takes control variables and design parameters as inputs and returns a predicted
-hemolysis index; it is available in both Python and Julia, selectable at
-runtime. The MCMC unit queries the forward model in an online loop to infer
+hemolysis index; it is available in both Python and Julia, selectable through a one-time, 
+per-run configuration. The MCMC unit queries the forward model in an online loop to infer
 model parameters (Pattern~C). The report unit compiles results and diagnostics from the
 MCMC outputs. The study can run a single calibration or fan out across a sweep of
 experimental datasets (Pattern~A) or across competing hemolysis model
