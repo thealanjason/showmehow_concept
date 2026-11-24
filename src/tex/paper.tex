@@ -561,8 +561,9 @@ package manager~\cite{juliapkg} have locking built in by default, but are not
 yet natively supported by the SWMSs we consider.
 
 \paragraph{Iso2 --- Containerisation.}
-When package managers with pinned lock files are not sufficient,
-containerisation is the next step. This applies to computational units whose dependencies are specified through complex build systems, are not available on conda, or require legacy software and operating systems. A container packages not just the software dependencies but the entire
+When package managers with pinned lock files are not sufficient, containerisation is the next step.
+This applies to computational units whose dependencies are specified through complex build systems, are not available on conda, require legacy software, or are available only on specific operating systems. 
+A container packages not just the software dependencies but the entire
 operating system layer, so that the unit is fully independent of the host
 operating system. Each unit requires a \texttt{Dockerfile} as its build definition, which can then be built into a container image using Docker~\cite{merkel2014docker},
 Podman~\cite{heon2018podman}, or any compatible container runtime. We recommend one container image per unit, so that a dependency change in one
