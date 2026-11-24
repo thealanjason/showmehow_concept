@@ -49,6 +49,7 @@ rule setup_tinytex:
         REPOSITORY="https://mirror.ctan.org/systems/texlive/tlnet"
         echo "Trying CTAN package repository: $REPOSITORY"
         if ! tlmgr option repository "$REPOSITORY" ||
+            ! tlmgr update --self ||
             ! tlmgr install hypcap caption booktabs pgf orcidlink rsfs courier placeins multirow tools; then
             REPOSITORY="https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/$TEXLIVE_YEAR/tlnet-final"
             echo "Trying TeX Live $TEXLIVE_YEAR package repository: $REPOSITORY"
