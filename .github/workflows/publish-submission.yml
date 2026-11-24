@@ -33,7 +33,7 @@ jobs:
           cache-downloads: true
 
       - name: Install snakemake
-        run: micromamba install -n tinytex -y -c conda-forge -c bioconda snakemake-minimal
+        run: micromamba install -n tinytex -y -c conda-forge -c bioconda conda snakemake-minimal
 
       - name: Cache snakemake conda envs and tinytex packages
         uses: actions/cache@v4
