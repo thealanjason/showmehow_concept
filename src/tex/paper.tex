@@ -907,7 +907,7 @@ sampling unit, which is containerised in Docker (Iso2). As in the hemolysis
 study, lock files and container images are maintained through
 build automation (Iso4), and the images can also be used by Apptainer on HPC (Iso3).
 Latin Hypercube samples and forward model responses are exchanged as CSV files;
-MCMC outputs are written in HDF5.
+MCMC outputs are written in NetCDF.
 Both are language-agnostic formats exchanged through the filesystem (Int1,
 Int2), bridging the Julia, Python, and R units across the pipeline.
 The surrogate unit is decomposed into a training sub-process and a serving
