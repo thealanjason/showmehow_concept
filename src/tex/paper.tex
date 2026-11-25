@@ -807,7 +807,9 @@ sentinel, the client unit never starts and the workflow stalls; if the server
 crashes after the client has started, the client cannot reach the server's URL
 and port and crashes with a connection error. Studies using Snakemake can use
 native service rules; studies using Nextflow can rely on the file-based sentinel
-workaround.
+workaround. Neither approach currently restarts a crashed server during a run; on rerun,
+the client starts from the beginning unless its algorithm checkpoints its state to a
+location that persists across reruns.
 
 
 
@@ -901,9 +903,10 @@ A surrogate serving unit in R then provides access to predictions over HTTP, and
 inference unit in Python queries it in an online loop to infer the model
 parameters (Pattern~C).
 
-Each unit is isolated in a dedicated conda environment (Iso1) and additionally
-containerised using Apptainer for running on HPC (Iso2, Iso3), so no unit code
-needs to be modified.
+Each unit is isolated in a dedicated conda environment (Iso1), except the
+sampling unit, which is containerised in Docker (Iso2). As in the hemolysis
+study, lock files and container images for all units are maintained through
+build automation (Iso4), and the images can also be used by Apptainer on HPC (Iso3).
 Latin Hypercube samples and forward model responses are exchanged as CSV files;
 MCMC outputs are written in HDF5.
 Both are language-agnostic formats exchanged through the filesystem (Int1,
@@ -1078,7 +1081,7 @@ coverage explicit and checkable against a concrete study.
 
 This rubric is prescriptive: it states what a robust study must satisfy.
 In their current state, the three use cases (Section~\ref{sec:usecases}) each satisfy a substantial subset of the criteria.
-The hemolysis and GPE studies provide a per-OS, per-architecture lock file or container image for each unit.
+All three studies provide a per-OS, per-architecture lock file or container image for each unit.
 The hemolysis study also runs end-to-end without unit-code changes on Linux, macOS, and Windows, and a new human collaborator reproduced it from a repository clone.
 The mass flow study couples its units in a live loop through a language-agnostic protocol and, on interruption, resumes without rerunning completed simulations.
 Furthermore, the GPE benchmark, available in both Nextflow and Snakemake, shows that the unit contract criterion makes a study independent of the SWMS.
