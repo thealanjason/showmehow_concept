@@ -863,7 +863,7 @@ Each unit declares its inputs, outputs, script, and environment as a
 self-contained contract; the full workflow is automated in Nextflow (Orch1),
 which limits concurrency based on available resources when running calibrations
 in parallel (Orch2) and skips completed runs on rerun (Orch3). The forward
-model server writes a sentinel file containing its network port to a shared
+model server writes a sentinel file and its network port to a shared
 directory; the MCMC client starts and waits until the file is present before
 connecting (Orch4).
 
@@ -918,7 +918,7 @@ interface; the Python MCMC client queries it without any language bridging
 (Int3).
 The full workflow is automated in Nextflow (Orch1), which sequences the two
 stages so that MCMC calibration starts only after the surrogate is trained
-(Orch2) and skips completed computational model simulations on rerun, so an
+(Orch2) and skips the completed computational model simulations on rerun, so an
 interrupted run need not repeat the expensive simulation stage (Orch3).
 The surrogate server signals readiness by writing its network port to a sentinel
 file; the MCMC client connects once the file appears (Orch4).
