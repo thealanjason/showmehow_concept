@@ -743,12 +743,10 @@ Snakemake~\cite{molder2021snakemake} as representative examples throughout
 this section; SHOWME.how is not tied to any particular manager, and a broader
 survey of the landscape is available in Suter et al.~\cite{suter2025terminology}
 and~\cite{diercks2023evaluation}. Nextflow runs on Linux and
-macOS (with WSL on Windows); Snakemake is cross-platform. Workflow extensions
-in Nextflow require Groovy and the JVM; Snakemake extensions are written in
-Python. Both managers share a similar unit contract,
+macOS (with WSL on Windows); Snakemake is cross-platform. Both managers share a similar unit contract,
 where each unit declares its inputs, outputs, script, and compute
-environment.\footnote{Snakemake's native container runtime is Apptainer; Docker
-images declared in the environment are converted automatically.} This contract
+environment.\footnote{At the time of writing, Snakemake supports only Apptainer as its
+native container runtime, which converts Docker images automatically.} This contract
 ties directly to both preceding pillars; the environment declaration activates
 the isolation strategy defined for each unit, and the input/output declarations
 specify where and how data crosses unit boundaries.
