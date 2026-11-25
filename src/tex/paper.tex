@@ -805,12 +805,11 @@ ready and the client unit declares that file as an input dependency. The
 workaround has two failure modes. If the server crashes before writing the
 sentinel, the client unit never starts and the workflow stalls; if the server
 crashes after the client has started, the client cannot reach the server's URL
-and port and crashes with a connection error. Studies using Snakemake can use
+and port and fails with a connection error. Studies using Snakemake can use
 native service rules; studies using Nextflow can rely on the file-based sentinel
-workaround. Neither approach currently restarts a crashed server during a run; on rerun,
-the client starts from the beginning unless its algorithm checkpoints its state to a
-location that persists across reruns.
-
+workaround. Neither approach currently restarts a crashed server during a run;
+to resume on rerun instead of starting from the beginning, the client's algorithm
+would need to checkpoint its state to a location that persists across reruns.
 
 
 % =============================================================================
@@ -851,7 +850,7 @@ variant.
 
 The computational units are isolated in dedicated conda environments (Iso1);
 the Julia forward model is instead containerised in Docker (Iso2), as it cannot
-be managed through conda. When environments change, CI regenerates conda lock
+be managed through conda. When environments change, build automation regenerates conda lock
 files and builds container images for all units (Iso4). On HPC, Apptainer runs
 these images directly (Iso3), so porting requires no modifications to unit code.
 Experimental data are fetched from a remote repository at setup time and
@@ -905,7 +904,7 @@ parameters (Pattern~C).
 
 Each unit is isolated in a dedicated conda environment (Iso1), except the
 sampling unit, which is containerised in Docker (Iso2). As in the hemolysis
-study, lock files and container images for all units are maintained through
+study, lock files and container images are maintained through
 build automation (Iso4), and the images can also be used by Apptainer on HPC (Iso3).
 Latin Hypercube samples and forward model responses are exchanged as CSV files;
 MCMC outputs are written in HDF5.
@@ -928,7 +927,7 @@ Assembling this study is where we first identified the sentinel file pattern (Or
 An R server implementation of the UMBridge interface was not yet available; we implemented it locally, and an upstream contribution is underway.
 We have executed the study end-to-end on Windows and Linux laptops and on a
 local Linux cluster.
-In this study, dependency conflicts, coordination overhead, and human collaborator harmonization, among others, were addressed through Iso1--3, Int1--3, and Orch1--4.
+In this study, dependency conflicts, coordination overhead, and human collaborator harmonization, among others, were addressed through Iso1--4, Int1--3, and Orch1--4.
 The study is available at \url{https://github.com/thealanjason/bpc_massflow}.
 
 % -----------------------------------------------------------------------------
